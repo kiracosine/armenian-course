@@ -31,9 +31,10 @@ const LEGACY_KEY = "armenian:level1:progress";
 
 const w = (hy, rom, en) => ({ hy, rom, en });
 const l = (u, lo, name, rom, tip, ex) => ({ u, lo, name, rom, tip, ex });
-const lig = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), unit: true });
-const glyph = (x) => (x.unit ? x.lo : x.u);
-const pair = (x) => (x.unit ? x.lo : `${x.u} ${x.lo}`);
+const wide = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), wide: true });
+const aside = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), solo: true, uncounted: true });
+const glyph = (x) => (x.solo ? x.lo : x.u);
+const pair = (x) => (x.solo ? x.lo : `${x.u} ${x.lo}`);
 
 const L = (id, title, note, items) => ({ id, title, note, items });
 const it = (hy, rom, en) => ({ hy, rom, en });
@@ -42,25 +43,25 @@ const LETTER_LESSONS = [
   {
     id: "1-1",
     title: "The core seven",
-    note: "Five vowels, two consonants, and the letters ու and և.",
+    note: "Five vowels and two consonants — enough to read real words straight away.",
     letters: [
-      l("Ա", "ա", "այբ", "a", "Open, like the a in father. The most common sound in Armenian.", w("արև", "arev", "sun")),
+      l("Ա", "ա", "այբ", "a", "Open, like the a in father. The most common sound in Armenian.", w("ասա", "asa", "say!")),
       l("Ե", "ե", "եչ", "ye/e", "Says ye at the start of a word, plain e anywhere else.", w("սեր", "ser", "love")),
       l("Ի", "ի", "ինի", "i", "Like the ee in see.", w("իր", "ir", "his, her")),
       l("Ո", "ո", "ո", "vo/o", "Says vo at the start of a word, plain o anywhere else.", w("որս", "vors", "hunt")),
-      lig("ՈՒ", "ու", "ու", "u", "One letter, one sound: oo as in boot.", w("ուս", "us", "shoulder")),
+      wide("ՈՒ", "ու", "ու", "u", "One letter, one sound: oo as in boot.", w("ուս", "us", "shoulder")),
       l("Ս", "ս", "սե", "s", "Like the s in sun.", w("սար", "sar", "mountain")),
       l("Ր", "ր", "րե", "r", "A single light tap of the tongue, softer than an English r.", w("սուր", "sur", "sharp")),
-      lig("Եւ", "և", "և", "yev", "One letter. Standing alone it is the word and.", w("սև", "sev", "black")),
     ],
     words: [
-      w("սար", "sar", "mountain"), w("սեր", "ser", "love"), w("սև", "sev", "black"),
-      w("արև", "arev", "sun"), w("ուս", "us", "shoulder"), w("սուր", "sur", "sharp"),
+      w("սար", "sar", "mountain"), w("սեր", "ser", "love"),       w("ուս", "us", "shoulder"), w("սուր", "sur", "sharp"),
       w("որս", "vors", "hunt"), w("ուր", "ur", "where"), w("ես", "yes", "I"),
       w("որ", "vor", "that, which"), w("իր", "ir", "his, her"), w("սա", "sa", "this"),
-      w("ևս", "yevs", "also"), w("իրար", "irar", "each other"), w("երևի", "yerevi", "probably"),
+      w("իրար", "irar", "each other"),
       w("արի", "ari", "come!"), w("ասա", "asa", "say!"), w("երես", "yeres", "face"),
-      w("արու", "aru", "male"), w("սուսեր", "suser", "sword")
+      w("արու", "aru", "male"), w("սուսեր", "suser", "sword"),
+      w("ասես", "ases", "as if"), w("սրա", "sra", "of this one"),
+      w("որի", "vori", "of which"), w("սոսի", "sosi", "plane tree")
     ],
   },
   {
@@ -92,13 +93,13 @@ const LETTER_LESSONS = [
     letters: [
       l("Խ", "խ", "խե", "kh", "Raspy, from the back of the throat, like the ch in Bach.", w("խոտ", "khot", "grass")),
       l("Հ", "հ", "հո", "h", "Like the h in hat.", w("հաց", "hats", "bread")),
-      l("Վ", "վ", "վև", "v", "Like the v in van.", w("հավ", "hav", "chicken")),
-      l("Տ", "տ", "տյուն", "t", "A t with no puff of air, closer to the t in stop.", w("տերև", "terev", "leaf")),
+      l("Վ", "վ", "վեվ", "v", "Like the v in van.", w("հավ", "hav", "chicken")),
+      l("Տ", "տ", "տյուն", "t", "A t with no puff of air, closer to the t in stop.", w("տերեվ", "terev", "leaf")),
       l("Ց", "ց", "ցո", "tsʰ", "A ts with a strong puff of air after it.", w("հաց", "hats", "bread")),
     ],
     words: [
       w("հաց", "hats", "bread"), w("հավ", "hav", "chicken"), w("սիրտ", "sirt", "heart"),
-      w("տերև", "terev", "leaf"), w("խոտ", "khot", "grass"), w("սոխ", "sokh", "onion"),
+      w("տերեվ", "terev", "leaf"), w("խոտ", "khot", "grass"), w("սոխ", "sokh", "onion"),
       w("վեց", "vets", "six"), w("տարի", "tari", "year"), w("կատու", "katu", "cat"),
       w("կով", "kov", "cow"), w("պատ", "pat", "wall"), w("տեր", "ter", "owner"), w("վատ", "vat", "bad"),
       w("խոր", "khor", "deep"), w("ուրախ", "urakh", "happy"), w("երեխա", "yerekha", "child"),
@@ -201,15 +202,31 @@ const LETTER_LESSONS = [
       w("մեղու", "meghu", "bee"), w("աստղ", "astgh", "star")
     ],
   },
+  {
+    id: "1-8",
+    title: "The ligature և",
+    note: "One character replacing the եվ you have been writing. From here on it is the normal spelling.",
+    letters: [
+      aside("Եվ", "և", "և", "yev", "A single character for եվ. Everything you spelled սեվ or արեվ is written սև and արև from now on.", w("սև", "sev", "black")),
+    ],
+    words: [
+      w("և", "yev", "and"), w("սև", "sev", "black"), w("արև", "arev", "sun"), w("տերև", "terev", "leaf"),
+      w("թև", "tev", "arm"), w("ևս", "yevs", "also"), w("երևի", "yerevi", "probably"),
+      w("կեղև", "keghev", "bark"), w("անձրև", "andzrev", "rain"), w("հարևան", "harevan", "neighbour"),
+      w("թեթև", "tetev", "light"), w("արևոտ", "arevot", "sunny")
+    ],
+  },
 ];
 
 const LESSONS = LETTER_LESSONS;
 const ALPHABET = LESSONS.flatMap((L) => L.letters.filter((x) => !x.uncounted));
+// Taught, but set apart from the 38: a ligature rather than a letter of the alphabet.
+const EXTRAS = LESSONS.flatMap((L) => L.letters.filter((x) => x.uncounted));
 
 const LEVELS = [
   { n: 1, name: "The letters",
-    blurb: "All 39 letters, grouped so that every word a lesson asks you to read is spellable from that lesson plus the core.",
-    topics: ["39 letters", "182 words", "Reading short words"], lessons: LETTER_LESSONS },
+    blurb: "All 38 letters, grouped so that every word a lesson asks you to read is spellable from that lesson plus the core.",
+    topics: ["38 letters plus և", "194 words", "Reading short words"], lessons: LETTER_LESSONS },
   { n: 2, name: "Syllables and stress", blurb: "Turning letters into sound. The rules that decide how a written word is said.",
     topics: ["Words with ու", "Words with և", "Words that begin with ը"], lessons: [
       L("2-1", "Words with ու", "ու is two letters but one sound. Read each of these aloud.", [
@@ -219,11 +236,12 @@ const LEVELS = [
         it("կատու", "katu", "cat"), it("ապուր", "apur", "soup"), it("սուրճ", "surch", "coffee"),
         it("գույն", "guyn", "colour"), it("անուն", "anun", "name"), it("գարուն", "garun", "spring")
       ]),
-      L("2-2", "Words with և", "և is one letter standing for ե plus ւ. It is never capitalised mid-word.", [
-        it("տերև", "terev", "leaf"), it("արև", "arev", "sun"), it("սև", "sev", "black"),
-        it("թև", "tev", "wing"), it("թեթև", "tetev", "light"), it("կեղև", "keghev", "bark"),
-        it("անձրև", "andzrev", "rain"), it("հարևան", "harevan", "neighbour"), it("ևս", "yevs", "also"),
-        it("արևոտ", "arevot", "sunny")
+      L("2-2", "Words built on և", "Now that you have the ligature, here it is inside longer words.", [
+        it("Երևան", "Yerevan", "Yerevan"), it("արևելք", "arevelk", "east"),
+        it("արևմուտք", "arevmutk", "west"), it("արևածագ", "arevatsag", "sunrise"),
+        it("անձրևոտ", "andzrevot", "rainy"), it("երևալ", "yereval", "to appear"),
+        it("թևավոր", "tevavor", "winged"), it("սևանալ", "sevanal", "to turn black"),
+        it("թեթևություն", "tetevutyun", "lightness"), it("արևային", "arevayin", "solar")
       ]),
       L("2-3", "Words that begin with ը", "ը is the neutral uh. At the start of a word it is always written.", [
         it("ընկեր", "ənker", "friend"), it("ընկույզ", "ənkuyz", "walnut"),
@@ -750,7 +768,7 @@ function buildQuiz(levelIdx, idx) {
   };
 
   const kinds = ["glyph2sound", "sound2glyph", "case"];
-  const letterQs = lesson.letters.map((L, i) => letterQ(L, L.unit ? "glyph2sound" : kinds[i % 3]));
+  const letterQs = lesson.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
   // The lesson's full word pool is large, so each attempt draws a rotating
   // sample. Keeps a session short and makes a repeat feel different.
   const chosen = pickN(lesson.words, 8);
@@ -909,7 +927,7 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
       <button key={L.u} onClick={() => setSel(on ? L : null)} disabled={!on}
         title={on ? `${L.name} · ${L.rom}` : "Not learned yet"}
         style={{
-          width: L.unit ? 44 : 34, height: 40, borderRadius: 6, display: "flex", alignItems: "center",
+          width: L.wide ? 48 : 34, height: 40, borderRadius: 6, display: "flex", alignItems: "center",
           justifyContent: "center", fontFamily: ARM, fontSize: 21, lineHeight: 1,
           color: on ? C.gold : C.line,
           background: active ? C.ink3 : on ? "rgba(216,162,43,0.07)" : "transparent",
@@ -925,6 +943,8 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
     <div>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
         {ALPHABET.map((L) => tile(L))}
+        <span aria-hidden="true" style={{ width: 1, height: 26, background: C.line, margin: "0 6px" }} />
+        {EXTRAS.map((L) => tile(L))}
       </div>
       <div style={{ marginTop: 12, fontSize: 14, color: sel ? C.parch : C.muted, fontFamily: UI, minHeight: 22 }}>
         {sel ? (
@@ -933,7 +953,7 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
             <span style={{ fontFamily: ARM }}>{sel.name}</span> · {sel.rom} — {sel.tip}
           </span>
         ) : (
-          `${learnedCount} of 39 letters lit. Tap a gold letter for a reminder.`
+          `${learnedCount} of 38 letters lit, plus և after the divider. Tap a gold one for a reminder.`
         )}
       </div>
     </div>
@@ -1046,7 +1066,7 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
         {[
           [progress.xp, "experience", C.apricot],
           [progress.streak, "day streak", C.apricot],
-          [`${learnedCount}/39`, "letters", C.gold],
+          [`${learnedCount}/38`, "letters", C.gold],
         ].map(([v, label, col]) => (
           <div key={label}>
             <div style={{ fontFamily: UI, fontSize: 22, color: col, fontWeight: 700 }}>{v}</div>
@@ -1092,7 +1112,7 @@ function Study({ lesson, onDone, onQuit }) {
       <div style={{ flex: "1 1 auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", paddingBottom: 16 }}>
         {isLetter ? (
           <>
-            <div style={{ fontFamily: ARM, fontSize: 92, color: C.gold, lineHeight: 1.1 }}>{pair(L)}</div>
+            <div style={{ fontFamily: ARM, fontSize: L.wide ? 68 : 92, color: C.gold, lineHeight: 1.1 }}>{pair(L)}</div>
             <div style={{ marginTop: 14, fontFamily: ARM, fontSize: 20, color: C.parch }}>{L.name}</div>
             <div style={{ marginTop: 2, fontFamily: UI, fontSize: 28, color: C.apricot, fontWeight: 600 }}>{L.rom}</div>
             <p style={{ marginTop: 18, fontFamily: UI, fontSize: 15, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>{L.tip}</p>
