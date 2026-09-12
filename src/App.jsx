@@ -31,7 +31,6 @@ const LEGACY_KEY = "armenian:level1:progress";
 
 const w = (hy, rom, en) => ({ hy, rom, en });
 const l = (u, lo, name, rom, tip, ex) => ({ u, lo, name, rom, tip, ex });
-const aux = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), uncounted: true });
 const lig = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), unit: true });
 const glyph = (x) => (x.unit ? x.lo : x.u);
 const pair = (x) => (x.unit ? x.lo : `${x.u} ${x.lo}`);
@@ -43,17 +42,16 @@ const LETTER_LESSONS = [
   {
     id: "1-1",
     title: "The core seven",
-    note: "Five vowels, two consonants and the joined letters ու and և.",
+    note: "Five vowels, two consonants, and the letters ու and և.",
     letters: [
       l("Ա", "ա", "այբ", "a", "Open, like the a in father. The most common sound in Armenian.", w("արև", "arev", "sun")),
       l("Ե", "ե", "եչ", "ye/e", "Says ye at the start of a word, plain e anywhere else.", w("սեր", "ser", "love")),
       l("Ի", "ի", "ինի", "i", "Like the ee in see.", w("իր", "ir", "his, her")),
       l("Ո", "ո", "ո", "vo/o", "Says vo at the start of a word, plain o anywhere else.", w("որս", "vors", "hunt")),
-      lig("ՈՒ", "ու", "ու", "u", "Written as ո and ւ joined, but learn it as one letter: oo as in boot.", w("ուս", "us", "shoulder")),
+      lig("ՈՒ", "ու", "ու", "u", "One letter, one sound: oo as in boot.", w("ուս", "us", "shoulder")),
       l("Ս", "ս", "սե", "s", "Like the s in sun.", w("սար", "sar", "mountain")),
       l("Ր", "ր", "րե", "r", "A single light tap of the tongue, softer than an English r.", w("սուր", "sur", "sharp")),
-      lig("Եւ", "և", "և", "yev", "Written as ե and ւ joined. Standing alone it is the word and.", w("սև", "sev", "black")),
-      aux("Ւ", "ւ", "հյուն", "w", "Never written on its own. You only ever meet it inside ու and և, which is why those two are counted instead.", w("ուս", "us", "shoulder")),
+      lig("Եւ", "և", "և", "yev", "One letter. Standing alone it is the word and.", w("սև", "sev", "black")),
     ],
     words: [
       w("սար", "sar", "mountain"), w("սեր", "ser", "love"), w("սև", "sev", "black"),
@@ -207,8 +205,6 @@ const LETTER_LESSONS = [
 
 const LESSONS = LETTER_LESSONS;
 const ALPHABET = LESSONS.flatMap((L) => L.letters.filter((x) => !x.uncounted));
-// Not letters of the alphabet, but written units a reader has to recognise.
-const EXTRAS = LESSONS.flatMap((L) => L.letters.filter((x) => x.uncounted));
 
 const LEVELS = [
   { n: 1, name: "The letters",
@@ -680,7 +676,7 @@ function buildQuiz(levelIdx, idx) {
   const upto = LESSONS.slice(0, idx + 1);
   const knownLetters = upto.flatMap((L) => L.letters);
   const knownWords = upto.flatMap((L) => L.words);
-  const bank = knownLetters.filter((x) => x.lo !== "ւ");
+  const bank = knownLetters;
 
   const letterQ = (L, kind) => {
     if (kind === "sound2glyph") {
@@ -762,7 +758,7 @@ function buildQuiz(levelIdx, idx) {
 
   const review = [];
   if (idx > 0) {
-    const oldLetters = LESSONS.slice(0, idx).flatMap((L) => L.letters).filter((x) => x.lo !== "ւ");
+    const oldLetters = LESSONS.slice(0, idx).flatMap((L) => L.letters);
     pickN(oldLetters, 2).forEach((L) => review.push(letterQ(L, Math.random() < 0.5 ? "glyph2sound" : "sound2glyph")));
     pickN(LESSONS.slice(0, idx).flatMap((L) => L.words), 1).forEach((word) => review.push(readQ(word)));
   }
@@ -906,18 +902,18 @@ function Button({ children, onClick, tone = "gold", disabled, full, small }) {
 function AlphabetBoard({ learnedIds, learnedCount }) {
   const [sel, setSel] = useState(null);
 
-  const tile = (L, extra) => {
+  const tile = (L) => {
     const on = learnedIds.has(L.u);
     const active = sel && sel.u === L.u;
     return (
       <button key={L.u} onClick={() => setSel(on ? L : null)} disabled={!on}
-        title={on ? `${L.name} · ${L.rom}${extra ? " (never written alone)" : ""}` : "Not learned yet"}
+        title={on ? `${L.name} · ${L.rom}` : "Not learned yet"}
         style={{
-          width: extra ? 44 : 34, height: 40, borderRadius: 6, display: "flex", alignItems: "center",
+          width: L.unit ? 44 : 34, height: 40, borderRadius: 6, display: "flex", alignItems: "center",
           justifyContent: "center", fontFamily: ARM, fontSize: 21, lineHeight: 1,
           color: on ? C.gold : C.line,
           background: active ? C.ink3 : on ? "rgba(216,162,43,0.07)" : "transparent",
-          border: `1px ${extra ? "dashed" : "solid"} ${active ? C.gold : on ? "rgba(216,162,43,0.28)" : C.line}`,
+          border: `1px solid ${active ? C.gold : on ? "rgba(216,162,43,0.28)" : C.line}`,
           cursor: on ? "pointer" : "default",
         }}>
         {glyph(L)}
@@ -928,9 +924,7 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
   return (
     <div>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
-        {ALPHABET.map((L) => tile(L, false))}
-        <span aria-hidden="true" style={{ width: 1, height: 26, background: C.line, margin: "0 6px" }} />
-        {EXTRAS.map((L) => tile(L, true))}
+        {ALPHABET.map((L) => tile(L))}
       </div>
       <div style={{ marginTop: 12, fontSize: 14, color: sel ? C.parch : C.muted, fontFamily: UI, minHeight: 22 }}>
         {sel ? (
@@ -939,7 +933,7 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
             <span style={{ fontFamily: ARM }}>{sel.name}</span> · {sel.rom} — {sel.tip}
           </span>
         ) : (
-          `${learnedCount} of 39 letters lit, plus ւ after the divider. Tap a gold one for a reminder.`
+          `${learnedCount} of 39 letters lit. Tap a gold letter for a reminder.`
         )}
       </div>
     </div>
