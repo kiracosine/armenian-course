@@ -640,155 +640,169 @@ const todayKey = () => {
 const dayGap = (a, b) => (a ? Math.round((new Date(b) - new Date(a)) / 86400000) : Infinity);
 
 /* ------------------------------------------------------------------ */
-/*  Quiz construction                                                  */
+/*  Sessions                                                           */
+/*                                                                     */
+/*  Nothing is ever asked before it has been shown. Each word climbs   */
+/*  four stages, saved per learner:                                    */
+/*                                                                     */
+/*    0  new       a card shows Armenian, transliteration and English, */
+/*                 and the first question still shows the              */
+/*                 transliteration                                     */
+/*    1  met       Armenian only. The transliteration is behind a tap, */
+/*                 and using the tap keeps the word at this stage      */
+/*    2  known     the translation is tested the other way round:     */
+/*                 pick or build the Armenian for an English word      */
+/*    3  mastered  mixed review                                        */
+/*                                                                     */
+/*  A right answer at a word's own stage moves it up one. A wrong      */
+/*  answer moves it down one, and a word back at 0 gets its card       */
+/*  again next time.                                                   */
 /* ------------------------------------------------------------------ */
 
-/* Lessons from level 2 onward are lists of {hy, rom, en} items rather than
-   letters, so they get their own question builder. */
-function buildItemQuiz(level, idx) {
-  const lesson = level.lessons[idx];
-  const pool = level.lessons.slice(0, idx + 1).flatMap((l) => l.items);
-  const spellable = (x) => !x.hy.includes(" ") && splitWord(x.hy).length <= 7;
+const NEW_PER_SESSION = 5;
+const PRACTICE_PER_SESSION = 4;
+const REVIEW_PER_SESSION = 3;
+const MASTERED = 3;
 
-  const readQ = (x) => {
-    const d = distractors(pool, x, 3, (o) => o.en);
-    return {
-      type: "choice", prompt: "What does this mean?", big: x.hy,
-      options: shuffle([x, ...d]).map((o) => ({ label: o.en, correct: o.en === x.en })),
-      note: `${x.hy} · ${x.rom} · ${x.en}`,
-    };
-  };
-  const writeQ = (x) => {
-    const d = distractors(pool, x, 3, (o) => o.hy);
-    return {
-      type: "choice", prompt: `Which one means \u201C${x.en}\u201D?`,
-      options: shuffle([x, ...d]).map((o) => ({ label: o.hy, armenian: true, correct: o.hy === x.hy })),
-      note: `${x.hy} · ${x.rom} · ${x.en}`,
-    };
-  };
-  const spellQ = (x) => {
-    const target = splitWord(x.hy);
-    const extra = shuffle(ALPHABET.map((L) => L.lo))
-      .filter((c) => !target.includes(c)).slice(0, 4);
-    return {
-      type: "spell", prompt: `Build the word for \u201C${x.en}\u201D`, hint: x.rom,
-      target, bank: shuffle([...target, ...extra]),
-      note: `${x.hy} · ${x.rom} · ${x.en}`,
-    };
-  };
+const wordKey = (x) => `${x.hy}|${x.en}`;
+const wordsOf = (lesson) => lesson.words || lesson.items;
+const stageOf = (words, x) => (words && words[wordKey(x)]) || 0;
+const isSpellable = (x) => /^[ա-և]+$/.test(x.hy) && splitWord(x.hy).length <= 7;
+const fullNote = (x) => `${x.hy} · ${x.rom} · ${x.en}`;
 
-  const chosen = pickN(lesson.items, 10);
-  const qs = chosen.map((x, k) =>
-    k % 3 === 0 ? readQ(x) : k % 3 === 1 && spellable(x) ? spellQ(x) : writeQ(x));
-
-  if (idx > 0) {
-    pickN(level.lessons.slice(0, idx).flatMap((l) => l.items), 3).forEach((x) => qs.push(readQ(x)));
-  }
-  return shuffle(qs);
+function nextStage(stage, rung, ok) {
+  if (!ok) return Math.max(0, stage - 1);
+  return rung === stage ? Math.min(MASTERED, stage + 1) : stage;
 }
 
-function buildQuiz(levelIdx, idx) {
+function buildSession(levelIdx, idx, words = {}) {
   const level = LEVELS[levelIdx];
-  if (!level.lessons[idx].letters) return buildItemQuiz(level, idx);
-  const lesson = LESSONS[idx];
-  const upto = LESSONS.slice(0, idx + 1);
-  const knownLetters = upto.flatMap((L) => L.letters);
-  const knownWords = upto.flatMap((L) => L.words);
-  const bank = knownLetters;
+  const lesson = level.lessons[idx];
+  const own = wordsOf(lesson);
 
-  const letterQ = (L, kind) => {
-    if (kind === "sound2glyph") {
+  // Which words this session teaches, practises and reviews.
+  const fresh = shuffle(own.filter((x) => stageOf(words, x) === 0)).slice(0, NEW_PER_SESSION);
+  const practice = shuffle(own.filter((x) => stageOf(words, x) > 0))
+    .sort((a, b) => stageOf(words, a) - stageOf(words, b))
+    .slice(0, PRACTICE_PER_SESSION + NEW_PER_SESSION - fresh.length);
+  const taken = new Set([...fresh, ...practice].map(wordKey));
+  const review = pickN(
+    level.lessons.slice(0, idx).flatMap(wordsOf)
+      .filter((x) => stageOf(words, x) > 0 && !taken.has(wordKey(x))),
+    REVIEW_PER_SESSION,
+  );
+
+  // Wrong options come from words the learner has already seen, when there are enough.
+  const freshKeys = new Set(fresh.map(wordKey));
+  const pool = level.lessons.slice(0, idx + 1).flatMap(wordsOf);
+  const seen = pool.filter((x) => stageOf(words, x) > 0 || freshKeys.has(wordKey(x)));
+  const wrongOptions = (x, keyFn) => {
+    const clash = (o) => o.en === x.en || o.hy === x.hy;
+    const d = distractors(seen.filter((o) => !clash(o)), x, 3, keyFn);
+    return d.length === 3 ? d : distractors(pool.filter((o) => !clash(o)), x, 3, keyFn);
+  };
+
+  const tiles = [...new Set(
+    lesson.letters
+      ? LESSONS.slice(0, idx + 1).flatMap((l) => l.letters).map((x) => x.lo)
+      : [...ALPHABET, ...EXTRAS].map((x) => x.lo),
+  )];
+
+  const meaning = (x, rung) => ({
+    key: wordKey(x), rung, type: "choice",
+    prompt: "What does this mean?", big: x.hy,
+    sub: rung === 0 ? x.rom : null,
+    peek: rung === 1 ? x.rom : null,
+    options: shuffle([x, ...wrongOptions(x, (o) => o.en)])
+      .map((o) => ({ label: o.en, correct: o.en === x.en })),
+    note: fullNote(x),
+  });
+  const pickArmenian = (x) => ({
+    key: wordKey(x), rung: 2, type: "choice",
+    prompt: `Which one means “${x.en}”?`,
+    options: shuffle([x, ...wrongOptions(x, (o) => o.hy)])
+      .map((o) => ({ label: o.hy, armenian: true, correct: o.hy === x.hy })),
+    note: fullNote(x),
+  });
+  const build = (x) => {
+    const target = splitWord(x.hy);
+    const extra = shuffle(tiles.filter((c) => !target.includes(c))).slice(0, 4);
+    return {
+      key: wordKey(x), rung: 2, type: "spell",
+      prompt: `Build the word for “${x.en}”`,
+      target, bank: shuffle([...target, ...extra]),
+      note: fullNote(x),
+    };
+  };
+  const produce = (x) => (isSpellable(x) && Math.random() < 0.5 ? build(x) : pickArmenian(x));
+  const askAt = (x, stage) =>
+    stage === 1 ? meaning(x, 1)
+    : stage === 2 ? produce(x)
+    : Math.random() < 0.5 ? meaning(x, 1) : produce(x);
+
+  // Letter questions, for level 1 only.
+  let letterQs = [];
+  let letterReview = [];
+  if (lesson.letters) {
+    const bank = LESSONS.slice(0, idx + 1).flatMap((l) => l.letters);
+    const letterQ = (L, kind) => {
+      if (kind === "sound2glyph") {
+        const d = distractors(bank, L, 3, (x) => x.rom);
+        return {
+          type: "choice", prompt: `Which letter says “${L.rom}”?`,
+          options: shuffle([L, ...d]).map((x) => ({ label: pair(x), armenian: true, correct: x.rom === L.rom })),
+          note: L.tip,
+        };
+      }
+      if (kind === "case") {
+        const d = distractors(bank, L, 3, (x) => x.lo);
+        return {
+          type: "choice", prompt: "Pick the small form of this letter", big: L.u,
+          options: shuffle([L, ...d]).map((x) => ({ label: x.lo, armenian: true, correct: x.lo === L.lo })),
+          note: `${L.u} ${L.lo} · ${L.name}`,
+        };
+      }
       const d = distractors(bank, L, 3, (x) => x.rom);
       return {
-        type: "choice",
-        prompt: `Which letter says “${L.rom}”?`,
-        options: shuffle([L, ...d]).map((x) => ({
-          label: pair(x),
-          armenian: true,
-          correct: x.rom === L.rom,
-        })),
+        type: "choice", prompt: "Which sound does this letter make?", big: pair(L),
+        options: shuffle([L, ...d]).map((x) => ({ label: x.rom, correct: x.rom === L.rom })),
         note: L.tip,
       };
+    };
+    const kinds = ["glyph2sound", "sound2glyph", "case"];
+    letterQs = lesson.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
+    if (idx > 0) {
+      letterReview = pickN(LESSONS.slice(0, idx).flatMap((l) => l.letters), 2)
+        .map((L) => letterQ(L, Math.random() < 0.5 ? "glyph2sound" : "sound2glyph"));
     }
-    if (kind === "case") {
-      const d = distractors(bank, L, 3, (x) => x.lo);
-      return {
-        type: "choice",
-        prompt: "Pick the small form of this letter",
-        big: L.u,
-        options: shuffle([L, ...d]).map((x) => ({ label: x.lo, armenian: true, correct: x.lo === L.lo })),
-        note: `${L.u} ${L.lo} · ${L.name}`,
-      };
-    }
-    const d = distractors(bank, L, 3, (x) => x.rom);
-    return {
-      type: "choice",
-      prompt: "Which sound does this letter make?",
-      big: pair(L),
-      options: shuffle([L, ...d]).map((x) => ({ label: x.rom, correct: x.rom === L.rom })),
-      note: L.tip,
-    };
-  };
-
-  const readQ = (word) => {
-    const d = distractors(knownWords, word, 3, (x) => x.en);
-    return {
-      type: "choice",
-      prompt: "What does this word mean?",
-      big: word.hy,
-      options: shuffle([word, ...d]).map((x) => ({ label: x.en, correct: x.en === word.en })),
-      note: `${word.hy} · ${word.rom} · ${word.en}`,
-    };
-  };
-
-  const writeQ = (word) => {
-    const d = distractors(knownWords, word, 3, (x) => x.hy);
-    return {
-      type: "choice",
-      prompt: `Which word means “${word.en}”?`,
-      options: shuffle([word, ...d]).map((x) => ({ label: x.hy, armenian: true, correct: x.hy === word.hy })),
-      note: `${word.hy} · ${word.rom} · ${word.en}`,
-    };
-  };
-
-  const spellQ = (word) => {
-    const target = splitWord(word.hy);
-    const extra = distractors(bank, { lo: "" }, 4, (x) => x.lo)
-      .map((x) => x.lo)
-      .filter((x) => !target.includes(x))
-      .slice(0, 3);
-    return {
-      type: "spell",
-      prompt: `Build the word for “${word.en}”`,
-      hint: word.rom,
-      target,
-      bank: shuffle([...target, ...extra]),
-      note: `${word.hy} · ${word.rom} · ${word.en}`,
-    };
-  };
-
-  const kinds = ["glyph2sound", "sound2glyph", "case"];
-  const letterQs = lesson.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
-  // The lesson's full word pool is large, so each attempt draws a rotating
-  // sample. Keeps a session short and makes a repeat feel different.
-  const chosen = pickN(lesson.words, 8);
-  const wordQs = chosen.map((word, i) => (i % 2 === 1 ? spellQ(word) : i % 4 === 0 ? readQ(word) : writeQ(word)));
-
-  const review = [];
-  if (idx > 0) {
-    const oldLetters = LESSONS.slice(0, idx).flatMap((L) => L.letters);
-    pickN(oldLetters, 2).forEach((L) => review.push(letterQ(L, Math.random() < 0.5 ? "glyph2sound" : "sound2glyph")));
-    pickN(LESSONS.slice(0, idx).flatMap((L) => L.words), 1).forEach((word) => review.push(readQ(word)));
   }
 
-  return [...shuffle(letterQs), ...shuffle([...wordQs, ...review])];
+  const cards = [
+    ...(lesson.letters || []).map((x) => ({ kind: "letter", ...x })),
+    ...fresh.map((x, k) => ({ kind: "word", ...x, firstWord: k === 0 })),
+  ];
+
+  // Letters first, then every new word once with its transliteration,
+  // then everything else. A new word's second ask always follows its first.
+  const questions = [
+    ...shuffle(letterQs),
+    ...shuffle(fresh.map((x) => meaning(x, 0))),
+    ...shuffle([
+      ...fresh.map((x) => meaning(x, 1)),
+      ...practice.map((x) => askAt(x, stageOf(words, x))),
+      ...review.map((x) => askAt(x, stageOf(words, x))),
+      ...letterReview,
+    ]),
+  ];
+
+  return { cards, questions, fresh, practice };
 }
 
 /* ------------------------------------------------------------------ */
 /*  Progress                                                           */
 /* ------------------------------------------------------------------ */
 
-const emptyProgress = () => ({ v: 2, xp: 0, lessons: {}, streak: 0, lastDay: null });
+const emptyProgress = () => ({ v: 2, xp: 0, lessons: {}, words: {}, streak: 0, lastDay: null });
 
 function readStored() {
   try {
@@ -996,37 +1010,12 @@ function LessonList({ level, progress, onStart }) {
                 : L.items.slice(0, 5).map((x) => <span key={x.hy}>{x.hy}</span>)}
             </div>
             <div style={{ marginTop: 8, fontFamily: UI, fontSize: 12, color: C.muted }}>
-              {letters
-                ? `${letters.filter((x) => !x.uncounted).length} letters · ${L.words.length} words`
-                : `${L.items.length} items`}
+              {(letters ? `${letters.filter((x) => !x.uncounted).length} letters · ` : "") +
+                `${wordsOf(L).filter((x) => stageOf(progress.words, x) > 0).length} of ${wordsOf(L).length} words introduced`}
             </div>
           </button>
         );
       })}
-    </div>
-  );
-}
-
-function LevelPreview({ level }) {
-  return (
-    <div style={{ borderRadius: 12, padding: "24px 20px", background: C.ink2, border: `1px dashed ${C.line}` }}>
-      <h2 style={{ fontFamily: UI, fontSize: 18, color: C.parch, fontWeight: 700, margin: 0 }}>
-        Level {level.n} — {level.name}
-      </h2>
-      <p style={{ marginTop: 12, fontFamily: UI, fontSize: 15, color: C.muted, lineHeight: 1.65, maxWidth: 460 }}>
-        {level.blurb}
-      </p>
-      <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 8 }}>
-        {level.topics.map((t) => (
-          <div key={t} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ width: 6, height: 6, borderRadius: 3, background: C.line, flexShrink: 0 }} />
-            <span style={{ fontFamily: UI, fontSize: 14, color: C.muted }}>{t}</span>
-          </div>
-        ))}
-      </div>
-      <p style={{ marginTop: 24, fontFamily: UI, fontSize: 13, color: C.muted }}>
-        Finish level {level.n - 1} to open this one.
-      </p>
     </div>
   );
 }
@@ -1042,9 +1031,6 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
 
   const learnedCount = ALPHABET.filter((x) => learnedIds.has(x.u)).length;
   const current = LEVELS.find((L) => L.n === level);
-  const levelDone = (lv) => lv.lessons.every((L) => progress.lessons[L.id]?.done);
-  const prev = LEVELS.find((L) => L.n === level - 1);
-  const levelOpen = level === 1 || (prev ? levelDone(prev) : false);
 
   return (
     <div className="hy-wrap">
@@ -1075,11 +1061,7 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
         ))}
       </section>
 
-      {levelOpen ? (
-        <LessonList level={current} progress={progress} onStart={onStart} />
-      ) : (
-        <LevelPreview level={current} />
-      )}
+      <LessonList level={current} progress={progress} onStart={onStart} />
 
       {storageWarning && (
         <p style={{ marginTop: 24, fontFamily: UI, fontSize: 12, color: C.muted }}>
@@ -1094,12 +1076,15 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
 /*  Study                                                              */
 /* ------------------------------------------------------------------ */
 
-function Study({ lesson, onDone, onQuit }) {
+function Study({ lesson, cards, onDone, onQuit }) {
   const [i, setI] = useState(0);
-  const cards = lesson.letters || lesson.items;
-  const L = cards[i];
+  const c = cards[i];
   const last = i === cards.length - 1;
-  const isLetter = !!lesson.letters;
+  const next = cards[i + 1];
+  const newLetters = new Set((lesson.letters || []).map((x) => x.lo));
+  const label = last ? "Start practice"
+    : c.kind === "letter" && next.kind === "word" ? "On to the words"
+    : c.kind === "letter" ? "Next letter" : "Next word";
 
   return (
     <div className="hy-lesson">
@@ -1110,21 +1095,21 @@ function Study({ lesson, onDone, onQuit }) {
       </div>
 
       <div style={{ flex: "1 1 auto", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", paddingBottom: 16 }}>
-        {isLetter ? (
+        {c.kind === "letter" ? (
           <>
-            <div style={{ fontFamily: ARM, fontSize: L.wide ? 68 : 92, color: C.gold, lineHeight: 1.1 }}>{pair(L)}</div>
-            <div style={{ marginTop: 14, fontFamily: ARM, fontSize: 20, color: C.parch }}>{L.name}</div>
-            <div style={{ marginTop: 2, fontFamily: UI, fontSize: 28, color: C.apricot, fontWeight: 600 }}>{L.rom}</div>
-            <p style={{ marginTop: 18, fontFamily: UI, fontSize: 15, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>{L.tip}</p>
-            {L.ex ? (
+            <div style={{ fontFamily: ARM, fontSize: c.wide ? 68 : 92, color: C.gold, lineHeight: 1.1 }}>{pair(c)}</div>
+            <div style={{ marginTop: 14, fontFamily: ARM, fontSize: 20, color: C.parch }}>{c.name}</div>
+            <div style={{ marginTop: 2, fontFamily: UI, fontSize: 28, color: C.apricot, fontWeight: 600 }}>{c.rom}</div>
+            <p style={{ marginTop: 18, fontFamily: UI, fontSize: 15, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>{c.tip}</p>
+            {c.ex ? (
               <div style={{ marginTop: 22, borderRadius: 12, padding: "16px 24px", background: C.ink2, border: `1px solid ${C.line}` }}>
                 <div style={{ fontFamily: ARM, fontSize: 32, lineHeight: 1.25, color: C.parch }}>
-                  {splitWord(L.ex.hy).map((ch, k) => (
-                    <span key={k} style={{ color: ch === L.lo ? C.gold : C.parch }}>{ch}</span>
+                  {splitWord(c.ex.hy).map((ch, k) => (
+                    <span key={k} style={{ color: ch === c.lo ? C.gold : C.parch }}>{ch}</span>
                   ))}
                 </div>
-                <div style={{ marginTop: 4, fontFamily: UI, fontSize: 15, color: C.apricot }}>{L.ex.rom}</div>
-                <div style={{ fontFamily: UI, fontSize: 15, color: C.muted }}>{L.ex.en}</div>
+                <div style={{ marginTop: 4, fontFamily: UI, fontSize: 15, color: C.apricot }}>{c.ex.rom}</div>
+                <div style={{ fontFamily: UI, fontSize: 15, color: C.muted }}>{c.ex.en}</div>
               </div>
             ) : (
               <p style={{ marginTop: 22, fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>
@@ -1134,11 +1119,20 @@ function Study({ lesson, onDone, onQuit }) {
           </>
         ) : (
           <>
-            <div style={{ fontFamily: ARM, fontSize: L.hy.length > 12 ? 34 : 46, color: C.gold, lineHeight: 1.25, maxWidth: 480 }}>
-              {L.hy}
+            {c.firstWord && lesson.letters && (
+              <p style={{ margin: "0 0 26px", fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>
+                Words you can read with these letters. The new letters are in gold.
+              </p>
+            )}
+            <div style={{ fontFamily: ARM, fontSize: c.hy.length > 12 ? 34 : 50, lineHeight: 1.25, maxWidth: 480 }}>
+              {lesson.letters
+                ? splitWord(c.hy).map((ch, k) => (
+                    <span key={k} style={{ color: newLetters.has(ch) ? C.gold : C.parch }}>{ch}</span>
+                  ))
+                : <span style={{ color: C.gold }}>{c.hy}</span>}
             </div>
-            <div style={{ marginTop: 12, fontFamily: UI, fontSize: 19, color: C.apricot }}>{L.rom}</div>
-            <div style={{ marginTop: 4, fontFamily: UI, fontSize: 18, color: C.parch }}>{L.en}</div>
+            <div style={{ marginTop: 12, fontFamily: UI, fontSize: 20, color: C.apricot }}>{c.rom}</div>
+            <div style={{ marginTop: 4, fontFamily: UI, fontSize: 18, color: C.parch }}>{c.en}</div>
             {i === 0 && lesson.note && (
               <p style={{ marginTop: 26, fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 400, lineHeight: 1.6 }}>
                 {lesson.note}
@@ -1151,9 +1145,7 @@ function Study({ lesson, onDone, onQuit }) {
       <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
         {i > 0 && <Button tone="quiet" onClick={() => setI(i - 1)}>Back</Button>}
         <div style={{ flex: 1 }}>
-          <Button full onClick={() => (last ? onDone() : setI(i + 1))}>
-            {last ? "Start practice" : isLetter ? "Next letter" : "Next"}
-          </Button>
+          <Button full onClick={() => (last ? onDone() : setI(i + 1))}>{label}</Button>
         </div>
       </div>
     </div>
@@ -1171,22 +1163,28 @@ function Quiz({ questions, onFinish, onQuit }) {
   const [state, setState] = useState("answering");
   const [hearts, setHearts] = useState(3);
   const [mistakes, setMistakes] = useState(0);
+  const [results, setResults] = useState([]);
+  const [peeked, setPeeked] = useState(false);
 
   const q = questions[i];
 
-  useEffect(() => { setSel(null); setBuilt([]); setState("answering"); }, [i]);
 
   const ready = q.type === "spell" ? built.length === q.target.length : sel !== null;
 
   const check = () => {
     const ok = q.type === "spell" ? built.join("") === q.target.join("") : q.options[sel].correct;
+    // Peeking at the transliteration counts the answer at the easier stage.
+    if (q.key) setResults((r) => [...r, { key: q.key, rung: peeked ? 0 : q.rung, ok }]);
     if (ok) setState("right");
     else { setState("wrong"); setMistakes((m) => m + 1); setHearts((h) => h - 1); }
   };
 
   const advance = () => {
-    if (state === "wrong" && hearts <= 0) return onFinish({ failed: true, mistakes });
-    if (i + 1 >= questions.length) return onFinish({ failed: false, mistakes });
+    if (state === "wrong" && hearts <= 0) return onFinish({ failed: true, mistakes, results });
+    if (i + 1 >= questions.length) return onFinish({ failed: false, mistakes, results });
+    // Reset in the same update as the move, so the next question never
+    // appears for a frame with the previous answer's state.
+    setSel(null); setBuilt([]); setState("answering"); setPeeked(false);
     setI(i + 1);
   };
 
@@ -1205,8 +1203,19 @@ function Quiz({ questions, onFinish, onQuit }) {
         <h2 style={{ fontFamily: UI, fontSize: 19, color: C.parch, fontWeight: 600, lineHeight: 1.4, margin: 0 }}>{q.prompt}</h2>
 
         {q.big && (
-          <div style={{ margin: "32px 0", textAlign: "center", fontFamily: ARM, fontSize: 72, color: C.gold, lineHeight: 1.1 }}>
-            {q.big}
+          <div style={{ margin: "32px 0", textAlign: "center" }}>
+            <div style={{ fontFamily: ARM, fontSize: q.big.length > 16 ? 34 : q.big.length > 8 ? 48 : 72, color: C.gold, lineHeight: 1.15 }}>
+              {q.big}
+            </div>
+            {(q.sub || (q.peek && peeked)) && (
+              <div style={{ marginTop: 10, fontFamily: UI, fontSize: 20, color: C.apricot }}>{q.sub || q.peek}</div>
+            )}
+            {q.peek && !peeked && state === "answering" && (
+              <button className="hy-btn" onClick={() => setPeeked(true)}
+                style={{ marginTop: 10, background: "none", border: "none", color: C.muted, fontFamily: UI, fontSize: 14, textDecoration: "underline", cursor: "pointer" }}>
+                Show how it sounds
+              </button>
+            )}
           </div>
         )}
 
@@ -1235,7 +1244,7 @@ function Quiz({ questions, onFinish, onQuit }) {
 
         {q.type === "spell" && (
           <div style={{ marginTop: 30 }}>
-            <div style={{ fontFamily: UI, fontSize: 13, color: C.muted, marginBottom: 10 }}>sounds like “{q.hint}”</div>
+            {q.hint && <div style={{ fontFamily: UI, fontSize: 13, color: C.muted, marginBottom: 10 }}>sounds like “{q.hint}”</div>}
             <div style={{
               display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, minHeight: 64,
               borderRadius: 12, padding: "16px 12px", background: C.ink2, border: `1px dashed ${C.line}`,
@@ -1298,7 +1307,7 @@ function Quiz({ questions, onFinish, onQuit }) {
 /*  Result                                                             */
 /* ------------------------------------------------------------------ */
 
-function Result({ lesson, result, stars, xpGain, onRetry, onHome }) {
+function Result({ lesson, session, result, stars, xpGain, onRetry, onHome }) {
   const wrap = { maxWidth: 460, margin: "0 auto", padding: "64px 20px", textAlign: "center", width: "100%", boxSizing: "border-box" };
 
   if (result.failed) {
@@ -1307,7 +1316,7 @@ function Result({ lesson, result, stars, xpGain, onRetry, onHome }) {
         <div style={{ display: "flex", justifyContent: "center" }}><Hearts n={0} /></div>
         <h2 style={{ marginTop: 18, fontFamily: UI, fontSize: 22, color: C.parch, fontWeight: 700 }}>Out of hearts</h2>
         <p style={{ marginTop: 8, fontFamily: UI, fontSize: 15, color: C.muted, lineHeight: 1.6 }}>
-          Lesson {lesson.id} stays where it is. Run through the letters again and retry — the questions will be reshuffled.
+          Lesson {lesson.id} stays where it is. Try again: the cards come first, then the questions.
         </p>
         <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 12 }}>
           <Button full onClick={onRetry}>Try lesson {lesson.id} again</Button>
@@ -1326,14 +1335,24 @@ function Result({ lesson, result, stars, xpGain, onRetry, onHome }) {
       <p style={{ marginTop: 8, fontFamily: UI, fontSize: 15, color: C.muted }}>
         {result.mistakes === 0 ? "No mistakes." : `${result.mistakes} mistake${result.mistakes > 1 ? "s" : ""}.`} +{xpGain} experience.
       </p>
-      <div style={{ marginTop: 32, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, fontFamily: ARM, fontSize: lesson.letters ? 34 : 22, color: C.gold }}>
-        {lesson.letters
-          ? lesson.letters.map((x) => <span key={x.u}>{glyph(x)}</span>)
-          : lesson.items.slice(0, 6).map((x) => <span key={x.hy}>{x.hy}</span>)}
-      </div>
-      <p style={{ marginTop: 12, fontFamily: UI, fontSize: 13, color: C.muted }}>
-        {lesson.letters ? "now lit on your board" : "learned"}
-      </p>
+      {lesson.letters && (
+        <>
+          <div style={{ marginTop: 32, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, fontFamily: ARM, fontSize: 34, color: C.gold }}>
+            {lesson.letters.map((x) => <span key={x.u}>{glyph(x)}</span>)}
+          </div>
+          <p style={{ marginTop: 12, fontFamily: UI, fontSize: 13, color: C.muted }}>now lit on your board</p>
+        </>
+      )}
+      {session.fresh.length > 0 && (
+        <>
+          <div style={{ marginTop: 28, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px 14px", fontFamily: ARM, fontSize: 22, color: C.parch }}>
+            {session.fresh.map((x) => <span key={x.hy}>{x.hy}</span>)}
+          </div>
+          <p style={{ marginTop: 10, fontFamily: UI, fontSize: 13, color: C.muted }}>
+            {session.fresh.length} new {session.fresh.length === 1 ? "word" : "words"} this time
+          </p>
+        </>
+      )}
       <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 12 }}>
         <Button full onClick={onHome}>Back to the alphabet</Button>
         <Button full tone="quiet" onClick={onRetry}>Practise again</Button>
@@ -1361,7 +1380,10 @@ export default function ArmenianCourse() {
     document.head.appendChild(link);
   }, []);
 
-  const startLesson = (lvl, idx) => setView({ name: "study", lvl, idx, questions: buildQuiz(lvl - 1, idx) });
+  const startLesson = (lvl, idx) => {
+    const session = buildSession(lvl - 1, idx, progress.words);
+    setView({ name: session.cards.length ? "study" : "quiz", lvl, idx, session });
+  };
 
   const finish = async (lvl, idx, result) => {
     const lesson = LEVELS[lvl - 1].lessons[idx];
@@ -1373,14 +1395,17 @@ export default function ArmenianCourse() {
       const today = todayKey();
       const gap = dayGap(progress.lastDay, today);
       const streak = gap === 0 ? progress.streak || 1 : gap === 1 ? (progress.streak || 0) + 1 : 1;
+      const words = { ...(progress.words || {}) };
+      for (const r of result.results) words[r.key] = nextStage(words[r.key] || 0, r.rung, r.ok);
       save({
         ...progress,
+        words,
         xp: progress.xp + xpGain,
         streak, lastDay: today,
         lessons: { ...progress.lessons, [lesson.id]: { done: true, stars: Math.max(stars, prev?.stars || 0), mistakes: result.mistakes } },
       });
     }
-    setView({ name: "result", lvl, idx, result, stars, xpGain });
+    setView({ name: "result", lvl, idx, session: view.session, result, stars, xpGain });
   };
 
   if (!progress) {
@@ -1396,11 +1421,11 @@ export default function ArmenianCourse() {
 
   let body;
   if (view.name === "study") {
-    body = <Study lesson={LEVELS[view.lvl - 1].lessons[view.idx]} onQuit={() => setView({ name: "home" })} onDone={() => setView({ ...view, name: "quiz" })} />;
+    body = <Study lesson={LEVELS[view.lvl - 1].lessons[view.idx]} cards={view.session.cards} onQuit={() => setView({ name: "home" })} onDone={() => setView({ ...view, name: "quiz" })} />;
   } else if (view.name === "quiz") {
-    body = <Quiz questions={view.questions} onQuit={() => setView({ name: "home" })} onFinish={(r) => finish(view.lvl, view.idx, r)} />;
+    body = <Quiz questions={view.session.questions} onQuit={() => setView({ name: "home" })} onFinish={(r) => finish(view.lvl, view.idx, r)} />;
   } else if (view.name === "result") {
-    body = <Result lesson={LEVELS[view.lvl - 1].lessons[view.idx]} result={view.result} stars={view.stars} xpGain={view.xpGain}
+    body = <Result lesson={LEVELS[view.lvl - 1].lessons[view.idx]} session={view.session} result={view.result} stars={view.stars} xpGain={view.xpGain}
       onRetry={() => startLesson(view.lvl, view.idx)} onHome={() => setView({ name: "home" })} />;
   } else {
     body = <Home progress={progress} onStart={(idx) => startLesson(level, idx)} storageWarning={status === "memory"} level={level} setLevel={setLevel} />;
@@ -1412,19 +1437,30 @@ export default function ArmenianCourse() {
       <div className="hy-shell">
         {!inLesson && (
           <nav className="hy-rail" aria-label="Levels">
-            {LEVELS.map((L) => (
-              <button key={L.n} className="hy-railitem" data-on={level === L.n} onClick={() => setLevel(L.n)}>
-                <div style={{ fontFamily: UI, fontSize: 11, fontWeight: 600, color: level === L.n ? C.gold : C.muted }}>
-                  Level {L.n}
-                </div>
-                <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
-                  {L.name}
-                </div>
-                <div style={{ fontFamily: UI, fontSize: 11, color: C.muted, marginTop: 2 }}>
-                  {L.lessons.filter((x) => progress.lessons[x.id]?.done).length} of {L.lessons.length} done
-                </div>
-              </button>
-            ))}
+            {LEVELS.map((L) => {
+              const doneCount = L.lessons.filter((x) => progress.lessons[x.id]?.done).length;
+              const complete = doneCount === L.lessons.length;
+              return (
+                <button key={L.n} className="hy-railitem" data-on={level === L.n} onClick={() => setLevel(L.n)}
+                  aria-label={`Level ${L.n}, ${L.name}${complete ? ", complete" : ""}`}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: UI, fontSize: 11, fontWeight: 600, color: level === L.n || complete ? C.gold : C.muted }}>
+                    Level {L.n}
+                    {complete && (
+                      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
+                        <circle cx="8" cy="8" r="8" fill={C.gold} />
+                        <path d="M4.5 8.3l2.3 2.3 4.7-4.9" fill="none" stroke={C.ink} strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </div>
+                  <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
+                    {L.name}
+                  </div>
+                  <div style={{ fontFamily: UI, fontSize: 11, color: complete ? C.gold : C.muted, marginTop: 2 }}>
+                    {complete ? "Complete" : `${doneCount} of ${L.lessons.length} done`}
+                  </div>
+                </button>
+              );
+            })}
           </nav>
         )}
         <main className="hy-main">{body}</main>
