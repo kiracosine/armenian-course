@@ -123,7 +123,7 @@ const LETTER_LESSONS = [
     words: [
       w("ջուր", "jur", "water"), w("քար", "kar", "stone"), w("աչք", "achk", "eye"),
       w("արջ", "arj", "bear"), w("միս", "mis", "meat"), w("մոմ", "mom", "candle"), w("չոր", "chor", "dry"),
-      w("էջ", "ej", "page"), w("ոչ", "voch", "no"), w("մեջ", "mej", "middle"), w("ամիս", "amis", "month"),
+      w("էջ", "ej", "page"), w("ոչ", "voch", "no"), w("մեջ", "mej", "in, inside"), w("ամիս", "amis", "month"),
       w("քիչ", "kich", "few"), w("տաք", "tak", "hot"), w("էշ", "esh", "donkey"), w("ոտք", "votk", "foot"),
       w("մատ", "mat", "finger"), w("ամպ", "amp", "cloud"), w("քամի", "kami", "wind"),
       w("միտք", "mitk", "thought"), w("մուկ", "muk", "mouse"), w("ատամ", "atam", "tooth"),
@@ -590,6 +590,138 @@ const LEVELS = [
 
 
 /* ------------------------------------------------------------------ */
+/*  Parts of speech                                                    */
+/*                                                                     */
+/*  Every word in the course, filed under one of the eight parts of    */
+/*  speech. Each entry is "Armenian|English", written exactly as it is */
+/*  in the lessons. Full sentences are left out on purpose: a sentence */
+/*  is not one part of speech. To add a new word, add its entry here.  */
+/* ------------------------------------------------------------------ */
+
+const PARTS = [
+  { id: "noun", name: "Nouns", note: "People, places, things and ideas.", words: [
+    "սար|mountain", "սեր|love", "ուս|shoulder", "որս|hunt", "երես|face", "սուսեր|sword", "սոսի|plane tree",
+    "կրակ|fire", "ոսկի|gold", "շապիկ|shirt", "կոշիկ|shoe", "ճաշ|meal", "ապուր|soup", "կես|half",
+    "երեկո|evening", "րոպե|minute", "շիշ|bottle", "կաշի|leather", "շուկա|market", "ապակի|glass", "ոսկոր|bone",
+    "պապիկ|grandpa", "սուրճ|coffee", "ճարպ|fat", "շոր|garment", "կապ|tie", "հաց|bread", "հավ|chicken",
+    "սիրտ|heart", "տերեվ|leaf", "խոտ|grass", "սոխ|onion", "տարի|year", "կատու|cat", "կով|cow", "պատ|wall",
+    "տեր|owner", "երեխա|child", "տատիկ|grandma", "կտուր|roof", "սխտոր|garlic", "ջուր|water", "քար|stone",
+    "աչք|eye", "արջ|bear", "միս|meat", "մոմ|candle", "էջ|page", "ամիս|month", "էշ|donkey", "ոտք|foot",
+    "մատ|finger", "ամպ|cloud", "քամի|wind", "միտք|thought", "մուկ|mouse", "ատամ|tooth", "կամուրջ|bridge",
+    "ոչխար|sheep", "շաքար|sugar", "մատիտ|pencil", "տուն|house", "գիշեր|night", "հայր|father", "մայր|mother",
+    "անուն|name", "երգ|song", "գետ|river", "մազ|hair", "գին|price", "ազգ|nation", "կին|woman", "նշան|sign",
+    "շուն|dog", "գորգ|carpet", "զանգ|bell", "գիրք|book", "այգի|garden", "գինի|wine", "քույր|sister",
+    "ընկեր|friend", "պանիր|cheese", "ականջ|ear", "գույն|colour", "նամակ|letter", "ծով|sea", "ծառ|tree",
+    "բալ|cherry", "կաթ|milk", "թեյ|tea", "թիվ|number", "քիթ|nose", "լիճ|lake", "բառ|word", "թել|thread",
+    "աթոռ|chair", "առու|stream", "նուռ|pomegranate", "ամառ|summer", "լույս|light", "գլուխ|head",
+    "լեզու|tongue", "բերան|mouth", "ծիրան|apricot", "լոլիկ|tomato", "ֆիլմ|film", "շաբաթ|week",
+    "առավոտ|morning", "խանութ|shop", "գործ|work", "օր|day", "մարդ|person", "տղա|boy", "ձի|horse", "ձու|egg",
+    "ձուկ|fish", "աղ|salt", "օդ|air", "օձ|snake", "դուռ|door", "դեղ|medicine", "փող|money", "փողոց|street",
+    "ժամ|hour", "ձեռք|hand", "ձմեռ|winter", "ձյուն|snow", "վարդ|rose", "սեղան|table", "ծաղիկ|flower",
+    "խնձոր|apple", "քաղաք|city", "գյուղ|village", "դպրոց|school", "թուղթ|paper", "մեղու|bee", "աստղ|star",
+    "արև|sun", "տերև|leaf", "թև|arm", "կեղև|bark", "անձրև|rain", "հարևան|neighbour", "գարուն|spring",
+    "Երևան|Yerevan", "արևելք|east", "արևմուտք|west", "արևածագ|sunrise", "թեթևություն|lightness",
+    "ընկույզ|walnut", "ընտանիք|family", "ընթրիք|dinner", "ընկերուհի|girlfriend", "ընթացք|course",
+    "տոմս|ticket", "թութ|mulberry", "փետուր|feather", "ցանկ|list", "ճամփա|road", "չամիչ|raisin",
+    "կիթառ|guitar", "ուսուցիչ|teacher", "աշակերտ|pupil", "համալսարան|university", "գրադարան|library",
+    "հյուրանոց|hotel", "վերելակ|lift", "սառնարան|fridge", "բանջարեղեն|vegetables", "հեռուստացույց|television",
+    "օդանավակայան|airport", "տղամարդ|man", "աղջիկ|girl", "եղբայր|brother", "տատիկ|grandmother",
+    "պապիկ|grandfather", "մեջք|back", "կարագ|butter", "մեղր|honey", "աղցան|salad", "պաղպաղակ|ice cream",
+    "սարեր|mountains", "քարեր|stones", "ծառեր|trees", "օրեր|days", "գետեր|rivers", "կատուներ|cats",
+    "երեխաներ|children", "աղջիկներ|girls", "ուսուցիչներ|teachers", "պատուհաններ|windows", "ընկերներ|friends",
+    "տղաներ|boys", "գիրքը|the book", "տունը|the house", "սարը|the mountain", "դուռը|the door",
+    "ջուրը|the water", "կատուն|the cat", "երեխան|the child", "ապուրը|the soup", "աչքը|the eye",
+    "քաղաքը|the city", "ծառը|the tree", "մարդը|the person", "քաղաքի|of the city", "դպրոցի|of the school",
+    "սարի|of the mountain", "ծառի|of the tree", "դասի|of the lesson", "ընկերոջ|of the friend",
+    "երեխայի|of the child", "տան|of the house", "օրվա|of the day", "մարդու|of the person",
+    "ընկերոջս|to my friend", "մորը|to the mother", "հորը|to the father", "երեխային|to the child",
+    "ուսուցչին|to the teacher", "քրոջը|to the sister", "եղբորը|to the brother", "տնից|from the house",
+    "քաղաքից|from the city", "դպրոցից|from the school", "սարից|from the mountain", "Հայաստանից|from Armenia",
+    "աշխատանքից|from work", "գնացքով|by train", "մեքենայով|by car", "ոտքով|on foot", "ձեռքով|by hand",
+    "ինքնաթիռով|by plane", "ավտոբուսով|by bus", "գրիչով|with a pen", "դանակով|with a knife",
+    "հայերենով|in Armenian", "սիրով|with love", "գիրքս|my book", "գիրքդ|your book", "տունս|my house",
+    "տունդ|your house", "անունս|my name", "անունդ|your name", "ձեռքս|my hand", "մայրս|my mother",
+    "հայրդ|your father", "ընկերս|my friend", "երկուշաբթի|Monday", "երեքշաբթի|Tuesday", "չորեքշաբթի|Wednesday",
+    "հինգշաբթի|Thursday", "ուրբաթ|Friday", "շաբաթ|Saturday", "կիրակի|Sunday", "հունվար|January", "ապրիլ|April",
+    "սեպտեմբեր|September", "խոհանոց|kitchen", "ննջասենյակ|bedroom", "լոգարան|bathroom",
+    "հյուրասենյակ|living room", "միջանցք|hallway", "պատշգամբ|balcony", "նկուղ|basement", "սենյակ|room",
+    "բակ|yard", "աստիճաններ|stairs", "դանակ|knife", "պատառաքաղ|fork", "գդալ|spoon", "ափսե|plate",
+    "բաժակ|glass", "կաթսա|pot", "վառարան|stove", "թեյնիկ|kettle", "լվացարան|sink", "անկողին|bed",
+    "բարձ|pillow", "վերմակ|blanket", "սրբիչ|towel", "օճառ|soap", "հայելի|mirror", "լամպ|lamp",
+    "վարագույր|curtain", "բանալի|key", "պահարան|cupboard", "աղբաման|bin"
+  ] },
+  { id: "pronoun", name: "Pronouns", note: "Words that stand in for a noun: I, this, who, my.", words: [
+    "ես|I", "որ|that, which", "իր|his, her", "սա|this", "իրար|each other", "սրա|of this one", "որի|of which",
+    "ով|who", "ինչ|what", "այս|this", "այդ|that", "այն|that over there", "սա|this one", "դա|that one",
+    "նա|he, she", "սրանք|these", "դրանք|those", "ի՞նչ|what", "ո՞վ|who", "քանի՞|how many", "ո՞ր|which",
+    "որքա՞ն|how much", "իմ|my", "քո|your", "նրա|his, her", "մեր|our", "ձեր|your (plural)", "նրանց|their",
+    "ինձ|to me", "քեզ|to you", "նրան|to him, to her", "ինձնից|from me", "քեզնից|from you"
+  ] },
+  { id: "verb", name: "Verbs", note: "Actions and states, including every form you have learned.", words: [
+    "արի|come!", "ասա|say!", "երևալ|to appear", "սևանալ|to turn black", "ընդունել|to accept", "ընկնել|to fall",
+    "եմ|I am", "ես|you are", "է|he is, she is, it is", "ենք|we are", "եք|you are (plural)", "են|they are",
+    "չեմ|I am not", "չես|you are not", "չէ|he is not", "չենք|we are not", "չեք|you are not (plural)",
+    "չեն|they are not", "գրել|to write", "կարդալ|to read", "խոսել|to speak", "ուտել|to eat", "խմել|to drink",
+    "տեսնել|to see", "գնալ|to go", "գալ|to come", "անել|to do", "աշխատել|to work", "սիրել|to love",
+    "ապրել|to live", "գրում եմ|I am writing", "կարդում եմ|I am reading", "խոսում եմ|I am speaking",
+    "ուտում եմ|I am eating", "խմում եմ|I am drinking", "աշխատում եմ|I am working", "ապրում եմ|I live",
+    "սիրում եմ|I love", "տեսնում եմ|I see", "անում եմ|I am doing", "գրում ես|you are writing",
+    "գրում է|he is writing", "գրում ենք|we are writing", "գրում եք|you are writing (plural)",
+    "գրում են|they are writing", "կարդում է|she is reading", "խոսում ենք|we are speaking",
+    "աշխատում են|they are working", "ապրում ես|you live", "ուտում են|they are eating",
+    "չեմ գրում|I am not writing", "չես կարդում|you are not reading", "չի խոսում|he is not speaking",
+    "չենք աշխատում|we are not working", "չեն ուտում|they are not eating", "չեմ հասկանում|I do not understand",
+    "չգիտեմ|I do not know", "չեմ ուզում|I do not want", "չի կարող|he cannot", "չեմ կարող|I cannot",
+    "հասկանալ|to understand", "իմանալ|to know", "ուզել|to want", "կարողանալ|to be able", "տալ|to give",
+    "վերցնել|to take", "ասել|to say", "հարցնել|to ask", "սպասել|to wait", "օգնել|to help", "գտնել|to find",
+    "կորցնել|to lose", "գրեցի|I wrote", "կարդացի|I read", "խոսեցի|I spoke", "աշխատեցի|I worked",
+    "գրեց|he wrote", "կարդաց|she read", "խոսեցինք|we spoke", "գրեցին|they wrote", "տեսա|I saw", "ասացի|I said",
+    "գրում էի|I was writing", "կարդում էի|I was reading", "խոսում էր|he was speaking",
+    "աշխատում էինք|we were working", "ապրում էին|they were living", "ուտում էիր|you were eating",
+    "գիտեի|I knew", "ուզում էի|I wanted", "սպասում էի|I was waiting", "չէի հասկանում|I did not understand",
+    "կգրեմ|I will write", "կկարդամ|I will read", "կխոսեմ|I will speak", "կգնամ|I will go", "կգամ|I will come",
+    "կանեմ|I will do", "կտեսնեմ|I will see", "կօգնեմ|I will help", "կսպասեմ|I will wait",
+    "կզանգեմ|I will call", "եղավ|it happened", "գնաց|he went", "եկավ|she came", "տվեց|he gave",
+    "ասաց|she said", "արեց|he did", "տեսավ|she saw", "եղա|I was", "գնացի|I went", "եկա|I came",
+    "խնդրում եմ|I ask you", "Ունե՞ք|Do you have it?", "Կարո՞ղ եմ|May I?", "Գալիս եմ|I am coming",
+    "լվանալ|to wash", "մաքրել|to clean", "եփել|to cook", "ավլել|to sweep", "արդուկել|to iron",
+    "չորացնել|to dry", "դասավորել|to tidy", "աման լվանալ|to wash dishes", "հագուստ լվանալ|to do laundry",
+    "ջրել|to water"
+  ] },
+  { id: "adjective", name: "Adjectives", note: "Words that describe a noun. Numbers are here too.", words: [
+    "սուր|sharp", "արու|male", "երկար|long", "կարճ|short", "երկու|two", "ուրիշ|other", "վեց|six", "վատ|bad",
+    "խոր|deep", "ուրախ|happy", "ցուրտ|cold", "տխուր|sad", "սպիտակ|white", "հարուստ|rich", "ճիշտ|correct",
+    "շատ|many", "չոր|dry", "քիչ|few", "տաք|hot", "կարմիր|red", "նոր|new", "արագ|fast", "հին|old",
+    "կանաչ|green", "ինը|nine", "լավ|good", "մեծ|big", "փոքր|small", "սև|black", "թեթև|light", "արևոտ|sunny",
+    "անձրևոտ|rainy", "թևավոր|winged", "արևային|solar", "ընտիր|choice", "ընդհանուր|general", "մեկ|one",
+    "երեք|three", "չորս|four", "հինգ|five", "յոթ|seven", "ութ|eight", "տասը|ten", "գեղեցիկ|beautiful",
+    "սառը|cold", "թանկ|expensive", "էժան|cheap", "հեշտ|easy", "դժվար|difficult"
+  ] },
+  { id: "adverb", name: "Adverbs", note: "When, where, how and how often.", words: [
+    "ուր|where", "ուշ|late", "երբ|when", "ևս|also", "երևի|probably", "ու՞ր|where to", "որտե՞ղ|where",
+    "ե՞րբ|when", "ինչու՞|why", "ինչպե՞ս|how", "այստեղ|here", "այնտեղ|there", "Իհարկե|Of course",
+    "այստեղից|from here", "այնտեղից|from there", "երեկ|yesterday", "այսօր|today", "վաղը|tomorrow", "հիմա|now",
+    "հետո|later", "շուտ|early", "միշտ|always", "երբեք|never", "երբեմն|sometimes", "անցյալ շաբաթ|last week",
+    "մյուս շաբաթ|next week"
+  ] },
+  { id: "preposition", name: "Prepositions", note: "Where things are. Armenian puts most of these after the noun.", words: [
+    "մեջ|in, inside", "ներսում|inside", "դրսում|outside", "վերևում|above", "ներքևում|below", "կողքին|beside",
+    "հետևում|behind", "առջևում|in front", "մեջտեղում|in the middle"
+  ] },
+  { id: "conjunction", name: "Conjunctions", note: "Words that join other words and sentences.", words: [
+    "և|and", "ասես|as if"
+  ] },
+  { id: "interjection", name: "Interjections", note: "Greetings, thanks and other words said on their own.", words: [
+    "ոչ|no", "այո|yes", "բարև|hello", "բարև ձեզ|hello (polite)", "բարի լույս|good morning",
+    "բարի երեկո|good evening", "բարի գիշեր|good night", "ցտեսություն|goodbye", "հաջողություն|good luck",
+    "բարի գալուստ|welcome", "ողջույն|greetings", "առայժմ|see you", "շնորհակալություն|thank you",
+    "շնորհակալ եմ|I am grateful", "խնդրեմ|please, you are welcome", "ներողություն|sorry", "կներեք|excuse me",
+    "ոչինչ|it is nothing", "հաճելի է|pleased to meet you", "բարի ախորժակ|enjoy your meal", "անհոգ|no worries"
+  ] },
+];
+
+
+/* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
@@ -798,6 +930,33 @@ function buildSession(levelIdx, idx, words = {}) {
   return { cards, questions, fresh, practice };
 }
 
+/* The rows behind the Parts of speech page. Level 1 writes some words with
+   եվ before lesson 1-8 teaches և; those are the same words, so they share a
+   row and count as known if either spelling has been learned. */
+const KNOWN = 2;   // answered from the Armenian alone, without the transliteration
+
+const BANK = (() => {
+  const first = new Map();
+  LEVELS.forEach((lv) => lv.lessons.forEach((l) => wordsOf(l).forEach((x) => {
+    if (!first.has(wordKey(x))) first.set(wordKey(x), { ...x, lesson: l.id });
+  })));
+  return PARTS.map((part) => {
+    const rows = new Map();
+    for (const k of part.words) {
+      const x = first.get(k);
+      if (!x) continue;
+      const hy = x.hy.replace(/եվ/g, "և");
+      const id = `${hy}|${x.en}`;
+      if (rows.has(id)) rows.get(id).keys.push(k);
+      else rows.set(id, { hy, rom: x.rom, en: x.en, lesson: x.lesson, keys: [k] });
+    }
+    return { ...part, rows: [...rows.values()] };
+  });
+})();
+
+const rowStage = (words, row) => Math.max(...row.keys.map((k) => (words && words[k]) || 0));
+const knownCount = (words) => BANK.reduce((n, p) => n + p.rows.filter((r) => rowStage(words, r) >= KNOWN).length, 0);
+
 /* ------------------------------------------------------------------ */
 /*  Progress                                                           */
 /* ------------------------------------------------------------------ */
@@ -860,12 +1019,17 @@ const CSS = `
   background:transparent;border:1px solid transparent;flex:0 0 auto;min-width:150px}
 .hy-railitem[data-on="true"]{background:${C.ink3};border-color:${C.gold}}
 .hy-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.hy-btn:focus-visible,.hy-railitem:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
+.hy-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.hy-tab{border-radius:999px;padding:8px 14px;background:transparent;border:1px solid ${C.line};color:${C.parch};font-family:${UI};font-size:14px;cursor:pointer}
+.hy-tab[aria-selected="true"]{background:${C.ink3};border-color:${C.gold}}
+.hy-raildiv{flex:0 0 1px;align-self:stretch;background:${C.line};margin:0 4px}
+.hy-btn:focus-visible,.hy-tab:focus-visible,.hy-railitem:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
 @media (min-width:880px){
   .hy-shell{flex-direction:row}
   .hy-rail{flex-direction:column;width:232px;flex:0 0 232px;height:100vh;position:sticky;top:0;
     overflow-y:auto;overflow-x:hidden;border-bottom:none;border-right:1px solid ${C.line};padding:26px 14px}
   .hy-railitem{min-width:0;width:100%}
+  .hy-raildiv{height:1px;margin:10px 4px}
 }
 @media (max-width:520px){ .hy-opts{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
@@ -1068,6 +1232,74 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
           Progress can't be saved in this browser — check if storage is blocked.
         </p>
       )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Parts of speech page                                               */
+/* ------------------------------------------------------------------ */
+
+function WordBank({ words }) {
+  const [tab, setTab] = useState(PARTS[0].id);
+  const part = BANK.find((p) => p.id === tab);
+  const known = part.rows.filter((r) => rowStage(words, r) >= KNOWN);
+  const learning = part.rows.filter((r) => { const st = rowStage(words, r); return st > 0 && st < KNOWN; });
+  const unmet = part.rows.length - known.length - learning.length;
+
+  const row = (r, isKnown) => (
+    <div key={r.hy + r.en} style={{ display: "flex", alignItems: "baseline", gap: 16, padding: "12px 0", borderBottom: `1px solid ${C.line}` }}>
+      <span style={{ flex: "0 0 44%", minWidth: 0, overflowWrap: "anywhere", fontFamily: ARM, fontSize: 22, lineHeight: 1.3, color: isKnown ? C.gold : C.parch }}>
+        {r.hy}
+      </span>
+      <span style={{ flex: "1 1 auto", minWidth: 0 }}>
+        <span style={{ display: "block", fontFamily: UI, fontSize: 15, color: C.parch }}>{r.en}</span>
+        <span style={{ display: "block", marginTop: 2, fontFamily: UI, fontSize: 13, color: C.apricot }}>{r.rom}</span>
+      </span>
+    </div>
+  );
+  const heading = (text) => (
+    <h2 style={{ margin: "26px 0 4px", fontFamily: UI, fontSize: 14, fontWeight: 600, color: C.muted }}>{text}</h2>
+  );
+
+  return (
+    <div className="hy-wrap">
+      <header style={{ marginBottom: 26 }}>
+        <h1 style={{ fontFamily: ARM, fontSize: 40, color: C.gold, lineHeight: 1.1, margin: 0, fontWeight: 700 }}>Խոսքի մասեր</h1>
+        <p style={{ marginTop: 10, fontFamily: UI, color: C.muted, fontSize: 15, lineHeight: 1.6, maxWidth: 520 }}>
+          Parts of speech. Every word you have met, sorted by the job it does. A word turns gold
+          once you can answer it from the Armenian alone.
+        </p>
+      </header>
+
+      <div className="hy-tabs" role="tablist" aria-label="Parts of speech">
+        {BANK.map((p) => {
+          const n = p.rows.filter((r) => rowStage(words, r) >= KNOWN).length;
+          return (
+            <button key={p.id} className="hy-tab" role="tab" aria-selected={p.id === tab} onClick={() => setTab(p.id)}>
+              {p.name} <span style={{ marginLeft: 4, color: n ? C.gold : C.muted }}>{n}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div role="tabpanel" aria-label={part.name} style={{ marginTop: 22 }}>
+        <p style={{ margin: 0, fontFamily: UI, fontSize: 15, color: C.parch }}>{part.note}</p>
+        <p style={{ margin: "6px 0 0", fontFamily: UI, fontSize: 13, color: C.muted }}>
+          {known.length} known · {learning.length} still learning · {unmet} to meet in later lessons
+        </p>
+
+        {known.length + learning.length === 0 ? (
+          <p style={{ marginTop: 26, fontFamily: UI, fontSize: 15, color: C.muted, lineHeight: 1.6 }}>
+            No {part.name.toLowerCase()} yet. The first ones come in lesson {part.rows[0].lesson}.
+          </p>
+        ) : (
+          <>
+            {known.length > 0 && <section>{heading("You know these")}{known.map((r) => row(r, true))}</section>}
+            {learning.length > 0 && <section>{heading("Still learning")}{learning.map((r) => row(r, false))}</section>}
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -1428,7 +1660,7 @@ export default function ArmenianCourse() {
     body = <Result lesson={LEVELS[view.lvl - 1].lessons[view.idx]} session={view.session} result={view.result} stars={view.stars} xpGain={view.xpGain}
       onRetry={() => startLesson(view.lvl, view.idx)} onHome={() => setView({ name: "home" })} />;
   } else {
-    body = <Home progress={progress} onStart={(idx) => startLesson(level, idx)} storageWarning={status === "memory"} level={level} setLevel={setLevel} />;
+    body = level === "pos" ? <WordBank words={progress.words} /> : <Home progress={progress} onStart={(idx) => startLesson(level, idx)} storageWarning={status === "memory"} level={level} setLevel={setLevel} />;
   }
 
   return (
@@ -1461,6 +1693,16 @@ export default function ArmenianCourse() {
                 </button>
               );
             })}
+            <div className="hy-raildiv" aria-hidden="true" />
+            <button className="hy-railitem" data-on={level === "pos"} onClick={() => setLevel("pos")}
+              aria-label={`Parts of speech, ${knownCount(progress.words)} words known`}>
+              <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
+                Parts of speech
+              </div>
+              <div style={{ fontFamily: UI, fontSize: 11, color: knownCount(progress.words) ? C.gold : C.muted, marginTop: 2 }}>
+                {knownCount(progress.words)} words known
+              </div>
+            </button>
           </nav>
         )}
         <main className="hy-main">{body}</main>
