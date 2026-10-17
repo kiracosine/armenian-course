@@ -590,6 +590,323 @@ const LEVELS = [
 
 
 /* ------------------------------------------------------------------ */
+/*  Stories                                                            */
+/*                                                                     */
+/*  A story is a list of lines, learned one at a time. Each line has:  */
+/*    hy     the Armenian sentence                                     */
+/*    tr     its transliteration                                       */
+/*    en     its English translation                                   */
+/*    words  each word as ["Armenian", "transliteration", "English"]   */
+/*                                                                     */
+/*  For each line the learner reads the card, then matches:            */
+/*    1. transliteration to meaning                                    */
+/*    2. Armenian to transliteration                                   */
+/*    3. Armenian to meaning                                           */
+/*  and moves on to the next line. Lines with many words are matched   */
+/*  in rounds of six. Words repeated in a line are only matched once.  */
+/*                                                                     */
+/*  Watch for quote marks inside a line: use “ ” or « » instead of ".  */
+/* ------------------------------------------------------------------ */
+
+const STORIES = [
+  {
+    id: "sutasane",
+    title: "Սուտասանը",
+    titleTr: "Sutasanə",
+    titleEn: "The Liar",
+    author: "Հովհաննես Թումանյան",
+    year: 1907,
+    lines: [
+      // Hovhannes Tumanyan, 1907. Public domain.
+      {
+        hy: "Լինում է, չի լինում՝ մի թագավոր։",
+        tr: "Linum e, chi linum, mi tagavor.",
+        en: "Once there was, and once there wasn’t, a king.",
+        words: [
+          ["լինում է", "linum e", "there is"],
+          ["չի լինում", "chi linum", "there isn’t"],
+          ["մի", "mi", "a, one"],
+          ["թագավոր", "tagavor", "king"],
+        ],
+      },
+      {
+        hy: "Էս թագավորը իր երկրումը հայտնում է.",
+        tr: "Es tagavorə ir yerkrumə haytnum e:",
+        en: "This king announces in his land:",
+        words: [
+          ["էս", "es", "this"],
+          ["թագավորը", "tagavorə", "the king"],
+          ["իր", "ir", "his"],
+          ["երկրումը", "yerkrumə", "in the land"],
+          ["հայտնում է", "haytnum e", "announces"],
+        ],
+      },
+      {
+        hy: "— Ով էնպես սուտ ասի, որ ես ասեմ՝ սուտ է, իմ թագավորության կեսը կտամ նրան։",
+        tr: "— Vov enpes sut asi, vor yes asem, sut e, im tagavorutyan kesə ktam nran.",
+        en: "— Whoever tells such a lie that I say, that is a lie, I will give him half my kingdom.",
+        words: [
+          ["ով", "vov", "whoever"],
+          ["էնպես", "enpes", "such, so"],
+          ["սուտ", "sut", "lie"],
+          ["ասի", "asi", "tells"],
+          ["որ", "vor", "that"],
+          ["ես", "yes", "I"],
+          ["ասեմ", "asem", "I say"],
+          ["է", "e", "is"],
+          ["իմ", "im", "my"],
+          ["թագավորության", "tagavorutyan", "of the kingdom"],
+          ["կեսը", "kesə", "the half"],
+          ["կտամ", "ktam", "I will give"],
+          ["նրան", "nran", "to him"],
+        ],
+      },
+      {
+        hy: "Գալիս է մի հովիվ։ Ասում է.",
+        tr: "Galis e mi hoviv. Asum e:",
+        en: "A shepherd comes. He says:",
+        words: [
+          ["գալիս է", "galis e", "comes"],
+          ["մի", "mi", "a"],
+          ["հովիվ", "hoviv", "shepherd"],
+          ["ասում է", "asum e", "says"],
+        ],
+      },
+      {
+        hy: "— Թագավորն ապրած կենա, իմ հերը մի դագանակ ուներ, որ էստեղից մեկնում էր, երկնքում աստղերը խառնում։",
+        tr: "— Tagavorn aprats kena, im herə mi daganak uner, vor esteghits meknum er, yerknkum astgherə khaṙnum.",
+        en: "— Long live the king! My father had a staff that he would stretch out from here and stir the stars in the sky.",
+        words: [
+          ["թագավորն", "tagavorn", "the king"],
+          ["ապրած կենա", "aprats kena", "long live"],
+          ["իմ", "im", "my"],
+          ["հերը", "herə", "the father"],
+          ["մի", "mi", "a"],
+          ["դագանակ", "daganak", "staff"],
+          ["ուներ", "uner", "had"],
+          ["որ", "vor", "that"],
+          ["էստեղից", "esteghits", "from here"],
+          ["մեկնում էր", "meknum er", "would stretch out"],
+          ["երկնքում", "yerknkum", "in the sky"],
+          ["աստղերը", "astgherə", "the stars"],
+          ["խառնում", "khaṙnum", "stirs"],
+        ],
+      },
+      {
+        hy: "— Կպատահի՛,— պատասխանում է թագավորը։",
+        tr: "— Kpatahi, — pataskhanum e tagavorə.",
+        en: "— That could happen, — the king answers.",
+        words: [
+          ["կպատահի", "kpatahi", "it could happen"],
+          ["պատասխանում է", "pataskhanum e", "answers"],
+          ["թագավորը", "tagavorə", "the king"],
+        ],
+      },
+      {
+        hy: "— Իմ պապն էլ մի չիբուխ ուներ, մի ծերը բերանին էր դնում, մյուս ծերը մեկնում, արեգակիցը վառում։",
+        tr: "— Im papn el mi chibukh uner, mi tserə beranin er dnum, myus tserə meknum, aregakitsə vaṙum.",
+        en: "— My grandfather also had a pipe. He would put one end in his mouth, stretch out the other end, and light it from the sun.",
+        words: [
+          ["իմ", "im", "my"],
+          ["պապն", "papn", "the grandfather"],
+          ["էլ", "el", "also"],
+          ["մի", "mi", "a, one"],
+          ["չիբուխ", "chibukh", "pipe"],
+          ["ուներ", "uner", "had"],
+          ["ծերը", "tserə", "the end"],
+          ["բերանին", "beranin", "to his mouth"],
+          ["էր դնում", "er dnum", "would put"],
+          ["մյուս", "myus", "the other"],
+          ["մեկնում", "meknum", "stretches out"],
+          ["արեգակիցը", "aregakitsə", "from the sun"],
+          ["վառում", "vaṙum", "lights"],
+        ],
+      },
+      {
+        hy: "Ստախոսը գլուխը քորելով՝ դուրս է գնում։",
+        tr: "Stakhosə glukhə korelov durs e gnum.",
+        en: "The liar goes out, scratching his head.",
+        words: [
+          ["ստախոսը", "stakhosə", "the liar"],
+          ["գլուխը", "glukhə", "the head"],
+          ["քորելով", "korelov", "scratching"],
+          ["դուրս է գնում", "durs e gnum", "goes out"],
+        ],
+      },
+      {
+        hy: "Գալիս է մի դերձակ։ Ասում է.",
+        tr: "Galis e mi derdzak. Asum e:",
+        en: "A tailor comes. He says:",
+        words: [
+          ["գալիս է", "galis e", "comes"],
+          ["մի", "mi", "a"],
+          ["դերձակ", "derdzak", "tailor"],
+          ["ասում է", "asum e", "says"],
+        ],
+      },
+      {
+        hy: "— Ներողությո՛ւն, թագավո՛ր, ես վաղ պիտի գայի, ուշացա։",
+        tr: "— Neroghutyun, tagavor, yes vagh piti gayi, ushatsa.",
+        en: "— Sorry, king, I should have come early, but I was late.",
+        words: [
+          ["ներողություն", "neroghutyun", "sorry"],
+          ["թագավոր", "tagavor", "king"],
+          ["ես", "yes", "I"],
+          ["վաղ", "vagh", "early"],
+          ["պիտի գայի", "piti gayi", "should have come"],
+          ["ուշացա", "ushatsa", "I was late"],
+        ],
+      },
+      {
+        hy: "Երեկ շատ անձրև եկավ, կայծակները տրաքեցին, երկինքը պատռվեց, գնացել էի կարկատելու։",
+        tr: "Yerek shat andzrev yekav, kaytsaknerə traketsin, yerkinkə patṙvets, gnatsel ei karkatelu.",
+        en: "Yesterday a lot of rain fell, the lightning cracked, the sky tore open, and I had gone to patch it.",
+        words: [
+          ["երեկ", "yerek", "yesterday"],
+          ["շատ", "shat", "a lot"],
+          ["անձրև", "andzrev", "rain"],
+          ["եկավ", "yekav", "came, fell"],
+          ["կայծակները", "kaytsaknerə", "the lightning bolts"],
+          ["տրաքեցին", "traketsin", "cracked"],
+          ["երկինքը", "yerkinkə", "the sky"],
+          ["պատռվեց", "patṙvets", "tore"],
+          ["գնացել էի", "gnatsel ei", "I had gone"],
+          ["կարկատելու", "karkatelu", "to patch"],
+        ],
+      },
+      {
+        hy: "— Հա՛, լավ ես արել,— ասում է թագավորը,— բայց լավ չէիր կարկատել. էս առավոտ մի քիչ անձրև թափվեց։",
+        tr: "— Ha, lav yes arel, — asum e tagavorə, — bayts lav cheir karkatel: es aṙavot mi kich andzrev tapvets.",
+        en: "— Yes, you did well, — says the king, — but you did not patch it well: this morning a little rain fell.",
+        words: [
+          ["հա", "ha", "yes"],
+          ["լավ", "lav", "well"],
+          ["ես արել", "yes arel", "you did"],
+          ["ասում է", "asum e", "says"],
+          ["թագավորը", "tagavorə", "the king"],
+          ["բայց", "bayts", "but"],
+          ["չէիր կարկատել", "cheir karkatel", "you did not patch"],
+          ["էս", "es", "this"],
+          ["առավոտ", "aṙavot", "morning"],
+          ["մի քիչ", "mi kich", "a little"],
+          ["անձրև", "andzrev", "rain"],
+          ["թափվեց", "tapvets", "poured down"],
+        ],
+      },
+      {
+        hy: "Սա էլ է դուրս գնում։",
+        tr: "Sa el e durs gnum.",
+        en: "He goes out too.",
+        words: [
+          ["սա", "sa", "this one"],
+          ["էլ", "el", "too"],
+          ["է", "e", "is"],
+          ["դուրս", "durs", "out"],
+          ["գնում", "gnum", "going"],
+        ],
+      },
+      {
+        hy: "Ներս է մտնում մի աղքատ գյուղացի, կոտը կռնատակին։",
+        tr: "Ners e mtnum mi aghkat gyughatsi, kotə kṙnatakin.",
+        en: "A poor villager comes in, a grain measure under his arm.",
+        words: [
+          ["ներս է մտնում", "ners e mtnum", "comes in"],
+          ["մի", "mi", "a"],
+          ["աղքատ", "aghkat", "poor"],
+          ["գյուղացի", "gyughatsi", "villager"],
+          ["կոտը", "kotə", "the grain measure"],
+          ["կռնատակին", "kṙnatakin", "under his arm"],
+        ],
+      },
+      {
+        hy: "— Դո՞ւ ինչ ես ուզում, ա՛յ մարդ,— հարցնում է թագավորը։",
+        tr: "— Du inch yes uzum, ay mard, — hartsnum e tagavorə.",
+        en: "— And what do you want, my man? — asks the king.",
+        words: [
+          ["դու", "du", "you"],
+          ["ինչ", "inch", "what"],
+          ["ես ուզում", "yes uzum", "you want"],
+          ["այ մարդ", "ay mard", "my man"],
+          ["հարցնում է", "hartsnum e", "asks"],
+          ["թագավորը", "tagavorə", "the king"],
+        ],
+      },
+      {
+        hy: "— Ինձ մի կոտ ոսկի ես պարտ, եկել եմ տանեմ։",
+        tr: "— Indz mi kot voski yes part, yekel yem tanem.",
+        en: "— You owe me a measure of gold. I have come to take it.",
+        words: [
+          ["ինձ", "indz", "to me"],
+          ["մի", "mi", "a, one"],
+          ["կոտ", "kot", "grain measure"],
+          ["ոսկի", "voski", "gold"],
+          ["ես պարտ", "yes part", "you owe"],
+          ["եկել եմ", "yekel yem", "I have come"],
+          ["տանեմ", "tanem", "to take away"],
+        ],
+      },
+      {
+        hy: "— Մի կոտ ոսկի՞,— զարմանում է թագավորը։— Սո՛ւտ ես ասում, ես քեզ ոսկի չեմ պարտ։",
+        tr: "— Mi kot voski? — zarmanum e tagavorə. — Sut yes asum, yes kez voski chem part.",
+        en: "— A measure of gold? — the king is surprised. — You are lying, I do not owe you gold.",
+        words: [
+          ["մի", "mi", "a, one"],
+          ["կոտ", "kot", "grain measure"],
+          ["ոսկի", "voski", "gold"],
+          ["զարմանում է", "zarmanum e", "is surprised"],
+          ["թագավորը", "tagavorə", "the king"],
+          ["սուտ ես ասում", "sut yes asum", "you are lying"],
+          ["ես", "yes", "I"],
+          ["քեզ", "kez", "to you"],
+          ["չեմ պարտ", "chem part", "I do not owe"],
+        ],
+      },
+      {
+        hy: "— Թե որ սուտ եմ ասում, թագավորությանդ կեսը տուր։",
+        tr: "— Te vor sut yem asum, tagavorutyand kesə tur.",
+        en: "— If I am lying, give me half your kingdom.",
+        words: [
+          ["թե որ", "te vor", "if"],
+          ["սուտ եմ ասում", "sut yem asum", "I am lying"],
+          ["թագավորությանդ", "tagavorutyand", "of your kingdom"],
+          ["կեսը", "kesə", "the half"],
+          ["տուր", "tur", "give!"],
+        ],
+      },
+      {
+        hy: "— Չէ՛, չէ՛, ճշմարիտ ես ասում,— խոսքը փոխում է թագավորը։",
+        tr: "— Che, che, chshmarit yes asum, — khoskə pokhum e tagavorə.",
+        en: "— No, no, you are telling the truth, — the king takes back his words.",
+        words: [
+          ["չէ", "che", "no"],
+          ["ճշմարիտ", "chshmarit", "truth"],
+          ["ես ասում", "yes asum", "you are saying"],
+          ["խոսքը", "khoskə", "the word"],
+          ["փոխում է", "pokhum e", "changes"],
+          ["թագավորը", "tagavorə", "the king"],
+        ],
+      },
+      {
+        hy: "— Ճշմարիտ եմ ասում՝ մի կոտ ոսկին տուր։",
+        tr: "— Chshmarit yem asum, mi kot voskin tur.",
+        en: "— I am telling the truth? Then give me the measure of gold.",
+        words: [
+          ["ճշմարիտ", "chshmarit", "truth"],
+          ["եմ ասում", "yem asum", "I am saying"],
+          ["մի", "mi", "a, one"],
+          ["կոտ", "kot", "grain measure"],
+          ["ոսկին", "voskin", "the gold"],
+          ["տուր", "tur", "give!"],
+        ],
+      },
+    ],
+  },
+];
+
+const MATCH_ROUND = 6;      // most word pairs shown at once
+const LINE_XP = 2;          // experience for each new line finished
+
+/* ------------------------------------------------------------------ */
 /*  Parts of speech                                                    */
 /*                                                                     */
 /*  Every word in the course, filed under one of the eight parts of    */
@@ -1305,6 +1622,299 @@ function WordBank({ words }) {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Stories page                                                       */
+/* ------------------------------------------------------------------ */
+
+const STORY_STAGES = [
+  { label: "Read" },
+  { label: "Sound to meaning", a: "tr", b: "en", prompt: "Match each word's sound with its meaning" },
+  { label: "Letters to sound", a: "hy", b: "tr", prompt: "Match each Armenian word with how it sounds" },
+  { label: "Letters to meaning", a: "hy", b: "en", prompt: "Match each Armenian word with its meaning" },
+];
+
+const FIELD_STYLE = {
+  hy: { fontFamily: ARM, fontSize: 22 },
+  tr: { fontFamily: UI, fontSize: 16, fontStyle: "italic", color: C.apricot },
+  en: { fontFamily: UI, fontSize: 16 },
+};
+
+function lineWords(line) {
+  const seen = new Set();
+  const out = [];
+  for (const [hy, tr, en] of line.words || []) {
+    const id = `${hy}|${en}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    out.push({ id, hy, tr, en });
+  }
+  return out;
+}
+
+function inRounds(items, size) {
+  const out = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  // Never leave a lonely single pair at the end: fold it into the round before.
+  if (out.length > 1 && out[out.length - 1].length === 1) out[out.length - 2].push(...out.pop());
+  return out;
+}
+
+function MatchRound({ items, a, b, prompt, roundLabel, onDone }) {
+  const [left] = useState(() => shuffle(items));
+  const [right] = useState(() => shuffle(items));
+  const [pick, setPick] = useState(null);
+  const [doneL, setDoneL] = useState(() => new Set());
+  const [doneR, setDoneR] = useState(() => new Set());
+  const [miss, setMiss] = useState(null);
+
+  const allDone = doneL.size === items.length;
+
+  const tapLeft = (i) => {
+    if (doneL.has(i)) return;
+    setMiss(null);
+    setPick(i === pick ? null : i);
+  };
+
+  const tapRight = (j) => {
+    if (pick === null || doneR.has(j)) return;
+    // Compare by what is shown, so two words with the same meaning both count.
+    if (right[j][b] === left[pick][b]) {
+      setDoneL(new Set(doneL).add(pick));
+      setDoneR(new Set(doneR).add(j));
+      setPick(null);
+    } else {
+      setMiss({ l: pick, r: j });
+      setPick(null);
+      setTimeout(() => setMiss(null), 650);
+    }
+  };
+
+  const tile = (item, field, state, onClick, key) => {
+    const border = state === "done" ? "rgba(216,162,43,0.35)" : state === "pick" ? C.apricot : state === "miss" ? C.pom : C.line;
+    const bg = state === "done" ? "rgba(216,162,43,0.08)" : state === "pick" ? C.ink3 : state === "miss" ? "rgba(194,43,62,0.16)" : C.ink2;
+    return (
+      <button key={key} className="hy-btn" onClick={onClick} disabled={state === "done"}
+        style={{
+          ...FIELD_STYLE[field], width: "100%", minHeight: 54, borderRadius: 12, padding: "10px 12px",
+          background: bg, border: `1px solid ${border}`, lineHeight: 1.3, overflowWrap: "anywhere",
+          color: state === "done" ? C.gold : FIELD_STYLE[field].color || C.parch,
+          opacity: state === "done" ? 0.7 : 1, cursor: state === "done" ? "default" : "pointer",
+        }}>
+        {item[field]}
+      </button>
+    );
+  };
+
+  return (
+    <div>
+      <h2 style={{ fontFamily: UI, fontSize: 18, color: C.parch, fontWeight: 600, lineHeight: 1.4, margin: 0 }}>{prompt}</h2>
+      <p style={{ margin: "6px 0 0", fontFamily: UI, fontSize: 13, color: C.muted }}>
+        Tap a word on the left, then its partner on the right.{roundLabel ? ` ${roundLabel}` : ""}
+      </p>
+      <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: 10 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {left.map((x, i) => tile(x, a,
+            doneL.has(i) ? "done" : pick === i ? "pick" : miss && miss.l === i ? "miss" : "idle",
+            () => tapLeft(i), `l${i}`))}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {right.map((x, j) => tile(x, b,
+            doneR.has(j) ? "done" : miss && miss.r === j ? "miss" : "idle",
+            () => tapRight(j), `r${j}`))}
+        </div>
+      </div>
+      <div style={{ marginTop: 24 }}>
+        <Button full disabled={!allDone} onClick={onDone}>{allDone ? "Continue" : `${doneL.size} of ${items.length} matched`}</Button>
+      </div>
+    </div>
+  );
+}
+
+function StoryPlayer({ story, progress, save, onBack }) {
+  const total = story.lines.length;
+  const saved = (progress.stories && progress.stories[story.id]) || 0;
+  const [line, setLine] = useState(saved >= total ? total : saved);
+  const [stage, setStage] = useState(0);
+  const [round, setRound] = useState(0);
+
+  if (line >= total) {
+    return (
+      <section style={{ borderRadius: 12, padding: "36px 20px", background: C.ink2, border: `1px solid ${C.line}`, textAlign: "center" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}><Stars n={3} size={34} /></div>
+        <h2 style={{ marginTop: 18, fontFamily: ARM, fontSize: 28, color: C.gold }}>{story.title}</h2>
+        <p style={{ marginTop: 6, fontFamily: UI, fontSize: 15, color: C.muted }}>
+          Story complete. All {total} lines read and matched.
+        </p>
+        <div style={{ marginTop: 26, display: "flex", flexDirection: "column", gap: 10 }}>
+          <Button full onClick={onBack}>Back to all stories</Button>
+          <Button full tone="quiet" onClick={() => { setLine(0); setStage(0); setRound(0); }}>Read it again</Button>
+        </div>
+      </section>
+    );
+  }
+
+  const L = story.lines[line];
+  const rounds = inRounds(lineWords(L), MATCH_ROUND);
+  const st = STORY_STAGES[stage];
+
+  const finishLine = () => {
+    if (line + 1 > saved) {
+      save({
+        ...progress,
+        xp: progress.xp + LINE_XP,
+        stories: { ...(progress.stories || {}), [story.id]: line + 1 },
+      });
+    }
+    setLine(line + 1); setStage(0); setRound(0);
+  };
+
+  const nextStep = () => {
+    if (stage > 0 && round + 1 < rounds.length) return setRound(round + 1);
+    if (stage + 1 < STORY_STAGES.length && rounds.length > 0) { setStage(stage + 1); setRound(0); return; }
+    finishLine();
+  };
+
+  return (
+    <section style={{ borderRadius: 12, padding: "22px 20px", background: C.ink2, border: `1px solid ${C.line}` }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <Bar value={line} total={total} />
+        <span style={{ flex: "0 0 auto", fontFamily: UI, fontSize: 12, color: C.muted }}>Line {line + 1} of {total}</span>
+      </div>
+
+      <ol aria-label="Steps for this line" style={{ listStyle: "none", padding: 0, margin: "16px 0 24px", display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {STORY_STAGES.map((s, k) => (
+          <li key={s.label} aria-current={k === stage ? "step" : undefined}
+            style={{
+              fontFamily: UI, fontSize: 12, padding: "4px 10px", borderRadius: 999,
+              border: `1px solid ${k === stage ? C.gold : C.line}`,
+              color: k < stage ? C.gold : k === stage ? C.parch : C.muted,
+              background: k === stage ? C.ink3 : "transparent",
+            }}>
+            {k + 1}. {s.label}
+          </li>
+        ))}
+      </ol>
+
+      {stage === 0 ? (
+        <div>
+          <div style={{ fontFamily: ARM, fontSize: 26, lineHeight: 1.5, color: C.parch }}>{L.hy}</div>
+          <div style={{ marginTop: 8, fontFamily: UI, fontSize: 17, lineHeight: 1.5, color: C.apricot, fontStyle: "italic" }}>{L.tr}</div>
+          <div style={{ marginTop: 8, fontFamily: UI, fontSize: 17, lineHeight: 1.5, color: C.parch }}>{L.en}</div>
+
+          {rounds.length > 0 && (
+            <div style={{ marginTop: 22, borderTop: `1px solid ${C.line}` }}>
+              {rounds.flat().map((x) => (
+                <div key={x.id} style={{ display: "flex", alignItems: "baseline", gap: 14, padding: "10px 0", borderBottom: `1px solid ${C.line}` }}>
+                  <span style={{ flex: "0 0 38%", minWidth: 0, overflowWrap: "anywhere", fontFamily: ARM, fontSize: 20, color: C.gold }}>{x.hy}</span>
+                  <span style={{ flex: "1 1 auto", minWidth: 0 }}>
+                    <span style={{ display: "block", fontFamily: UI, fontSize: 14, color: C.apricot, fontStyle: "italic" }}>{x.tr}</span>
+                    <span style={{ display: "block", fontFamily: UI, fontSize: 14, color: C.parch }}>{x.en}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+            {line > 0 && <Button tone="quiet" onClick={() => { setLine(line - 1); setStage(0); setRound(0); }}>Previous line</Button>}
+            <div style={{ flex: 1 }}>
+              <Button full onClick={nextStep}>{rounds.length ? "Start matching" : "Next line"}</Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <MatchRound key={`${line}-${stage}-${round}`} items={rounds[round]} a={st.a} b={st.b} prompt={st.prompt}
+          roundLabel={rounds.length > 1 ? `Round ${round + 1} of ${rounds.length}.` : ""}
+          onDone={nextStep} />
+      )}
+    </section>
+  );
+}
+
+const linesDone = (progress, s) => (progress.stories && progress.stories[s.id]) || 0;
+const storyRead = (progress, s) => linesDone(progress, s) >= s.lines.length;
+const storiesRead = (progress) => STORIES.filter((s) => storyRead(progress, s)).length;
+
+function StoryCard({ story, progress, onOpen }) {
+  const done = linesDone(progress, story);
+  const total = story.lines.length;
+  const read = done >= total;
+  const started = done > 0 && !read;
+  return (
+    <button className="hy-btn" onClick={onOpen}
+      style={{
+        textAlign: "left", width: "100%", borderRadius: 12, padding: "18px 16px", background: C.ink2, cursor: "pointer",
+        border: `1px solid ${started ? C.apricot : read ? "rgba(216,162,43,0.35)" : C.line}`,
+      }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+        <span style={{ fontFamily: ARM, fontSize: 26, lineHeight: 1.2, color: read ? C.gold : C.parch }}>{story.title}</span>
+        <span style={{ flex: "0 0 auto", fontFamily: UI, fontSize: 12, fontWeight: 600, color: read ? C.gold : started ? C.apricot : C.muted }}>
+          {read ? "Read" : started ? "Continue" : "Start"}
+        </span>
+      </div>
+      <div style={{ marginTop: 4, fontFamily: UI, fontSize: 14, color: C.muted }}>
+        <span style={{ color: C.apricot, fontStyle: "italic" }}>{story.titleTr}</span> · {story.titleEn}
+      </div>
+      {story.author && (
+        <div style={{ marginTop: 2, fontFamily: UI, fontSize: 13, color: C.muted }}>
+          <span style={{ fontFamily: ARM }}>{story.author}</span>{story.year ? ` · ${story.year}` : ""}
+        </div>
+      )}
+      <div style={{ marginTop: 14, display: "flex", alignItems: "center", gap: 12 }}>
+        <Bar value={done} total={total} />
+        <span style={{ flex: "0 0 auto", fontFamily: UI, fontSize: 12, color: C.muted }}>
+          {read ? `${total} lines` : `${done} of ${total} lines`}
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function StoryReader({ progress, save }) {
+  const [openId, setOpenId] = useState(null);
+  const story = STORIES.find((s) => s.id === openId);
+
+  if (story) {
+    return (
+      <div className="hy-wrap">
+        <button className="hy-btn" onClick={() => setOpenId(null)}
+          style={{ background: "none", border: "none", padding: 0, marginBottom: 18, color: C.muted, fontFamily: UI, fontSize: 14, cursor: "pointer" }}>
+          ← All stories
+        </button>
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ fontFamily: ARM, fontSize: 30, color: C.gold, lineHeight: 1.2 }}>{story.title}</div>
+          <div style={{ marginTop: 4, fontFamily: UI, fontSize: 15, color: C.muted }}>
+            <span style={{ color: C.apricot, fontStyle: "italic" }}>{story.titleTr}</span> · {story.titleEn}
+            {story.author && <> · <span style={{ fontFamily: ARM }}>{story.author}</span></>}
+            {story.year && <> · {story.year}</>}
+          </div>
+        </div>
+        <StoryPlayer key={story.id} story={story} progress={progress} save={save} onBack={() => setOpenId(null)} />
+      </div>
+    );
+  }
+
+  const read = storiesRead(progress);
+  return (
+    <div className="hy-wrap">
+      <header style={{ marginBottom: 26 }}>
+        <h1 style={{ fontFamily: ARM, fontSize: 40, color: C.gold, lineHeight: 1.1, margin: 0, fontWeight: 700 }}>Պատմություններ</h1>
+        <p style={{ marginTop: 10, fontFamily: UI, color: C.muted, fontSize: 15, lineHeight: 1.6, maxWidth: 520 }}>
+          Stories, one line at a time. Read each line, then match its words three ways before moving on.
+        </p>
+        <p style={{ margin: "6px 0 0", fontFamily: UI, fontSize: 13, color: read ? C.gold : C.muted }}>
+          {read} of {STORIES.length} {STORIES.length === 1 ? "story" : "stories"} read
+        </p>
+      </header>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {STORIES.map((s) => (
+          <StoryCard key={s.id} story={s} progress={progress} onOpen={() => setOpenId(s.id)} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /*  Study                                                              */
 /* ------------------------------------------------------------------ */
 
@@ -1660,7 +2270,7 @@ export default function ArmenianCourse() {
     body = <Result lesson={LEVELS[view.lvl - 1].lessons[view.idx]} session={view.session} result={view.result} stars={view.stars} xpGain={view.xpGain}
       onRetry={() => startLesson(view.lvl, view.idx)} onHome={() => setView({ name: "home" })} />;
   } else {
-    body = level === "pos" ? <WordBank words={progress.words} /> : <Home progress={progress} onStart={(idx) => startLesson(level, idx)} storageWarning={status === "memory"} level={level} setLevel={setLevel} />;
+    body = level === "stories" ? <StoryReader progress={progress} save={save} /> : level === "pos" ? <WordBank words={progress.words} /> : <Home progress={progress} onStart={(idx) => startLesson(level, idx)} storageWarning={status === "memory"} level={level} setLevel={setLevel} />;
   }
 
   return (
@@ -1701,6 +2311,15 @@ export default function ArmenianCourse() {
               </div>
               <div style={{ fontFamily: UI, fontSize: 11, color: knownCount(progress.words) ? C.gold : C.muted, marginTop: 2 }}>
                 {knownCount(progress.words)} words known
+              </div>
+            </button>
+            <button className="hy-railitem" data-on={level === "stories"} onClick={() => setLevel("stories")}
+              aria-label={`Stories, ${storiesRead(progress)} of ${STORIES.length} read`}>
+              <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
+                Stories
+              </div>
+              <div style={{ fontFamily: UI, fontSize: 11, color: storiesRead(progress) ? C.gold : C.muted, marginTop: 2 }}>
+                {storiesRead(progress)} of {STORIES.length} {STORIES.length === 1 ? "story" : "stories"} read
               </div>
             </button>
           </nav>
