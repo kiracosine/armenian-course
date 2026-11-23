@@ -41,7 +41,7 @@ function lessonPhrases(src) {
 
 function writeManifest(phrases) {
   const manifest = {};
-  for (const p of phrases) if (fs.existsSync(path.join(OUT, fileFor(p)))) manifest[p] = fileFor(p);
+  for (const p of phrases) if (hasClip(p)) manifest[p] = fileFor(p);
   fs.writeFileSync(path.join(OUT, "manifest.json"), JSON.stringify(manifest, null, 1) + "\n");
   return Object.keys(manifest).length;
 }
@@ -57,11 +57,14 @@ function saveProgress(phrases, made) {
   }
 }
 
+// Text Azure can't read on its own, and what to say instead (same sound).
+const SAY = { "և": "եվ" };
+
 const xml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function speak(text) {
-  const ssml = `<speak version="1.0" xml:lang="hy-AM"><voice name="${VOICE}"><prosody rate="${RATE}">${xml(text)}</prosody></voice></speak>`;
+  const ssml = `<speak version="1.0" xml:lang="hy-AM"><voice name="${VOICE}"><prosody rate="${RATE}">${xml(SAY[text] || text)}</prosody></voice></speak>`;
   for (let attempt = 1; attempt <= 5; attempt++) {
     const res = await fetch(`https://${REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
       method: "POST",
@@ -84,7 +87,8 @@ const src = fs.readFileSync(path.join("src", "App.jsx"), "utf8");
 const phrases = [...new Set(lessonPhrases(src))];
 fs.mkdirSync(OUT, { recursive: true });
 
-const missing = phrases.filter((p) => !fs.existsSync(path.join(OUT, fileFor(p))));
+const hasClip = (p) => fs.existsSync(path.join(OUT, fileFor(p))) && fs.statSync(path.join(OUT, fileFor(p))).size > 0;
+const missing = phrases.filter((p) => !hasClip(p));
 console.log(`${phrases.length} phrases, ${missing.length} without audio yet.`);
 
 if (missing.length && !KEY) {
@@ -92,7 +96,16 @@ if (missing.length && !KEY) {
 } else {
   let made = 0;
   for (const p of missing) {
-    fs.writeFileSync(path.join(OUT, fileFor(p)), await speak(p));
+    let audio;
+    try {
+      audio = await speak(p);
+    } catch (e) {
+      // For example, the Azure trial has ended. Keep the clips we have and let the site deploy.
+      console.log(`Azure did not make audio (${e.message}). Stopping here; the site will still deploy.`);
+      break;
+    }
+    if (!audio.length) { console.log(`  Azure returned no sound for ${p}; skipped`); continue; }
+    fs.writeFileSync(path.join(OUT, fileFor(p)), audio);
     made++;
     console.log(`  made ${fileFor(p)}  ${p}  (${made} of ${missing.length})`);
     if (SAVE_EVERY && made % SAVE_EVERY === 0 && made < missing.length) saveProgress(phrases, made);
