@@ -545,7 +545,7 @@ const LEVELS = [
       ]),
     ] },
   { n: 10, name: "Around the house", blurb: "The words and phrases you use at home, with the people you live with.",
-    topics: ["Rooms", "In the kitchen", "Around the rooms"], lessons: [
+    topics: ["Rooms", "In the kitchen", "Cooking and cleaning together"], lessons: [
       L("10-1", "Rooms", "Naming the parts of a home.", [
         it("խոհանոց", "khohanots", "kitchen"), it("ննջասենյակ", "nnjasenyak", "bedroom"),
         it("լոգարան", "logaran", "bathroom"), it("հյուրասենյակ", "hyurasenyak", "living room"),
@@ -584,6 +584,33 @@ const LEVELS = [
         it("արդուկել", "ardukel", "to iron"), it("չորացնել", "choratsnel", "to dry"),
         it("դասավորել", "dasavorel", "to tidy"), it("աման լվանալ", "aman lvanal", "to wash dishes"),
         it("հագուստ լվանալ", "hagust lvanal", "to do laundry"), it("ջրել", "jrel", "to water")
+      ]),
+      L("10-6", "Cooking together", "Making a meal side by side.", [
+        it("միասին", "miasin", "together"),
+        it("Արի միասին ճաշ եփենք", "Ari miasin chash yepenk", "Let us cook together"),
+        it("Ի՞նչ ենք եփում", "Inch yenk yepum", "What are we cooking?"),
+        it("Օգնիր ինձ", "Ognir indz", "Help me"),
+        it("Սոխը կտրատիր", "Sokhə ktratir", "Chop the onion"),
+        it("Կաթսան տուր", "Katsan tur", "Pass the pot"),
+        it("Ջուրը եռում է", "Jurə yeṙum e", "The water is boiling"),
+        it("Խառնիր", "Khaṙnir", "Stir it"),
+        it("Աղ ավելացրու", "Agh avelatsru", "Add salt"),
+        it("Համտեսիր", "Hamtesir", "Taste it"),
+        it("Շատ համեղ է", "Shat hamegh e", "It is very tasty"),
+        it("Վառարանը անջատիր", "Vaṙaranə anjatir", "Turn off the stove")
+      ]),
+      L("10-7", "Cleaning together", "Sharing the chores so they go faster.", [
+        it("Արի միասին մաքրենք", "Ari miasin makrenk", "Let us clean together"),
+        it("Ես կավլեմ", "Yes kavlem", "I will sweep"),
+        it("Դու ամանները լվա", "Du amannerə lva", "You wash the dishes"),
+        it("Աղբը դուրս տար", "Aghbə durs tar", "Take out the trash"),
+        it("Անկողինը հավաքիր", "Ankoghinə havakir", "Make the bed"),
+        it("Հատակը լվա", "Hatakə lva", "Mop the floor"),
+        it("Փոշին սրբիր", "Poshin srbir", "Wipe off the dust"),
+        it("փոշեկուլ", "poshekul", "vacuum cleaner"),
+        it("Պատուհանը բացիր", "Patuhanə batsir", "Open the window"),
+        it("Շնորհակալ եմ օգնության համար", "Shnorhakal yem ognutyan hamar", "Thanks for the help"),
+        it("Ամեն ինչ մաքուր է", "Amen inch makur e", "Everything is clean")
       ]),
     ] },
 ];
@@ -965,7 +992,7 @@ const PARTS = [
     "բակ|yard", "աստիճաններ|stairs", "դանակ|knife", "պատառաքաղ|fork", "գդալ|spoon", "ափսե|plate",
     "բաժակ|glass", "կաթսա|pot", "վառարան|stove", "թեյնիկ|kettle", "լվացարան|sink", "անկողին|bed",
     "բարձ|pillow", "վերմակ|blanket", "սրբիչ|towel", "օճառ|soap", "հայելի|mirror", "լամպ|lamp",
-    "վարագույր|curtain", "բանալի|key", "պահարան|cupboard", "աղբաման|bin"
+    "վարագույր|curtain", "բանալի|key", "պահարան|cupboard", "աղբաման|bin", "փոշեկուլ|vacuum cleaner"
   ] },
   { id: "pronoun", name: "Pronouns", note: "Words that stand in for a noun: I, this, who, my.", words: [
     "ես|I", "որ|that, which", "իր|his, her", "սա|this", "իրար|each other", "սրա|of this one", "որի|of which",
@@ -1019,7 +1046,7 @@ const PARTS = [
     "ե՞րբ|when", "ինչու՞|why", "ինչպե՞ս|how", "այստեղ|here", "այնտեղ|there", "Իհարկե|Of course",
     "այստեղից|from here", "այնտեղից|from there", "երեկ|yesterday", "այսօր|today", "վաղը|tomorrow", "հիմա|now",
     "հետո|later", "շուտ|early", "միշտ|always", "երբեք|never", "երբեմն|sometimes", "անցյալ շաբաթ|last week",
-    "մյուս շաբաթ|next week"
+    "մյուս շաբաթ|next week", "միասին|together"
   ] },
   { id: "preposition", name: "Prepositions", note: "Where things are. Armenian puts most of these after the noun.", words: [
     "մեջ|in, inside", "ներսում|inside", "դրսում|outside", "վերևում|above", "ներքևում|below", "կողքին|beside",
