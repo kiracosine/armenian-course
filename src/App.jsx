@@ -1563,7 +1563,8 @@ function Button({ children, onClick, tone = "gold", disabled, full, small }) {
 }
 
 /* Spoken audio. Clips are made ahead of time by scripts/make-audio.mjs and
-   listed in audio/manifest.json; a phrase with no clip simply has no button. */
+   listed in audio/manifest.json; a phrase with no clip simply has no button.
+   Nothing plays on its own: audio plays only when a speaker button is tapped. */
 let AUDIO = null;
 const audioReady = fetch("./audio/manifest.json")
   .then((r) => (r.ok ? r.json() : {}))
@@ -1935,11 +1936,6 @@ function StoryPlayer({ story, progress, save, onBack }) {
   const [stage, setStage] = useState(0);
   const [round, setRound] = useState(0);
 
-  // Read each new line aloud when it appears.
-  useEffect(() => {
-    if (line < total && stage === 0) audioReady.then(() => playHy(story.lines[line].hy));
-  }, [line, stage]);
-
   if (line >= total) {
     return (
       <section style={{ borderRadius: 12, padding: "36px 20px", background: C.ink2, border: `1px solid ${C.line}`, textAlign: "center" }}>
@@ -2136,11 +2132,6 @@ function Study({ lesson, cards, onDone, onQuit }) {
   const label = last ? "Start practice"
     : c.kind === "letter" && next.kind === "word" ? "On to the words"
     : c.kind === "letter" ? "Next letter" : "Next word";
-
-  // Say each new letter's name, or each new word or phrase, when its card appears.
-  useEffect(() => {
-    audioReady.then(() => playHy(c.kind === "letter" ? c.name : c.hy));
-  }, [i]);
 
   return (
     <div className="hy-lesson">
