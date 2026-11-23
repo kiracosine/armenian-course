@@ -691,6 +691,13 @@ const LEVELS = [
 // Levels 1 to 10 are A0. Fill in the labels the level bar shows for them.
 LEVELS.forEach((lv) => { lv.tier = lv.tier || "A0"; lv.short = lv.short || lv.n; lv.tag = lv.tag || `Level ${lv.n}`; });
 
+// The CEFR levels in the level bar's dropdown. A level with no units yet shows as coming soon.
+const TIERS = [
+  { id: "A0", name: "Foundations" }, { id: "A1", name: "Beginner" }, { id: "A2", name: "Elementary" },
+  { id: "B1", name: "Intermediate" }, { id: "B2", name: "Upper intermediate" }, { id: "C1", name: "Advanced" },
+  { id: "C2", name: "Mastery" },
+];
+
 
 /* ------------------------------------------------------------------ */
 /*  Stories                                                            */
@@ -1452,8 +1459,18 @@ const CSS = `
 .hy-raildiv{flex:0 0 1px;align-self:stretch;background:${C.line};margin:0 4px}
 .hy-btn:focus-visible,.hy-tab:focus-visible,.hy-railitem:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
 .hy-railnum,.hy-railpre,.hy-short{display:none}
-.hy-railgroup{font-family:${UI};font-size:11px;font-weight:700;letter-spacing:.08em;color:${C.gold};padding:10px 12px 2px;flex:0 0 auto}
-.hy-railgroup:first-child{padding-top:0}
+.hy-tierbtn{display:flex;align-items:center;gap:8px;flex:0 0 auto;background:transparent;border:1px solid ${C.line};
+  border-radius:8px;padding:8px 12px;color:${C.parch};font-family:${UI};cursor:pointer;text-align:left}
+.hy-tierbtn:hover,.hy-tierbtn[aria-expanded="true"]{border-color:${C.gold}}
+.hy-tierid{font-family:${UI};font-weight:700;font-size:14px;letter-spacing:.04em;color:${C.gold}}
+.hy-tiername{font-size:13px;color:${C.muted}}
+.hy-tiermenu{position:fixed;z-index:50;width:270px;background:${C.ink2};border:1px solid ${C.line};border-radius:10px;
+  padding:6px;box-shadow:0 12px 32px rgba(0,0,0,.45)}
+.hy-tieropt{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;
+  border:none;border-radius:6px;padding:9px 10px;color:${C.parch};font-family:${UI};font-size:14px;cursor:pointer}
+.hy-tieropt:hover:not(:disabled),.hy-tieropt[aria-current="true"]{background:${C.ink3}}
+.hy-tieropt:disabled{opacity:.45;cursor:default}
+.hy-tierbtn:focus-visible,.hy-tieropt:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
 @media (max-width:879px){
   .hy-rail{gap:6px;padding:10px 14px;align-items:center;scrollbar-width:thin;scrollbar-color:${C.line} transparent}
   .hy-rail::-webkit-scrollbar{height:4px}
@@ -1474,8 +1491,8 @@ const CSS = `
   .hy-long{display:none}
   .hy-short{display:inline}
   .hy-raildiv{align-self:center;height:24px}
-  .hy-railgroup{align-self:center;padding:0 2px 0 6px}
-  .hy-railgroup:first-child{padding-left:0}
+  .hy-tierbtn{align-self:center;padding:7px 10px}
+  .hy-tiername{display:none}
 }
 @media (min-width:880px){
   .hy-shell{flex-direction:row}
@@ -1483,6 +1500,7 @@ const CSS = `
     overflow-y:auto;overflow-x:hidden;border-bottom:none;border-right:1px solid ${C.line};padding:26px 14px}
   .hy-railitem{min-width:0;width:100%}
   .hy-raildiv{height:1px;margin:10px 4px}
+  .hy-tierbtn{width:100%;margin-bottom:8px}
 }
 @media (max-width:520px){ .hy-opts{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
@@ -1917,6 +1935,11 @@ function StoryPlayer({ story, progress, save, onBack }) {
   const [stage, setStage] = useState(0);
   const [round, setRound] = useState(0);
 
+  // Read each new line aloud when it appears.
+  useEffect(() => {
+    if (line < total && stage === 0) audioReady.then(() => playHy(story.lines[line].hy));
+  }, [line, stage]);
+
   if (line >= total) {
     return (
       <section style={{ borderRadius: 12, padding: "36px 20px", background: C.ink2, border: `1px solid ${C.line}`, textAlign: "center" }}>
@@ -1936,6 +1959,7 @@ function StoryPlayer({ story, progress, save, onBack }) {
   const L = story.lines[line];
   const rounds = inRounds(lineWords(L), MATCH_ROUND);
   const st = STORY_STAGES[stage];
+
 
   const finishLine = () => {
     if (line + 1 > saved) {
@@ -1977,7 +2001,10 @@ function StoryPlayer({ story, progress, save, onBack }) {
 
       {stage === 0 ? (
         <div>
-          <div style={{ fontFamily: ARM, fontSize: 26, lineHeight: 1.5, color: C.parch }}>{L.hy}</div>
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+            <div style={{ flex: 1, fontFamily: ARM, fontSize: 26, lineHeight: 1.5, color: C.parch }}>{L.hy}</div>
+            <div style={{ flex: "0 0 auto", marginTop: 2 }}><SpeakButton hy={L.hy} size={40} /></div>
+          </div>
           <div style={{ marginTop: 8, fontFamily: UI, fontSize: 17, lineHeight: 1.5, color: C.apricot, fontStyle: "italic" }}>{L.tr}</div>
           <div style={{ marginTop: 8, fontFamily: UI, fontSize: 17, lineHeight: 1.5, color: C.parch }}>{L.en}</div>
 
@@ -1986,6 +2013,7 @@ function StoryPlayer({ story, progress, save, onBack }) {
               {rounds.flat().map((x) => (
                 <div key={x.id} style={{ display: "flex", alignItems: "baseline", gap: 14, padding: "10px 0", borderBottom: `1px solid ${C.line}` }}>
                   <span style={{ flex: "0 0 38%", minWidth: 0, overflowWrap: "anywhere", fontFamily: ARM, fontSize: 20, color: C.gold }}>{x.hy}</span>
+                  <span style={{ flex: "0 0 auto", alignSelf: "center" }}><SpeakButton hy={x.hy} size={30} /></span>
                   <span style={{ flex: "1 1 auto", minWidth: 0 }}>
                     <span style={{ display: "block", fontFamily: UI, fontSize: 14, color: C.apricot, fontStyle: "italic" }}>{x.tr}</span>
                     <span style={{ display: "block", fontFamily: UI, fontSize: 14, color: C.parch }}>{x.en}</span>
@@ -2401,6 +2429,39 @@ export default function ArmenianCourse() {
   const { progress, status, save } = useProgress();
   const [view, setView] = useState({ name: "home" });
   const [level, setLevel] = useState(1);
+  const [tier, setTier] = useState("A0");
+  const [tierMenu, setTierMenu] = useState(null);   // where the open dropdown sits, or null when closed
+  const tierBtn = React.useRef(null);
+
+  // Keep the dropdown on the CEFR level of whatever unit is open.
+  useEffect(() => {
+    const lv = LEVELS.find((l) => l.n === level);
+    if (lv) setTier(lv.tier);
+  }, [level]);
+
+  // Close the dropdown on a click elsewhere or on Escape.
+  useEffect(() => {
+    if (!tierMenu) return;
+    const close = (e) => {
+      if (e.type === "keydown" ? e.key === "Escape" : !e.target.closest(".hy-tiermenu, .hy-tierbtn")) setTierMenu(null);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", close); };
+  }, [tierMenu]);
+
+  const toggleTierMenu = () => {
+    if (tierMenu) return setTierMenu(null);
+    const r = tierBtn.current.getBoundingClientRect();
+    setTierMenu({ top: r.bottom + 6, left: Math.max(8, Math.min(r.left, window.innerWidth - 278)) });
+  };
+
+  const chooseTier = (t) => {
+    setTierMenu(null);
+    setTier(t);
+    const first = LEVELS.find((l) => l.tier === t);
+    if (first) setLevel(first.n);
+  };
 
   useEffect(() => {
     const id = "hy-fonts";
@@ -2469,13 +2530,19 @@ export default function ArmenianCourse() {
       <div className="hy-shell">
         {!inLesson && (
           <nav className="hy-rail" aria-label="Levels">
-            {LEVELS.map((L, li) => {
+            <button ref={tierBtn} className="hy-tierbtn" onClick={toggleTierMenu}
+              aria-haspopup="menu" aria-expanded={!!tierMenu} aria-label={`CEFR level ${tier}, choose another`}>
+              <span className="hy-tierid">{tier}</span>
+              <span className="hy-tiername">{TIERS.find((t) => t.id === tier).name}</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: "auto", transform: tierMenu ? "rotate(180deg)" : "none" }}>
+                <path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke={C.gold} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {LEVELS.filter((L) => L.tier === tier).map((L) => {
               const doneCount = L.lessons.filter((x) => progress.lessons[x.id]?.done).length;
               const complete = L.lessons.length > 0 && doneCount === L.lessons.length;
-              const newTier = li === 0 || LEVELS[li - 1].tier !== L.tier;
               return (
                 <React.Fragment key={L.n}>
-                {newTier && <div className="hy-railgroup">{L.tier}</div>}
                 <button className="hy-railitem hy-raillevel" data-on={level === L.n} data-done={complete} onClick={() => setLevel(L.n)}
                   aria-label={`${L.tag}, ${L.name}${complete ? ", complete" : ""}`}>
                   <span className="hy-railnum" aria-hidden="true">{L.short}</span>
@@ -2520,6 +2587,22 @@ export default function ArmenianCourse() {
               </div>
             </button>
           </nav>
+        )}
+        {tierMenu && !inLesson && (
+          <div className="hy-tiermenu" role="menu" aria-label="CEFR levels" style={{ top: tierMenu.top, left: tierMenu.left }}>
+            {TIERS.map((t) => {
+              const units = LEVELS.filter((l) => l.tier === t.id).length;
+              return (
+                <button key={t.id} role="menuitem" className="hy-tieropt" disabled={!units}
+                  aria-current={t.id === tier} onClick={() => chooseTier(t.id)}>
+                  <span><span className="hy-tierid">{t.id}</span> <span style={{ marginLeft: 6 }}>{t.name}</span></span>
+                  <span style={{ fontSize: 12, color: C.muted }}>
+                    {!units ? "coming soon" : t.id === "A0" ? `${units} levels` : `${units} unit${units === 1 ? "" : "s"}`}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         )}
         <main className="hy-main">{body}</main>
       </div>
