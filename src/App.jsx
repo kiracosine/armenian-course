@@ -25,7 +25,8 @@ const LEGACY_KEY = "armenian:level1:progress";
 /*  Content                                                            */
 /*                                                                     */
 /*  Naming: domains (A0 to C2) hold units, units hold chapters, and    */
-/*  each start on a chapter is one lesson.                             */
+/*  chapters hold lessons. An A0 chapter is one lesson; an A1 chapter  */
+/*  is 10 lessons of 10 words.                                         */
 /*                                                                     */
 /*  Chapter 1-1 teaches a core of five vowels plus ս and ր. Every later*/
 /*  chapter's words are spellable from that core plus its own new      */
@@ -39,8 +40,12 @@ const aside = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex),
 const glyph = (x) => (x.solo ? x.lo : x.u);
 const pair = (x) => (x.solo ? x.lo : `${x.u} ${x.lo}`);
 
-// A chapter: a group of words inside a unit. Each time a learner taps start on it, they do one lesson.
+// Domains (A0 to C2) hold units; units hold chapters; chapters hold lessons; lessons hold words.
+// An A0 chapter is a single lesson made of its own words: chapter(id, title, note, words).
+// From A1 on, a chapter lists its lessons: chapterOf(id, title, note, [lesson(...), ...]).
 const chapter = (id, title, note, items) => ({ id, title, note, items });
+const lesson = (id, title, note, items) => ({ id, title, note, items });
+const chapterOf = (id, title, note, lessons) => ({ id, title, note, lessons });
 const it = (hy, rom, en) => ({ hy, rom, en });
 
 const LETTER_CHAPTERS = [
@@ -617,83 +622,88 @@ const UNITS = [
         it("Ամեն ինչ մաքուր է", "Amen inch makur e", "Everything is clean")
       ]),
     ] },
-  /* A1 to C2: the CEFR course. Each unit is 10 chapters of 10 words, none repeated from A0. */
+  /* A1 to C2: the CEFR course. In A1 every chapter is 10 lessons of 10 words, none repeated from A0.
+     A1 will have 12 chapters. */
   { n: 11, domain: "A1", short: 1, tag: "A1 · Unit 1", name: "Greetings, pronouns and glue words", blurb: "The small words that hold every sentence together: who, whose, and, but, because.",
     topics: ["People words", "Mine and yours", "More questions"], chapters: [
-      chapter("A1.1-1", "People words", "The rest of the personal pronouns, and a few forms built from them.", [
+     chapterOf("A1.1", "Greetings, pronouns and glue words", "The small words that hold every sentence together: who, whose, and, but, because.", [
+      lesson("A1.1-1", "People words", "The rest of the personal pronouns, and a few forms built from them.", [
         it("դու", "du", "you"), it("մենք", "menk", "we"),
         it("դուք", "duk", "you (plural, polite)"), it("նրանք", "nrank", "they"),
         it("մեզ", "mez", "to us"), it("ձեզ", "dzez", "to you (plural)"),
         it("ինքը", "inkə", "he himself, she herself"), it("ինքս", "inks", "I myself"),
         it("իրենք", "irenk", "they themselves"), it("նրանից", "nranits", "from him, from her")
       ]),
-      chapter("A1.1-2", "Mine and yours", "Add -ը to my, your and our to say mine, yours and ours.", [
+      lesson("A1.1-2", "Mine and yours", "Add -ը to my, your and our to say mine, yours and ours.", [
         it("իմը", "imə", "mine"), it("քոնը", "konə", "yours"),
         it("նրանը", "nranə", "his, hers"), it("մերը", "merə", "ours"),
         it("ձերը", "dzerə", "yours (plural)"), it("նրանցը", "nrantsə", "theirs"),
         it("իրենց", "irents", "their own"), it("ինձ հետ", "indz het", "with me"),
         it("քեզ հետ", "kez het", "with you"), it("մեզ հետ", "mez het", "with us")
       ]),
-      chapter("A1.1-3", "More questions", "Question words for which, what kind, and since when.", [
+      lesson("A1.1-3", "More questions", "Question words for which, what kind, and since when.", [
         it("որտեղի՞ց", "vorteghits", "from where"), it("ո՞րը", "vorə", "which one"),
         it("ինչպիսի՞", "inchpisi", "what kind of"), it("ինչքա՞ն", "inchkan", "how much (everyday)"),
         it("ինչո՞վ", "inchov", "with what"), it("ինչի՞ մասին", "inchi masin", "about what"),
         it("ում", "um", "whom, whose"), it("երբվանի՞ց", "yerbvanits", "since when"),
         it("ինչու՞ ոչ", "inchu voch", "why not"), it("Ի՞նչ է պատահել", "Inch e patahel", "What happened?")
       ]),
-      chapter("A1.1-4", "Joining words", "And, but, or, because: the words that link two ideas.", [
+      lesson("A1.1-4", "Joining words", "And, but, or, because: the words that link two ideas.", [
         it("բայց", "bayts", "but"), it("կամ", "kam", "or"),
         it("որովհետև", "vorovhetev", "because"), it("եթե", "yete", "if"),
         it("ապա", "apa", "then, next"), it("նաև", "nayev", "also"),
         it("սակայն", "sakayn", "however"), it("թե", "te", "whether"),
         it("ու", "u", "and (casual)"), it("իսկ", "isk", "and, while (contrast)")
       ]),
-      chapter("A1.1-5", "Linking longer ideas", "Words for so that, although, until, and for example.", [
+      lesson("A1.1-5", "Linking longer ideas", "Words for so that, although, until, and for example.", [
         it("որպեսզի", "vorpeszi", "so that"), it("քանի որ", "kani vor", "since, because"),
         it("չնայած", "chnayats", "although"), it("մինչև", "minchev", "until"),
         it("թեև", "tev", "even though"), it("այնպես որ", "aynpes vor", "so, so that"),
         it("ուստի", "usti", "therefore"), it("այսինքն", "aysink", "that is, in other words"),
         it("օրինակ", "orinak", "for example"), it("ընդհակառակը", "əndhakaṙakə", "on the contrary")
       ]),
-      chapter("A1.1-6", "Little helper words", "Short words that add already, still, only or even.", [
+      lesson("A1.1-6", "Little helper words", "Short words that add already, still, only or even.", [
         it("էլ", "el", "too, also"), it("էլի", "eli", "again; come on"),
         it("դեռ", "deṙ", "still, yet"), it("արդեն", "arden", "already"),
         it("միայն", "miayn", "only"), it("նույնիսկ", "nuynisk", "even"),
         it("գուցե", "gutse", "maybe"), it("հենց", "hents", "just, exactly"),
         it("ահա", "aha", "here it is"), it("հա", "ha", "yeah")
       ]),
-      chapter("A1.1-7", "Everyday greetings", "Friendly openers and replies for people you know.", [
+      lesson("A1.1-7", "Everyday greetings", "Friendly openers and replies for people you know.", [
         it("բարի օր", "bari or", "good day"), it("Ինչպե՞ս ես", "Inchpes yes", "How are you? (to a friend)"),
         it("Ի՞նչ կա", "Inch ka", "What's up?"), it("Ի՞նչ նորություն կա", "Inch norutyun ka", "What's new?"),
         it("մերսի", "mersi", "thanks (casual)"), it("շատ շնորհակալ եմ", "shat shnorhakal yem", "thank you very much"),
         it("չարժե", "charzhe", "don't mention it"), it("Ամեն ինչ լավ է", "Amen inch lav e", "Everything is fine"),
         it("կհանդիպենք", "khandipenk", "see you later"), it("բարի ճանապարհ", "bari chanaparh", "have a good trip")
       ]),
-      chapter("A1.1-8", "Everyone and no one", "Words for all, each, some, and nobody.", [
+      lesson("A1.1-8", "Everyone and no one", "Words for all, each, some, and nobody.", [
         it("մեկը", "mekə", "someone, one of them"), it("ոչ ոք", "voch vok", "nobody"),
         it("ամեն ինչ", "amen inch", "everything"), it("բոլորը", "bolorə", "everyone"),
         it("ամեն", "amen", "every"), it("յուրաքանչյուր", "yurakanchyur", "each"),
         it("մյուսը", "myusə", "the other one"), it("նույն", "nuyn", "same"),
         it("ամբողջ", "amboghj", "whole"), it("որոշ", "vorosh", "some, certain")
       ]),
-      chapter("A1.1-9", "Saying yes and no", "Answers that are stronger or softer than a plain yes or no.", [
+      lesson("A1.1-9", "Saying yes and no", "Answers that are stronger or softer than a plain yes or no.", [
         it("անպայման", "anpayman", "definitely"), it("անշուշտ", "anshusht", "certainly"),
         it("իրոք", "irok", "really, indeed"), it("իսկապե՞ս", "iskapes", "Really?"),
         it("համաձայն եմ", "hamadzayn yem", "I agree"), it("համաձայն չեմ", "hamadzayn chem", "I disagree"),
         it("ոչ մի դեպքում", "voch mi depkum", "no way"), it("իհարկե ոչ", "iharke voch", "of course not"),
         it("հնարավոր է", "hnaravor e", "it is possible"), it("չեմ կարծում", "chem kartsum", "I don't think so")
       ]),
-      chapter("A1.1-10", "With, about, for", "Armenian puts most of these after the word they go with.", [
+      lesson("A1.1-10", "With, about, for", "Armenian puts most of these after the word they go with.", [
         it("հետ", "het", "with"), it("մասին", "masin", "about"),
         it("համար", "hamar", "for"), it("առանց", "aṙants", "without"),
         it("մոտ", "mot", "near, at someone's place"), it("պես", "pes", "like"),
         it("դեպի", "depi", "toward"), it("փոխարեն", "pokharen", "instead of"),
         it("ընթացքում", "əntatskum", "during"), it("շնորհիվ", "shnorhiv", "thanks to")
       ]),
+     ]),
     ] },
 ];
 // Units 1 to 10 make up domain A0. Fill in the labels the unit bar shows for them.
 UNITS.forEach((u) => { u.domain = u.domain || "A0"; u.short = u.short || u.n; u.tag = u.tag || `Unit ${u.n}`; });
+// An A0 chapter is its own single lesson.
+UNITS.forEach((u) => u.chapters.forEach((c) => { if (!c.lessons) c.lessons = [c]; }));
 
 // The domains (CEFR levels) in the unit bar's dropdown. A domain with no units yet shows as coming soon.
 const DOMAINS = [
@@ -1228,13 +1238,15 @@ const dayGap = (a, b) => (a ? Math.round((new Date(b) - new Date(a)) / 86400000)
 /*  again next time.                                                   */
 /* ------------------------------------------------------------------ */
 
-const NEW_PER_LESSON = 5;
+const NEW_PER_LESSON = 10;
 const PRACTICE_PER_LESSON = 4;
 const REVIEW_PER_LESSON = 3;
 const MASTERED = 3;
 
 const wordKey = (x) => `${x.hy}|${x.en}`;
-const wordsOf = (chapter) => chapter.words || chapter.items;
+// The words of a lesson, or of a whole chapter (all its lessons).
+const wordsOf = (x) => x.words || x.items || (x.lessons ? x.lessons.flatMap(wordsOf) : []);
+const chapterDone = (progress, c) => c.lessons.every((l) => progress.lessons[l.id]?.done);
 const stageOf = (words, x) => (words && words[wordKey(x)]) || 0;
 const isSpellable = (x) => /^[ա-և]+$/.test(x.hy) && splitWord(x.hy).length <= 7;
 const fullNote = (x) => `${x.hy} · ${x.rom} · ${x.en}`;
@@ -1244,11 +1256,14 @@ function nextStage(stage, rung, ok) {
   return rung === stage ? Math.min(MASTERED, stage + 1) : stage;
 }
 
-// One lesson: a sitting in chapter number idx of a unit (new words, practice, review).
-function buildLesson(unitIdx, idx, words = {}, doneChapters = {}) {
+// The plan for one sitting of a lesson: its word cards, then questions (new words, practice, review).
+// idx is the chapter's place in the unit; li is the lesson's place in the chapter.
+function buildLesson(unitIdx, idx, li, words = {}, doneLessons = {}) {
   const unit = UNITS[unitIdx];
   const chapter = unit.chapters[idx];
-  const own = wordsOf(chapter);
+  const lesson = chapter.lessons[li];
+  const own = wordsOf(lesson);
+  const before = [...unit.chapters.slice(0, idx).flatMap(wordsOf), ...chapter.lessons.slice(0, li).flatMap(wordsOf)];
 
   // Which words this lesson teaches, practises and reviews.
   const fresh = shuffle(own.filter((x) => stageOf(words, x) === 0)).slice(0, NEW_PER_LESSON);
@@ -1257,14 +1272,13 @@ function buildLesson(unitIdx, idx, words = {}, doneChapters = {}) {
     .slice(0, PRACTICE_PER_LESSON + NEW_PER_LESSON - fresh.length);
   const taken = new Set([...fresh, ...practice].map(wordKey));
   const review = pickN(
-    unit.chapters.slice(0, idx).flatMap(wordsOf)
-      .filter((x) => stageOf(words, x) > 0 && !taken.has(wordKey(x))),
+    before.filter((x) => stageOf(words, x) > 0 && !taken.has(wordKey(x))),
     REVIEW_PER_LESSON,
   );
 
   // Wrong options come from words the learner has already seen, when there are enough.
   const freshKeys = new Set(fresh.map(wordKey));
-  const pool = unit.chapters.slice(0, idx + 1).flatMap(wordsOf);
+  const pool = [...before, ...own];
   const seen = pool.filter((x) => stageOf(words, x) > 0 || freshKeys.has(wordKey(x)));
   const wrongOptions = (x, keyFn) => {
     const clash = (o) => o.en === x.en || o.hy === x.hy;
@@ -1273,7 +1287,7 @@ function buildLesson(unitIdx, idx, words = {}, doneChapters = {}) {
   };
 
   const tiles = [...new Set(
-    chapter.letters
+    lesson.letters
       ? LETTER_CHAPTERS.slice(0, idx + 1).flatMap((l) => l.letters).map((x) => x.lo)
       : [...ALPHABET, ...EXTRAS].map((x) => x.lo),
   )];
@@ -1313,7 +1327,7 @@ function buildLesson(unitIdx, idx, words = {}, doneChapters = {}) {
   // Letter questions, for unit 1 (the letters) only.
   let letterQs = [];
   let letterReview = [];
-  if (chapter.letters) {
+  if (lesson.letters) {
     const bank = LETTER_CHAPTERS.slice(0, idx + 1).flatMap((l) => l.letters);
     const letterQ = (L, kind) => {
       if (kind === "sound2glyph") {
@@ -1340,16 +1354,16 @@ function buildLesson(unitIdx, idx, words = {}, doneChapters = {}) {
       };
     };
     const kinds = ["glyph2sound", "sound2glyph", "case"];
-    letterQs = chapter.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
+    letterQs = lesson.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
     if (idx > 0) {
       // Only review letters from chapters the learner has finished; any chapter can be opened first.
-      letterReview = pickN(LETTER_CHAPTERS.slice(0, idx).filter((l) => doneChapters[l.id]?.done).flatMap((l) => l.letters), 2)
+      letterReview = pickN(LETTER_CHAPTERS.slice(0, idx).filter((l) => doneLessons[l.id]?.done).flatMap((l) => l.letters), 2)
         .map((L) => letterQ(L, Math.random() < 0.5 ? "glyph2sound" : "sound2glyph"));
     }
   }
 
   const cards = [
-    ...(chapter.letters || []).map((x) => ({ kind: "letter", ...x })),
+    ...(lesson.letters || []).map((x) => ({ kind: "letter", ...x })),
     ...fresh.map((x, k) => ({ kind: "word", ...x, firstWord: k === 0 })),
   ];
 
@@ -1376,9 +1390,9 @@ const KNOWN = 2;   // answered from the Armenian alone, without the transliterat
 
 const BANK = (() => {
   const first = new Map();
-  UNITS.forEach((u) => u.chapters.forEach((l) => wordsOf(l).forEach((x) => {
+  UNITS.forEach((u) => u.chapters.forEach((c) => c.lessons.forEach((l) => wordsOf(l).forEach((x) => {
     if (!first.has(wordKey(x))) first.set(wordKey(x), { ...x, chapter: l.id });
-  })));
+  }))));
   return PARTS.map((part) => {
     const rows = new Map();
     for (const k of part.words) {
@@ -1400,7 +1414,7 @@ const knownCount = (words) => BANK.reduce((n, p) => n + p.rows.filter((r) => row
 /*  Progress                                                           */
 /* ------------------------------------------------------------------ */
 
-const emptyProgress = () => ({ v: 3, xp: 0, chapters: {}, words: {}, streak: 0, lastDay: null });
+const emptyProgress = () => ({ v: 4, xp: 0, lessons: {}, words: {}, streak: 0, lastDay: null });
 
 function readStored() {
   try {
@@ -1417,8 +1431,10 @@ function useProgress() {
 
   useEffect(() => {
     const stored = readStored();
-    // Saves from before the Domain / Unit / Chapter / Lesson naming kept finished chapters under "lessons".
-    if (stored && stored.lessons && !stored.chapters) { stored.chapters = stored.lessons; delete stored.lessons; stored.v = 3; }
+    // Finished lessons are saved under "lessons", by lesson id. For a short while they were saved
+    // under "chapters"; an A0 chapter's single lesson shares its id, so those carry straight over.
+    if (stored && stored.chapters && !stored.lessons) { stored.lessons = stored.chapters; delete stored.chapters; }
+    if (stored) stored.v = 4;
     setProgress({ ...emptyProgress(), ...(stored || {}) });
     let usable = false;
     try {
@@ -1666,40 +1682,71 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
 
 function ChapterList({ unit, progress, onStart }) {
   const chapters = unit.chapters;
-  const firstOpen = chapters.findIndex((L) => !progress.chapters[L.id]?.done);
+  const firstOpen = chapters.findIndex((c) => !chapterDone(progress, c));
+  const [open, setOpen] = useState(firstOpen < 0 ? 0 : firstOpen);   // the chapter showing its lessons
+  useEffect(() => { setOpen(firstOpen < 0 ? 0 : firstOpen); }, [unit.n]);
+
+  const preview = (x, done) => (
+    <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 8, fontFamily: ARM, fontSize: x.letters ? 24 : 19, lineHeight: 1.35, color: done ? C.gold : C.parch }}>
+      {x.letters
+        ? x.letters.map((y) => <span key={y.u}>{glyph(y)}</span>)
+        : wordsOf(x).slice(0, 5).map((y) => <span key={y.hy}>{y.hy}</span>)}
+    </div>
+  );
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {chapters.map((L, i) => {
-        const rec = progress.chapters[L.id];
-        const done = !!rec?.done;
-        const locked = false;   // every chapter is open; learners can move freely
-        const next = i === firstOpen;
-        const letters = L.letters;
+      {chapters.map((ch, i) => {
+        const done = chapterDone(progress, ch);
+        const lessonsDone = ch.lessons.filter((l) => progress.lessons[l.id]?.done).length;
+        const isOpen = open === i;
+        const words = wordsOf(ch);
+        const letters = ch.letters;
         return (
-          <button key={L.id} className="hy-btn" onClick={() => !locked && onStart(i)} disabled={locked}
-            style={{
-              textAlign: "left", borderRadius: 12, padding: "16px", background: C.ink2,
-              border: `1px solid ${next ? C.apricot : done ? "rgba(216,162,43,0.35)" : C.line}`,
-              opacity: locked ? 0.45 : 1, cursor: locked ? "not-allowed" : "pointer",
-            }}>
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
-              <span style={{ fontFamily: UI, fontSize: 14, color: C.parch, fontWeight: 600 }}>
-                Chapter {i + 1} · {L.title}
-              </span>
-              {done ? <Stars n={rec.stars} />
-                : locked ? <span style={{ fontFamily: UI, fontSize: 12, color: C.muted }}>locked</span>
-                : <span style={{ fontFamily: UI, fontSize: 12, color: C.apricot }}>start</span>}
-            </div>
-            <div style={{ marginTop: 12, display: "flex", flexWrap: "wrap", gap: 8, fontFamily: ARM, fontSize: letters ? 24 : 19, lineHeight: 1.35, color: done ? C.gold : locked ? C.line : C.parch }}>
-              {letters
-                ? letters.map((x) => <span key={x.u}>{glyph(x)}</span>)
-                : L.items.slice(0, 5).map((x) => <span key={x.hy}>{x.hy}</span>)}
-            </div>
-            <div style={{ marginTop: 8, fontFamily: UI, fontSize: 12, color: C.muted }}>
-              {(letters ? `${letters.filter((x) => !x.uncounted).length} letter${letters.filter((x) => !x.uncounted).length === 1 ? "" : "s"} · ` : "") +
-                `${wordsOf(L).filter((x) => stageOf(progress.words, x) > 0).length} of ${wordsOf(L).length} words introduced`}
-            </div>
-          </button>
+          <div key={ch.id} style={{
+            borderRadius: 12, background: C.ink2,
+            border: `1px solid ${isOpen ? C.apricot : done ? "rgba(216,162,43,0.35)" : C.line}`,
+          }}>
+            <button className="hy-btn" onClick={() => setOpen(isOpen ? -1 : i)} aria-expanded={isOpen}
+              style={{ width: "100%", textAlign: "left", background: "transparent", border: "none", padding: "16px", cursor: "pointer", color: C.parch }}>
+              <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+                <span style={{ fontFamily: UI, fontSize: 14, color: C.parch, fontWeight: 600 }}>
+                  Chapter {i + 1} · {ch.title}
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: UI, fontSize: 12, color: done ? C.gold : C.muted, flex: "0 0 auto" }}>
+                  {done ? "Complete" : `${lessonsDone} of ${ch.lessons.length} lesson${ch.lessons.length === 1 ? "" : "s"}`}
+                  <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ transform: isOpen ? "rotate(180deg)" : "none" }}>
+                    <path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke={C.gold} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              </div>
+              {!isOpen && preview(ch, done)}
+              <div style={{ marginTop: 8, fontFamily: UI, fontSize: 12, color: C.muted }}>
+                {(letters ? `${letters.filter((x) => !x.uncounted).length} letter${letters.filter((x) => !x.uncounted).length === 1 ? "" : "s"} · ` : "") +
+                  `${words.filter((x) => stageOf(progress.words, x) > 0).length} of ${words.length} words introduced`}
+              </div>
+            </button>
+            {isOpen && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: "0 12px 12px" }}>
+                {ch.lessons.map((ls, k) => {
+                  const rec = progress.lessons[ls.id];
+                  return (
+                    <button key={ls.id} className="hy-btn" onClick={() => onStart(i, k)}
+                      style={{
+                        textAlign: "left", borderRadius: 10, padding: "12px 14px", background: C.ink3, cursor: "pointer", color: C.parch,
+                        border: `1px solid ${rec?.done ? "rgba(216,162,43,0.35)" : C.line}`,
+                      }}>
+                      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
+                        <span style={{ fontFamily: UI, fontSize: 14, fontWeight: 600 }}>Lesson {k + 1} · {ls.title}</span>
+                        {rec?.done ? <Stars n={rec.stars} /> : <span style={{ fontFamily: UI, fontSize: 12, color: C.apricot }}>start</span>}
+                      </div>
+                      {preview(ls, rec?.done)}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         );
       })}
     </div>
@@ -1710,7 +1757,7 @@ function Home({ progress, onStart, storageWarning, unitN }) {
   const learnedIds = useMemo(() => {
     const s = new Set();
     LETTER_CHAPTERS.forEach((L) => {
-      if (progress.chapters[L.id]?.done) L.letters.forEach((x) => s.add(x.u));
+      if (progress.lessons[L.id]?.done) L.letters.forEach((x) => s.add(x.u));
     });
     return s;
   }, [progress]);
@@ -2132,12 +2179,12 @@ function StoryReader({ progress, save }) {
 /*  Study                                                              */
 /* ------------------------------------------------------------------ */
 
-function Study({ chapter, cards, onDone, onQuit }) {
+function Study({ lesson, cards, onDone, onQuit }) {
   const [i, setI] = useState(0);
   const c = cards[i];
   const last = i === cards.length - 1;
   const next = cards[i + 1];
-  const newLetters = new Set((chapter.letters || []).map((x) => x.lo));
+  const newLetters = new Set((lesson.letters || []).map((x) => x.lo));
   const label = last ? "Start practice"
     : c.kind === "letter" && next.kind === "word" ? "On to the words"
     : c.kind === "letter" ? "Next letter" : "Next word";
@@ -2177,13 +2224,13 @@ function Study({ chapter, cards, onDone, onQuit }) {
           </>
         ) : (
           <>
-            {c.firstWord && chapter.letters && (
+            {c.firstWord && lesson.letters && (
               <p style={{ margin: "0 0 26px", fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>
                 Words you can read with these letters. The new letters are in gold.
               </p>
             )}
             <div style={{ fontFamily: ARM, fontSize: c.hy.length > 12 ? 34 : 50, lineHeight: 1.25, maxWidth: 480 }}>
-              {chapter.letters
+              {lesson.letters
                 ? splitWord(c.hy).map((ch, k) => (
                     <span key={k} style={{ color: newLetters.has(ch) ? C.gold : C.parch }}>{ch}</span>
                   ))
@@ -2192,9 +2239,9 @@ function Study({ chapter, cards, onDone, onQuit }) {
             <div style={{ marginTop: 12, fontFamily: UI, fontSize: 20, color: C.apricot }}>{c.rom}</div>
             <div style={{ marginTop: 4, fontFamily: UI, fontSize: 18, color: C.parch }}>{c.en}</div>
             <div style={{ marginTop: 18 }}><SpeakButton hy={c.hy} /></div>
-            {i === 0 && chapter.note && (
+            {i === 0 && lesson.note && (
               <p style={{ marginTop: 26, fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 400, lineHeight: 1.6 }}>
-                {chapter.note}
+                {lesson.note}
               </p>
             )}
           </>
@@ -2367,7 +2414,7 @@ function Quiz({ questions, onFinish, onQuit }) {
 /*  Result                                                             */
 /* ------------------------------------------------------------------ */
 
-function Result({ chapter, lesson, result, stars, xpGain, onRetry, onHome }) {
+function Result({ lesson, plan, result, stars, xpGain, onRetry, onHome }) {
   const wrap = { maxWidth: 460, margin: "0 auto", padding: "64px 20px", textAlign: "center", width: "100%", boxSizing: "border-box" };
 
   if (result.failed) {
@@ -2376,7 +2423,7 @@ function Result({ chapter, lesson, result, stars, xpGain, onRetry, onHome }) {
         <div style={{ display: "flex", justifyContent: "center" }}><Hearts n={0} /></div>
         <h2 style={{ marginTop: 18, fontFamily: UI, fontSize: 22, color: C.parch, fontWeight: 700 }}>Out of hearts</h2>
         <p style={{ marginTop: 8, fontFamily: UI, fontSize: 15, color: C.muted, lineHeight: 1.6 }}>
-          The chapter “{chapter.title}” stays where it is. Try again: the cards come first, then the questions.
+          The lesson “{lesson.title}” stays where it is. Try again: the cards come first, then the questions.
         </p>
         <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 12 }}>
           <Button full onClick={onRetry}>Try this lesson again</Button>
@@ -2390,26 +2437,26 @@ function Result({ chapter, lesson, result, stars, xpGain, onRetry, onHome }) {
     <div style={wrap}>
       <div style={{ display: "flex", justifyContent: "center" }}><Stars n={stars} size={38} /></div>
       <h2 style={{ marginTop: 24, fontFamily: UI, fontSize: 22, color: C.parch, fontWeight: 700 }}>
-        “{chapter.title}” complete
+        “{lesson.title}” complete
       </h2>
       <p style={{ marginTop: 8, fontFamily: UI, fontSize: 15, color: C.muted }}>
         {result.mistakes === 0 ? "No mistakes." : `${result.mistakes} mistake${result.mistakes > 1 ? "s" : ""}.`} +{xpGain} experience.
       </p>
-      {chapter.letters && (
+      {lesson.letters && (
         <>
           <div style={{ marginTop: 32, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, fontFamily: ARM, fontSize: 34, color: C.gold }}>
-            {chapter.letters.map((x) => <span key={x.u}>{glyph(x)}</span>)}
+            {lesson.letters.map((x) => <span key={x.u}>{glyph(x)}</span>)}
           </div>
           <p style={{ marginTop: 12, fontFamily: UI, fontSize: 13, color: C.muted }}>now lit on your board</p>
         </>
       )}
-      {lesson.fresh.length > 0 && (
+      {plan.fresh.length > 0 && (
         <>
           <div style={{ marginTop: 28, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px 14px", fontFamily: ARM, fontSize: 22, color: C.parch }}>
-            {lesson.fresh.map((x) => <span key={x.hy}>{x.hy}</span>)}
+            {plan.fresh.map((x) => <span key={x.hy}>{x.hy}</span>)}
           </div>
           <p style={{ marginTop: 10, fontFamily: UI, fontSize: 13, color: C.muted }}>
-            {lesson.fresh.length} new {lesson.fresh.length === 1 ? "word" : "words"} this time
+            {plan.fresh.length} new {plan.fresh.length === 1 ? "word" : "words"} this time
           </p>
         </>
       )}
@@ -2473,19 +2520,19 @@ export default function ArmenianCourse() {
     document.head.appendChild(link);
   }, []);
 
-  // unitN: the unit's number. idx: which chapter in it.
-  const startLesson = (unitN, idx) => {
-    const lesson = buildLesson(unitN - 1, idx, progress.words, progress.chapters);
-    setView({ name: lesson.cards.length ? "study" : "quiz", unitN, idx, lesson });
+  // unitN: the unit's number. idx: which chapter in it. li: which lesson in that chapter.
+  const startLesson = (unitN, idx, li) => {
+    const plan = buildLesson(unitN - 1, idx, li, progress.words, progress.lessons);
+    setView({ name: plan.cards.length ? "study" : "quiz", unitN, idx, li, plan });
   };
 
-  const finish = async (unitN, idx, result) => {
-    const chapter = UNITS[unitN - 1].chapters[idx];
+  const finish = async (unitN, idx, li, result) => {
+    const lesson = UNITS[unitN - 1].chapters[idx].lessons[li];
     let stars = 0, xpGain = 0;
     if (!result.failed) {
       stars = result.mistakes === 0 ? 3 : result.mistakes <= 2 ? 2 : 1;
       xpGain = 10 + (result.mistakes === 0 ? 5 : 0);
-      const prev = progress.chapters[chapter.id];
+      const prev = progress.lessons[lesson.id];
       const today = todayKey();
       const gap = dayGap(progress.lastDay, today);
       const streak = gap === 0 ? progress.streak || 1 : gap === 1 ? (progress.streak || 0) + 1 : 1;
@@ -2496,10 +2543,10 @@ export default function ArmenianCourse() {
         words,
         xp: progress.xp + xpGain,
         streak, lastDay: today,
-        chapters: { ...progress.chapters, [chapter.id]: { done: true, stars: Math.max(stars, prev?.stars || 0), mistakes: result.mistakes } },
+        lessons: { ...progress.lessons, [lesson.id]: { done: true, stars: Math.max(stars, prev?.stars || 0), mistakes: result.mistakes } },
       });
     }
-    setView({ name: "result", unitN, idx, lesson: view.lesson, result, stars, xpGain });
+    setView({ name: "result", unitN, idx, li, plan: view.plan, result, stars, xpGain });
   };
 
   if (!progress) {
@@ -2515,14 +2562,14 @@ export default function ArmenianCourse() {
 
   let body;
   if (view.name === "study") {
-    body = <Study chapter={UNITS[view.unitN - 1].chapters[view.idx]} cards={view.lesson.cards} onQuit={() => setView({ name: "home" })} onDone={() => setView({ ...view, name: "quiz" })} />;
+    body = <Study lesson={UNITS[view.unitN - 1].chapters[view.idx].lessons[view.li]} cards={view.plan.cards} onQuit={() => setView({ name: "home" })} onDone={() => setView({ ...view, name: "quiz" })} />;
   } else if (view.name === "quiz") {
-    body = <Quiz questions={view.lesson.questions} onQuit={() => setView({ name: "home" })} onFinish={(r) => finish(view.unitN, view.idx, r)} />;
+    body = <Quiz questions={view.plan.questions} onQuit={() => setView({ name: "home" })} onFinish={(r) => finish(view.unitN, view.idx, view.li, r)} />;
   } else if (view.name === "result") {
-    body = <Result chapter={UNITS[view.unitN - 1].chapters[view.idx]} lesson={view.lesson} result={view.result} stars={view.stars} xpGain={view.xpGain}
-      onRetry={() => startLesson(view.unitN, view.idx)} onHome={() => setView({ name: "home" })} />;
+    body = <Result lesson={UNITS[view.unitN - 1].chapters[view.idx].lessons[view.li]} plan={view.plan} result={view.result} stars={view.stars} xpGain={view.xpGain}
+      onRetry={() => startLesson(view.unitN, view.idx, view.li)} onHome={() => setView({ name: "home" })} />;
   } else {
-    body = page === "stories" ? <StoryReader progress={progress} save={save} /> : page === "pos" ? <WordBank words={progress.words} /> : <Home progress={progress} onStart={(idx) => startLesson(page, idx)} storageWarning={status === "memory"} unitN={page} />;
+    body = page === "stories" ? <StoryReader progress={progress} save={save} /> : page === "pos" ? <WordBank words={progress.words} /> : <Home progress={progress} onStart={(idx, li) => startLesson(page, idx, li)} storageWarning={status === "memory"} unitN={page} />;
   }
 
   return (
@@ -2543,7 +2590,7 @@ export default function ArmenianCourse() {
               // On phones: a card for the open unit, beside the numbered circles.
               const cur = UNITS.find((u) => u.n === page && u.domain === domain);
               if (!cur) return null;
-              const done = cur.chapters.filter((x) => progress.chapters[x.id]?.done).length;
+              const done = cur.chapters.filter((c) => chapterDone(progress, c)).length;
               return (
                 <div className="hy-railcurrent" aria-hidden="true">
                   <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
@@ -2557,7 +2604,7 @@ export default function ArmenianCourse() {
             })()}
             <div className="hy-railgrid">
             {UNITS.filter((U) => U.domain === domain).map((U) => {
-              const doneCount = U.chapters.filter((x) => progress.chapters[x.id]?.done).length;
+              const doneCount = U.chapters.filter((c) => chapterDone(progress, c)).length;
               const complete = U.chapters.length > 0 && doneCount === U.chapters.length;
               return (
                 <React.Fragment key={U.n}>
