@@ -24,9 +24,12 @@ const LEGACY_KEY = "armenian:level1:progress";
 /* ------------------------------------------------------------------ */
 /*  Content                                                            */
 /*                                                                     */
-/*  Lesson 1-1 teaches a core of five vowels plus ս and ր. Every later */
-/*  lesson's words are spellable from that core plus the lesson's own  */
-/*  new letters — no word ever needs a letter from a different lesson. */
+/*  Naming: domains (A0 to C2) hold units, units hold chapters, and    */
+/*  each start on a chapter is one lesson.                             */
+/*                                                                     */
+/*  Chapter 1-1 teaches a core of five vowels plus ս and ր. Every later*/
+/*  chapter's words are spellable from that core plus its own new      */
+/*  letters — no word ever needs a letter from a different chapter.    */
 /* ------------------------------------------------------------------ */
 
 const w = (hy, rom, en) => ({ hy, rom, en });
@@ -36,10 +39,11 @@ const aside = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex),
 const glyph = (x) => (x.solo ? x.lo : x.u);
 const pair = (x) => (x.solo ? x.lo : `${x.u} ${x.lo}`);
 
-const L = (id, title, note, items) => ({ id, title, note, items });
+// A chapter: a group of words inside a unit. Each time a learner taps start on it, they do one lesson.
+const chapter = (id, title, note, items) => ({ id, title, note, items });
 const it = (hy, rom, en) => ({ hy, rom, en });
 
-const LETTER_LESSONS = [
+const LETTER_CHAPTERS = [
   {
     id: "1-1",
     title: "The core seven",
@@ -218,45 +222,45 @@ const LETTER_LESSONS = [
   },
 ];
 
-const LESSONS = LETTER_LESSONS;
-const ALPHABET = LESSONS.flatMap((L) => L.letters.filter((x) => !x.uncounted));
+const ALPHABET = LETTER_CHAPTERS.flatMap((L) => L.letters.filter((x) => !x.uncounted));
 // Anything marked uncounted is taught but kept off the alphabet count. և now counts as the 39th letter.
-const EXTRAS = LESSONS.flatMap((L) => L.letters.filter((x) => x.uncounted));
+const EXTRAS = LETTER_CHAPTERS.flatMap((L) => L.letters.filter((x) => x.uncounted));
 
-const LEVELS = [
+// Units, grouped into domains (A0 to C2). Each unit holds chapters; each chapter holds words.
+const UNITS = [
   { n: 1, name: "The letters",
-    blurb: "All 39 letters, grouped so that every word a lesson asks you to read is spellable from that lesson plus the core.",
-    topics: ["39 letters, ending with և", "194 words", "Reading short words"], lessons: LETTER_LESSONS },
+    blurb: "All 39 letters, grouped so that every word a chapter asks you to read is spellable from that chapter plus the core.",
+    topics: ["39 letters, ending with և", "194 words", "Reading short words"], chapters: LETTER_CHAPTERS },
   { n: 2, name: "Syllables and stress", blurb: "Turning letters into sound. The rules that decide how a written word is said.",
-    topics: ["Words with ու", "Words with և", "Words that begin with ը"], lessons: [
-      L("2-1", "Words with ու", "ու is two letters but one sound. Read each of these aloud.", [
+    topics: ["Words with ու", "Words with և", "Words that begin with ը"], chapters: [
+      chapter("2-1", "Words with ու", "ու is two letters but one sound. Read each of these aloud.", [
         it("ջուր", "jur", "water"), it("տուն", "tun", "house"), it("մուկ", "muk", "mouse"),
         it("լույս", "luys", "light"), it("քույր", "kuyr", "sister"), it("ձուկ", "dzuk", "fish"),
         it("առու", "aṙu", "stream"), it("մեղու", "meghu", "bee"), it("լեզու", "lezu", "tongue"),
         it("կատու", "katu", "cat"), it("ապուր", "apur", "soup"), it("սուրճ", "surch", "coffee"),
         it("գույն", "guyn", "colour"), it("անուն", "anun", "name"), it("գարուն", "garun", "spring")
       ]),
-      L("2-2", "Words built on և", "Now that you have the ligature, here it is inside longer words.", [
+      chapter("2-2", "Words built on և", "Now that you have the ligature, here it is inside longer words.", [
         it("Երևան", "Yerevan", "Yerevan"), it("արևելք", "arevelk", "east"),
         it("արևմուտք", "arevmutk", "west"), it("արևածագ", "arevatsag", "sunrise"),
         it("անձրևոտ", "andzrevot", "rainy"), it("երևալ", "yereval", "to appear"),
         it("թևավոր", "tevavor", "winged"), it("սևանալ", "sevanal", "to turn black"),
         it("թեթևություն", "tetevutyun", "lightness"), it("արևային", "arevayin", "solar")
       ]),
-      L("2-3", "Words that begin with ը", "ը is the neutral uh. At the start of a word it is always written.", [
+      chapter("2-3", "Words that begin with ը", "ը is the neutral uh. At the start of a word it is always written.", [
         it("ընկեր", "ənker", "friend"), it("ընկույզ", "ənkuyz", "walnut"),
         it("ընտանիք", "əntanik", "family"), it("ընթրիք", "əntrik", "dinner"),
         it("ընդունել", "əndunel", "to accept"), it("ընկնել", "ənknel", "to fall"),
         it("ընտիր", "əntir", "choice"), it("ընդհանուր", "əndhanur", "general"),
         it("ընկերուհի", "ənkeruhi", "girlfriend"), it("ընթացք", "əntatsk", "course")
       ]),
-      L("2-4", "Telling the pairs apart", "Armenian separates puffed and unpuffed consonants. Each pair below differs only in that puff.", [
+      chapter("2-4", "Telling the pairs apart", "Armenian separates puffed and unpuffed consonants. Each pair below differs only in that puff.", [
         it("կաթ", "kat", "milk"), it("քաղաք", "kaghak", "city"), it("տոմս", "toms", "ticket"),
         it("թութ", "tut", "mulberry"), it("պատ", "pat", "wall"), it("փետուր", "petur", "feather"),
         it("ծաղիկ", "tsaghik", "flower"), it("ցանկ", "tsank", "list"), it("ճամփա", "champa", "road"),
         it("չամիչ", "chamich", "raisin"), it("կիթառ", "kitaṙ", "guitar"), it("քիթ", "kit", "nose")
       ]),
-      L("2-5", "Longer words", "Armenian stress falls on the last syllable. Keep the weight at the end.", [
+      chapter("2-5", "Longer words", "Armenian stress falls on the last syllable. Keep the weight at the end.", [
         it("ուսուցիչ", "usutsich", "teacher"), it("աշակերտ", "ashakert", "pupil"),
         it("համալսարան", "hamalsaran", "university"), it("գրադարան", "gradaran", "library"),
         it("հյուրանոց", "hyuranots", "hotel"), it("վերելակ", "verelak", "lift"),
@@ -265,8 +269,8 @@ const LEVELS = [
       ]),
     ] },
   { n: 3, name: "First words", blurb: "A working core of everyday vocabulary, and the first piece of grammar: making things plural.",
-    topics: ["People", "The body", "Food and drink"], lessons: [
-      L("3-1", "People", "The words for the people around you.", [
+    topics: ["People", "The body", "Food and drink"], chapters: [
+      chapter("3-1", "People", "The words for the people around you.", [
         it("մարդ", "mard", "person"), it("կին", "kin", "woman"), it("տղամարդ", "tghamard", "man"),
         it("աղջիկ", "aghjik", "girl"), it("տղա", "tgha", "boy"), it("երեխա", "yerekha", "child"),
         it("մայր", "mayr", "mother"), it("հայր", "hayr", "father"), it("քույր", "kuyr", "sister"),
@@ -274,26 +278,26 @@ const LEVELS = [
         it("ուսուցիչ", "usutsich", "teacher"), it("տատիկ", "tatik", "grandmother"),
         it("պապիկ", "papik", "grandfather")
       ]),
-      L("3-2", "The body", "Parts of the body, most of them short words.", [
+      chapter("3-2", "The body", "Parts of the body, most of them short words.", [
         it("գլուխ", "glukh", "head"), it("աչք", "achk", "eye"), it("ականջ", "akanj", "ear"),
         it("քիթ", "kit", "nose"), it("բերան", "beran", "mouth"), it("ատամ", "atam", "tooth"),
         it("ձեռք", "dzeṙk", "hand"), it("ոտք", "votk", "foot"), it("մազ", "maz", "hair"),
         it("սիրտ", "sirt", "heart"), it("մատ", "mat", "finger"), it("մեջք", "mejk", "back")
       ]),
-      L("3-3", "Food and drink", "What is on the table.", [
+      chapter("3-3", "Food and drink", "What is on the table.", [
         it("հաց", "hats", "bread"), it("պանիր", "panir", "cheese"), it("կարագ", "karag", "butter"),
         it("միս", "mis", "meat"), it("ձու", "dzu", "egg"), it("կաթ", "kat", "milk"), it("թեյ", "tey", "tea"),
         it("սուրճ", "surch", "coffee"), it("գինի", "gini", "wine"), it("շաքար", "shakar", "sugar"),
         it("մեղր", "meghr", "honey"), it("ապուր", "apur", "soup"), it("աղցան", "aghtsan", "salad"),
         it("պաղպաղակ", "paghpaghak", "ice cream")
       ]),
-      L("3-4", "Numbers one to ten", "Counting. These come up constantly.", [
+      chapter("3-4", "Numbers one to ten", "Counting. These come up constantly.", [
         it("մեկ", "mek", "one"), it("երկու", "yerku", "two"), it("երեք", "yerek", "three"),
         it("չորս", "chors", "four"), it("հինգ", "hing", "five"), it("վեց", "vets", "six"),
         it("յոթ", "yot", "seven"), it("ութ", "ut", "eight"), it("ինը", "inə", "nine"),
         it("տասը", "tasə", "ten")
       ]),
-      L("3-5", "Making things plural", "One syllable takes -եր. Two or more syllables take -ներ.", [
+      chapter("3-5", "Making things plural", "One syllable takes -եր. Two or more syllables take -ներ.", [
         it("սարեր", "sarer", "mountains"), it("քարեր", "karer", "stones"), it("ծառեր", "tsaṙer", "trees"),
         it("օրեր", "orer", "days"), it("գետեր", "geter", "rivers"), it("կատուներ", "katuner", "cats"),
         it("երեխաներ", "yerekhaner", "children"), it("աղջիկներ", "aghjikner", "girls"),
@@ -302,8 +306,8 @@ const LEVELS = [
       ]),
     ] },
   { n: 4, name: "Naming and pointing", blurb: "Saying which thing you mean. Armenian attaches its article to the end of the word.",
-    topics: ["The attached article", "This and that", "Asking questions"], lessons: [
-      L("4-1", "The attached article", "English puts the in front. Armenian adds -ը to a consonant, -ն to a vowel.", [
+    topics: ["The attached article", "This and that", "Asking questions"], chapters: [
+      chapter("4-1", "The attached article", "English puts the in front. Armenian adds -ը to a consonant, -ն to a vowel.", [
         it("գիրքը", "girkə", "the book"), it("տունը", "tunə", "the house"),
         it("սարը", "sarə", "the mountain"), it("դուռը", "duṙə", "the door"),
         it("ջուրը", "jurə", "the water"), it("կատուն", "katun", "the cat"),
@@ -311,25 +315,25 @@ const LEVELS = [
         it("աչքը", "achkə", "the eye"), it("քաղաքը", "kaghakə", "the city"), it("ծառը", "tsaṙə", "the tree"),
         it("մարդը", "mardə", "the person")
       ]),
-      L("4-2", "This and that", "այս, այդ and այն go before a noun. սա, դա and նա stand alone.", [
+      chapter("4-2", "This and that", "այս, այդ and այն go before a noun. սա, դա and նա stand alone.", [
         it("այս", "ays", "this"), it("այդ", "ayd", "that"), it("այն", "ayn", "that over there"),
         it("սա", "sa", "this one"), it("դա", "da", "that one"), it("նա", "na", "he, she"),
         it("սրանք", "srank", "these"), it("դրանք", "drank", "those"),
         it("այս գիրքը", "ays girkə", "this book"), it("այն տունը", "ayn tunə", "that house")
       ]),
-      L("4-3", "Asking questions", "The ՞ mark sits over the stressed vowel of the questioned word.", [
+      chapter("4-3", "Asking questions", "The ՞ mark sits over the stressed vowel of the questioned word.", [
         it("ի՞նչ", "inch", "what"), it("ո՞վ", "vov", "who"), it("ու՞ր", "ur", "where to"),
         it("որտե՞ղ", "vortegh", "where"), it("ե՞րբ", "yerb", "when"), it("ինչու՞", "inchu", "why"),
         it("ինչպե՞ս", "inchpes", "how"), it("քանի՞", "kani", "how many"), it("ո՞ր", "vor", "which"),
         it("որքա՞ն", "vorkan", "how much")
       ]),
-      L("4-4", "Whose it is", "The possessive words, used before the noun.", [
+      chapter("4-4", "Whose it is", "The possessive words, used before the noun.", [
         it("իմ", "im", "my"), it("քո", "ko", "your"), it("նրա", "nra", "his, her"), it("մեր", "mer", "our"),
         it("ձեր", "dzer", "your (plural)"), it("նրանց", "nrants", "their"),
         it("իմ գիրքը", "im girkə", "my book"), it("քո տունը", "ko tunə", "your house"),
         it("մեր քաղաքը", "mer kaghakə", "our city"), it("նրա անունը", "nra anunə", "his name")
       ]),
-      L("4-5", "Here and there", "Place words you will need in every conversation.", [
+      chapter("4-5", "Here and there", "Place words you will need in every conversation.", [
         it("այստեղ", "aystegh", "here"), it("այնտեղ", "ayntegh", "there"), it("ներսում", "nersum", "inside"),
         it("դրսում", "drsum", "outside"), it("վերևում", "verevum", "above"),
         it("ներքևում", "nerkevum", "below"), it("կողքին", "koghkin", "beside"),
@@ -338,14 +342,14 @@ const LEVELS = [
       ]),
     ] },
   { n: 5, name: "Saying what things are", blurb: "Your first full sentences, built on the verb to be.",
-    topics: ["The verb to be", "Simple sentences", "Describing words"], lessons: [
-      L("5-1", "The verb to be", "Armenian puts եմ, ես, է after the word it belongs to.", [
+    topics: ["The verb to be", "Simple sentences", "Describing words"], chapters: [
+      chapter("5-1", "The verb to be", "Armenian puts եմ, ես, է after the word it belongs to.", [
         it("եմ", "yem", "I am"), it("ես", "yes", "you are"), it("է", "e", "he is, she is, it is"),
         it("ենք", "yenk", "we are"), it("եք", "yek", "you are (plural)"), it("են", "yen", "they are"),
         it("ուսանող եմ", "usanogh yem", "I am a student"), it("բժիշկ է", "bzhishk e", "he is a doctor"),
         it("տանը եմ", "tanə yem", "I am at home"), it("պատրաստ ենք", "patrast yenk", "we are ready")
       ]),
-      L("5-2", "Simple sentences", "Subject, then the describing word, then the verb.", [
+      chapter("5-2", "Simple sentences", "Subject, then the describing word, then the verb.", [
         it("Ես ուսանող եմ", "Yes usanogh yem", "I am a student"),
         it("Նա բժիշկ է", "Na bzhishk e", "She is a doctor"),
         it("Դու ընկեր ես", "Du ənker yes", "You are a friend"),
@@ -355,14 +359,14 @@ const LEVELS = [
         it("Այս քաղաքը մեծ է", "Ays kaghakə mets e", "This city is big"),
         it("Ջուրը սառն է", "Jurə saṙn e", "The water is cold")
       ]),
-      L("5-3", "Describing words", "Adjectives come before the noun and never change.", [
+      chapter("5-3", "Describing words", "Adjectives come before the noun and never change.", [
         it("մեծ", "mets", "big"), it("փոքր", "pokr", "small"), it("նոր", "nor", "new"),
         it("հին", "hin", "old"), it("լավ", "lav", "good"), it("վատ", "vat", "bad"),
         it("գեղեցիկ", "geghetsik", "beautiful"), it("երկար", "yerkar", "long"), it("կարճ", "karch", "short"),
         it("տաք", "tak", "hot"), it("սառը", "saṙə", "cold"), it("թանկ", "tank", "expensive"),
         it("էժան", "ezhan", "cheap"), it("հեշտ", "hesht", "easy"), it("դժվար", "dzhvar", "difficult")
       ]),
-      L("5-4", "Saying no", "չ- attaches to the front of the verb to be.", [
+      chapter("5-4", "Saying no", "չ- attaches to the front of the verb to be.", [
         it("չեմ", "chem", "I am not"), it("չես", "ches", "you are not"), it("չէ", "che", "he is not"),
         it("չենք", "chenk", "we are not"), it("չեք", "chek", "you are not (plural)"),
         it("չեն", "chen", "they are not"), it("Ես բժիշկ չեմ", "Yes bzhishk chem", "I am not a doctor"),
@@ -370,7 +374,7 @@ const LEVELS = [
         it("Սա թանկ չէ", "Sa tank che", "This is not expensive"),
         it("Մենք պատրաստ չենք", "Menk patrast chenk", "We are not ready")
       ]),
-      L("5-5", "Yes and no questions", "Word order stays the same. Only the intonation and the ՞ change.", [
+      chapter("5-5", "Yes and no questions", "Word order stays the same. Only the intonation and the ՞ change.", [
         it("այո", "ayo", "yes"), it("ոչ", "voch", "no"),
         it("Դու ուսանո՞ղ ես", "Du usanogh yes", "Are you a student?"),
         it("Սա քո գի՞րքն է", "Sa ko girkn e", "Is this your book?"),
@@ -380,36 +384,36 @@ const LEVELS = [
       ]),
     ] },
   { n: 6, name: "Endings that carry meaning", blurb: "Armenian marks a noun's job with an ending rather than with word order.",
-    topics: ["Of something", "Giving to someone", "Coming from"], lessons: [
-      L("6-1", "Of something", "The genitive adds -ի. It marks what the thing belongs to.", [
+    topics: ["Of something", "Giving to someone", "Coming from"], chapters: [
+      chapter("6-1", "Of something", "The genitive adds -ի. It marks what the thing belongs to.", [
         it("քաղաքի", "kaghaki", "of the city"), it("դպրոցի", "dprotsi", "of the school"),
         it("սարի", "sari", "of the mountain"), it("ծառի", "tsaṙi", "of the tree"),
         it("դասի", "dasi", "of the lesson"), it("ընկերոջ", "ənkeroj", "of the friend"),
         it("երեխայի", "yerekhayi", "of the child"), it("տան", "tan", "of the house"),
         it("օրվա", "orva", "of the day"), it("մարդու", "mardu", "of the person")
       ]),
-      L("6-2", "Giving to someone", "The same -ի form also marks who receives something.", [
+      chapter("6-2", "Giving to someone", "The same -ի form also marks who receives something.", [
         it("ընկերոջս", "ənkerojs", "to my friend"), it("մորը", "morə", "to the mother"),
         it("հորը", "horə", "to the father"), it("երեխային", "yerekhayin", "to the child"),
         it("ուսուցչին", "usutschin", "to the teacher"), it("քրոջը", "krojə", "to the sister"),
         it("եղբորը", "yeghborə", "to the brother"), it("ինձ", "indz", "to me"), it("քեզ", "kez", "to you"),
         it("նրան", "nran", "to him, to her")
       ]),
-      L("6-3", "Coming from", "The ablative adds -ից. It marks the source.", [
+      chapter("6-3", "Coming from", "The ablative adds -ից. It marks the source.", [
         it("տնից", "tnits", "from the house"), it("քաղաքից", "kaghakits", "from the city"),
         it("դպրոցից", "dprotsits", "from the school"), it("սարից", "sarits", "from the mountain"),
         it("այստեղից", "aysteghits", "from here"), it("այնտեղից", "aynteghits", "from there"),
         it("Հայաստանից", "Hayastanits", "from Armenia"), it("աշխատանքից", "ashkhatankits", "from work"),
         it("ինձնից", "indznits", "from me"), it("քեզնից", "keznits", "from you")
       ]),
-      L("6-4", "By means of", "The instrumental adds -ով. It marks the tool or the way.", [
+      chapter("6-4", "By means of", "The instrumental adds -ով. It marks the tool or the way.", [
         it("գնացքով", "gnatskov", "by train"), it("մեքենայով", "mekenayov", "by car"),
         it("ոտքով", "votkov", "on foot"), it("ձեռքով", "dzeṙkov", "by hand"),
         it("ինքնաթիռով", "inknatiṙov", "by plane"), it("ավտոբուսով", "avtobusov", "by bus"),
         it("գրիչով", "grichov", "with a pen"), it("դանակով", "danakov", "with a knife"),
         it("հայերենով", "hayerenov", "in Armenian"), it("սիրով", "sirov", "with love")
       ]),
-      L("6-5", "My and your on the noun", "Armenian can attach -ս for my and -դ for your.", [
+      chapter("6-5", "My and your on the noun", "Armenian can attach -ս for my and -դ for your.", [
         it("գիրքս", "girks", "my book"), it("գիրքդ", "girkd", "your book"), it("տունս", "tuns", "my house"),
         it("տունդ", "tund", "your house"), it("անունս", "anuns", "my name"),
         it("անունդ", "anund", "your name"), it("ձեռքս", "dzeṙks", "my hand"),
@@ -418,22 +422,22 @@ const LEVELS = [
       ]),
     ] },
   { n: 7, name: "Verbs in the present", blurb: "Describing what is happening now, and saying that it is not.",
-    topics: ["Naming the action", "Happening now", "All six persons"], lessons: [
-      L("7-1", "Naming the action", "Dictionary forms end in -ել or -ալ.", [
+    topics: ["Naming the action", "Happening now", "All six persons"], chapters: [
+      chapter("7-1", "Naming the action", "Dictionary forms end in -ել or -ալ.", [
         it("գրել", "grel", "to write"), it("կարդալ", "kardal", "to read"), it("խոսել", "khosel", "to speak"),
         it("ուտել", "utel", "to eat"), it("խմել", "khmel", "to drink"), it("տեսնել", "tesnel", "to see"),
         it("գնալ", "gnal", "to go"), it("գալ", "gal", "to come"), it("անել", "anel", "to do"),
         it("աշխատել", "ashkhatel", "to work"), it("սիրել", "sirel", "to love"),
         it("ապրել", "aprel", "to live")
       ]),
-      L("7-2", "Happening now", "Drop the ending, add -ում, then the verb to be.", [
+      chapter("7-2", "Happening now", "Drop the ending, add -ում, then the verb to be.", [
         it("գրում եմ", "grum yem", "I am writing"), it("կարդում եմ", "kardum yem", "I am reading"),
         it("խոսում եմ", "khosum yem", "I am speaking"), it("ուտում եմ", "utum yem", "I am eating"),
         it("խմում եմ", "khmum yem", "I am drinking"), it("աշխատում եմ", "ashkhatum yem", "I am working"),
         it("ապրում եմ", "aprum yem", "I live"), it("սիրում եմ", "sirum yem", "I love"),
         it("տեսնում եմ", "tesnum yem", "I see"), it("անում եմ", "anum yem", "I am doing")
       ]),
-      L("7-3", "All six persons", "Only the verb to be changes at the end.", [
+      chapter("7-3", "All six persons", "Only the verb to be changes at the end.", [
         it("գրում ես", "grum yes", "you are writing"), it("գրում է", "grum e", "he is writing"),
         it("գրում ենք", "grum yenk", "we are writing"),
         it("գրում եք", "grum yek", "you are writing (plural)"),
@@ -442,7 +446,7 @@ const LEVELS = [
         it("աշխատում են", "ashkhatum yen", "they are working"), it("ապրում ես", "aprum yes", "you live"),
         it("ուտում են", "utum yen", "they are eating")
       ]),
-      L("7-4", "Not happening", "չ- goes on the verb to be, which then moves in front.", [
+      chapter("7-4", "Not happening", "չ- goes on the verb to be, which then moves in front.", [
         it("չեմ գրում", "chem grum", "I am not writing"),
         it("չես կարդում", "ches kardum", "you are not reading"),
         it("չի խոսում", "chi khosum", "he is not speaking"),
@@ -452,7 +456,7 @@ const LEVELS = [
         it("չգիտեմ", "chgitem", "I do not know"), it("չեմ ուզում", "chem uzum", "I do not want"),
         it("չի կարող", "chi karogh", "he cannot"), it("չեմ կարող", "chem karogh", "I cannot")
       ]),
-      L("7-5", "Useful verbs", "Verbs you will reach for every day.", [
+      chapter("7-5", "Useful verbs", "Verbs you will reach for every day.", [
         it("հասկանալ", "haskanal", "to understand"), it("իմանալ", "imanal", "to know"),
         it("ուզել", "uzel", "to want"), it("կարողանալ", "karoghanal", "to be able"),
         it("տալ", "tal", "to give"), it("վերցնել", "vertsnel", "to take"), it("ասել", "asel", "to say"),
@@ -462,15 +466,15 @@ const LEVELS = [
       ]),
     ] },
   { n: 8, name: "Past and future", blurb: "Moving off the present tense.",
-    topics: ["Finished actions", "Was happening", "Will happen"], lessons: [
-      L("8-1", "Finished actions", "The aorist. It says the action happened and ended.", [
+    topics: ["Finished actions", "Was happening", "Will happen"], chapters: [
+      chapter("8-1", "Finished actions", "The aorist. It says the action happened and ended.", [
         it("գրեցի", "gretsi", "I wrote"), it("կարդացի", "kardatsi", "I read"),
         it("խոսեցի", "khosetsi", "I spoke"), it("աշխատեցի", "ashkhatetsi", "I worked"),
         it("գրեց", "grets", "he wrote"), it("կարդաց", "kardats", "she read"),
         it("խոսեցինք", "khosetsink", "we spoke"), it("գրեցին", "gretsin", "they wrote"),
         it("տեսա", "tesa", "I saw"), it("ասացի", "asatsi", "I said")
       ]),
-      L("8-2", "Was happening", "The imperfect. Present form, but with էի instead of եմ.", [
+      chapter("8-2", "Was happening", "The imperfect. Present form, but with էի instead of եմ.", [
         it("գրում էի", "grum ei", "I was writing"), it("կարդում էի", "kardum ei", "I was reading"),
         it("խոսում էր", "khosum er", "he was speaking"),
         it("աշխատում էինք", "ashkhatum eink", "we were working"),
@@ -479,20 +483,20 @@ const LEVELS = [
         it("սպասում էի", "spasum ei", "I was waiting"),
         it("չէի հասկանում", "chei haskanum", "I did not understand")
       ]),
-      L("8-3", "Will happen", "կ- on the front makes the future.", [
+      chapter("8-3", "Will happen", "կ- on the front makes the future.", [
         it("կգրեմ", "kgrem", "I will write"), it("կկարդամ", "kkardam", "I will read"),
         it("կխոսեմ", "kkhosem", "I will speak"), it("կգնամ", "kgnam", "I will go"),
         it("կգամ", "kgam", "I will come"), it("կանեմ", "kanem", "I will do"),
         it("կտեսնեմ", "ktesnem", "I will see"), it("կօգնեմ", "kognem", "I will help"),
         it("կսպասեմ", "kspasem", "I will wait"), it("կզանգեմ", "kzangem", "I will call")
       ]),
-      L("8-4", "Irregular pasts", "The most common verbs do not follow the pattern. Learn these as they are.", [
+      chapter("8-4", "Irregular pasts", "The most common verbs do not follow the pattern. Learn these as they are.", [
         it("եղավ", "yeghav", "it happened"), it("գնաց", "gnats", "he went"), it("եկավ", "yekav", "she came"),
         it("տվեց", "tvets", "he gave"), it("ասաց", "asats", "she said"), it("արեց", "arets", "he did"),
         it("տեսավ", "tesav", "she saw"), it("եղա", "yegha", "I was"), it("գնացի", "gnatsi", "I went"),
         it("եկա", "yeka", "I came")
       ]),
-      L("8-5", "When it happened", "Time words that pin a sentence down.", [
+      chapter("8-5", "When it happened", "Time words that pin a sentence down.", [
         it("երեկ", "yerek", "yesterday"), it("այսօր", "aysor", "today"), it("վաղը", "vaghə", "tomorrow"),
         it("հիմա", "hima", "now"), it("հետո", "heto", "later"), it("շուտ", "shut", "early"),
         it("ուշ", "ush", "late"), it("միշտ", "misht", "always"), it("երբեք", "yerbek", "never"),
@@ -501,15 +505,15 @@ const LEVELS = [
       ]),
     ] },
   { n: 9, name: "Holding a conversation", blurb: "The exchanges you will actually have with people.",
-    topics: ["Greetings", "Please and thank you", "Introducing yourself"], lessons: [
-      L("9-1", "Greetings", "What you say walking in and walking out.", [
+    topics: ["Greetings", "Please and thank you", "Introducing yourself"], chapters: [
+      chapter("9-1", "Greetings", "What you say walking in and walking out.", [
         it("բարև", "barev", "hello"), it("բարև ձեզ", "barev dzez", "hello (polite)"),
         it("բարի լույս", "bari luys", "good morning"), it("բարի երեկո", "bari yereko", "good evening"),
         it("բարի գիշեր", "bari gisher", "good night"), it("ցտեսություն", "tstesutyun", "goodbye"),
         it("հաջողություն", "hajoghutyun", "good luck"), it("բարի գալուստ", "bari galust", "welcome"),
         it("ողջույն", "voghjuyn", "greetings"), it("առայժմ", "aṙayzhm", "see you")
       ]),
-      L("9-2", "Please and thank you", "Politeness carries a long way.", [
+      chapter("9-2", "Please and thank you", "Politeness carries a long way.", [
         it("շնորհակալություն", "shnorhakalutyun", "thank you"),
         it("շնորհակալ եմ", "shnorhakal yem", "I am grateful"),
         it("խնդրեմ", "khndrem", "please, you are welcome"), it("ներողություն", "neroghutyun", "sorry"),
@@ -518,7 +522,7 @@ const LEVELS = [
         it("բարի ախորժակ", "bari akhorzhak", "enjoy your meal"),
         it("խնդրում եմ", "khndrum yem", "I ask you"), it("անհոգ", "anhog", "no worries")
       ]),
-      L("9-3", "Introducing yourself", "The first thirty seconds of any conversation.", [
+      chapter("9-3", "Introducing yourself", "The first thirty seconds of any conversation.", [
         it("Անունս Արամ է", "Anuns Aram e", "My name is Aram"),
         it("Ի՞նչ է ձեր անունը", "Inch e dzer anunə", "What is your name?"),
         it("Ինչպե՞ս եք", "Inchpes yek", "How are you?"), it("Լավ եմ", "Lav yem", "I am well"),
@@ -528,7 +532,7 @@ const LEVELS = [
         it("Հայերեն սովորում եմ", "Hayeren sovorum yem", "I am learning Armenian"),
         it("Քիչ եմ հասկանում", "Kich yem haskanum", "I understand a little")
       ]),
-      L("9-4", "Asking for things", "Shops, cafes, and anywhere you need something.", [
+      chapter("9-4", "Asking for things", "Shops, cafes, and anywhere you need something.", [
         it("Որքա՞ն արժե", "Vorkan arzhe", "How much does it cost?"),
         it("Շատ թանկ է", "Shat tank e", "It is very expensive"), it("Կարո՞ղ եմ", "Karogh yem", "May I?"),
         it("Ջուր, խնդրեմ", "Jur, khndrem", "Water, please"), it("Սա ի՞նչ է", "Sa inch e", "What is this?"),
@@ -536,7 +540,7 @@ const LEVELS = [
         it("Հաշիվը, խնդրեմ", "Hashivə, khndrem", "The bill, please"),
         it("Բավական է", "Bavakan e", "That is enough"), it("Ուրիշ բան", "Urish ban", "Something else")
       ]),
-      L("9-5", "Days and months", "Naming the day you mean.", [
+      chapter("9-5", "Days and months", "Naming the day you mean.", [
         it("երկուշաբթի", "yerkushabti", "Monday"), it("երեքշաբթի", "yerekshabti", "Tuesday"),
         it("չորեքշաբթի", "chorekshabti", "Wednesday"), it("հինգշաբթի", "hingshabti", "Thursday"),
         it("ուրբաթ", "urbat", "Friday"), it("շաբաթ", "shabat", "Saturday"), it("կիրակի", "kiraki", "Sunday"),
@@ -545,29 +549,29 @@ const LEVELS = [
       ]),
     ] },
   { n: 10, name: "Around the house", blurb: "The words and phrases you use at home, with the people you live with.",
-    topics: ["Rooms", "In the kitchen", "Cooking and cleaning together"], lessons: [
-      L("10-1", "Rooms", "Naming the parts of a home.", [
+    topics: ["Rooms", "In the kitchen", "Cooking and cleaning together"], chapters: [
+      chapter("10-1", "Rooms", "Naming the parts of a home.", [
         it("խոհանոց", "khohanots", "kitchen"), it("ննջասենյակ", "nnjasenyak", "bedroom"),
         it("լոգարան", "logaran", "bathroom"), it("հյուրասենյակ", "hyurasenyak", "living room"),
         it("միջանցք", "mijantsk", "hallway"), it("պատշգամբ", "patshgamb", "balcony"),
         it("նկուղ", "nkugh", "basement"), it("սենյակ", "senyak", "room"), it("բակ", "bak", "yard"),
         it("աստիճաններ", "astichanner", "stairs")
       ]),
-      L("10-2", "In the kitchen", "What you cook and eat with.", [
+      chapter("10-2", "In the kitchen", "What you cook and eat with.", [
         it("սեղան", "seghan", "table"), it("աթոռ", "atoṙ", "chair"), it("դանակ", "danak", "knife"),
         it("պատառաքաղ", "pataṙakagh", "fork"), it("գդալ", "gdal", "spoon"), it("ափսե", "apse", "plate"),
         it("բաժակ", "bazhak", "glass"), it("կաթսա", "katsa", "pot"), it("սառնարան", "saṙnaran", "fridge"),
         it("վառարան", "vaṙaran", "stove"), it("թեյնիկ", "teynik", "kettle"),
         it("լվացարան", "lvatsaran", "sink")
       ]),
-      L("10-3", "Around the rooms", "The objects you reach for without thinking.", [
+      chapter("10-3", "Around the rooms", "The objects you reach for without thinking.", [
         it("անկողին", "ankoghin", "bed"), it("բարձ", "bardz", "pillow"), it("վերմակ", "vermak", "blanket"),
         it("սրբիչ", "srbich", "towel"), it("օճառ", "ochaṙ", "soap"), it("հայելի", "hayeli", "mirror"),
         it("լամպ", "lamp", "lamp"), it("գորգ", "gorg", "carpet"), it("վարագույր", "varaguyr", "curtain"),
         it("բանալի", "banali", "key"), it("պահարան", "paharan", "cupboard"),
         it("աղբաման", "aghbaman", "bin")
       ]),
-      L("10-4", "Things said at home", "Short sentences you will hear every day.", [
+      chapter("10-4", "Things said at home", "Short sentences you will hear every day.", [
         it("Դուռը փակիր", "Duṙə pakir", "Close the door"),
         it("Լույսը վառիր", "Luysə vaṙir", "Turn on the light"),
         it("Լույսը հանգցրու", "Luysə hangtsru", "Turn off the light"),
@@ -578,14 +582,14 @@ const LEVELS = [
         it("Գալիս եմ", "Galis yem", "I am coming"),
         it("Ո՞ւր ես գնում", "Ur yes gnum", "Where are you going?")
       ]),
-      L("10-5", "Keeping house", "Chores, and the verbs that go with them.", [
+      chapter("10-5", "Keeping house", "Chores, and the verbs that go with them.", [
         it("լվանալ", "lvanal", "to wash"), it("մաքրել", "makrel", "to clean"),
         it("եփել", "yepel", "to cook"), it("ավլել", "avlel", "to sweep"),
         it("արդուկել", "ardukel", "to iron"), it("չորացնել", "choratsnel", "to dry"),
         it("դասավորել", "dasavorel", "to tidy"), it("աման լվանալ", "aman lvanal", "to wash dishes"),
         it("հագուստ լվանալ", "hagust lvanal", "to do laundry"), it("ջրել", "jrel", "to water")
       ]),
-      L("10-6", "Cooking together", "Making a meal side by side.", [
+      chapter("10-6", "Cooking together", "Making a meal side by side.", [
         it("միասին", "miasin", "together"),
         it("Արի միասին ճաշ եփենք", "Ari miasin chash yepenk", "Let us cook together"),
         it("Ի՞նչ ենք եփում", "Inch yenk yepum", "What are we cooking?"),
@@ -599,7 +603,7 @@ const LEVELS = [
         it("Շատ համեղ է", "Shat hamegh e", "It is very tasty"),
         it("Վառարանը անջատիր", "Vaṙaranə anjatir", "Turn off the stove")
       ]),
-      L("10-7", "Cleaning together", "Sharing the chores so they go faster.", [
+      chapter("10-7", "Cleaning together", "Sharing the chores so they go faster.", [
         it("Արի միասին մաքրենք", "Ari miasin makrenk", "Let us clean together"),
         it("Ես կավլեմ", "Yes kavlem", "I will sweep"),
         it("Դու ամանները լվա", "Du amannerə lva", "You wash the dishes"),
@@ -613,73 +617,73 @@ const LEVELS = [
         it("Ամեն ինչ մաքուր է", "Amen inch makur e", "Everything is clean")
       ]),
     ] },
-  /* A1 to C2: the CEFR course. Each unit is 10 lessons of 10 words, none repeated from A0. */
-  { n: 11, tier: "A1", short: 1, tag: "A1 · Unit 1", name: "Greetings, pronouns and glue words", blurb: "The small words that hold every sentence together: who, whose, and, but, because.",
-    topics: ["People words", "Mine and yours", "More questions"], lessons: [
-      L("A1.1-1", "People words", "The rest of the personal pronouns, and a few forms built from them.", [
+  /* A1 to C2: the CEFR course. Each unit is 10 chapters of 10 words, none repeated from A0. */
+  { n: 11, domain: "A1", short: 1, tag: "A1 · Unit 1", name: "Greetings, pronouns and glue words", blurb: "The small words that hold every sentence together: who, whose, and, but, because.",
+    topics: ["People words", "Mine and yours", "More questions"], chapters: [
+      chapter("A1.1-1", "People words", "The rest of the personal pronouns, and a few forms built from them.", [
         it("դու", "du", "you"), it("մենք", "menk", "we"),
         it("դուք", "duk", "you (plural, polite)"), it("նրանք", "nrank", "they"),
         it("մեզ", "mez", "to us"), it("ձեզ", "dzez", "to you (plural)"),
         it("ինքը", "inkə", "he himself, she herself"), it("ինքս", "inks", "I myself"),
         it("իրենք", "irenk", "they themselves"), it("նրանից", "nranits", "from him, from her")
       ]),
-      L("A1.1-2", "Mine and yours", "Add -ը to my, your and our to say mine, yours and ours.", [
+      chapter("A1.1-2", "Mine and yours", "Add -ը to my, your and our to say mine, yours and ours.", [
         it("իմը", "imə", "mine"), it("քոնը", "konə", "yours"),
         it("նրանը", "nranə", "his, hers"), it("մերը", "merə", "ours"),
         it("ձերը", "dzerə", "yours (plural)"), it("նրանցը", "nrantsə", "theirs"),
         it("իրենց", "irents", "their own"), it("ինձ հետ", "indz het", "with me"),
         it("քեզ հետ", "kez het", "with you"), it("մեզ հետ", "mez het", "with us")
       ]),
-      L("A1.1-3", "More questions", "Question words for which, what kind, and since when.", [
+      chapter("A1.1-3", "More questions", "Question words for which, what kind, and since when.", [
         it("որտեղի՞ց", "vorteghits", "from where"), it("ո՞րը", "vorə", "which one"),
         it("ինչպիսի՞", "inchpisi", "what kind of"), it("ինչքա՞ն", "inchkan", "how much (everyday)"),
         it("ինչո՞վ", "inchov", "with what"), it("ինչի՞ մասին", "inchi masin", "about what"),
         it("ում", "um", "whom, whose"), it("երբվանի՞ց", "yerbvanits", "since when"),
         it("ինչու՞ ոչ", "inchu voch", "why not"), it("Ի՞նչ է պատահել", "Inch e patahel", "What happened?")
       ]),
-      L("A1.1-4", "Joining words", "And, but, or, because: the words that link two ideas.", [
+      chapter("A1.1-4", "Joining words", "And, but, or, because: the words that link two ideas.", [
         it("բայց", "bayts", "but"), it("կամ", "kam", "or"),
         it("որովհետև", "vorovhetev", "because"), it("եթե", "yete", "if"),
         it("ապա", "apa", "then, next"), it("նաև", "nayev", "also"),
         it("սակայն", "sakayn", "however"), it("թե", "te", "whether"),
         it("ու", "u", "and (casual)"), it("իսկ", "isk", "and, while (contrast)")
       ]),
-      L("A1.1-5", "Linking longer ideas", "Words for so that, although, until, and for example.", [
+      chapter("A1.1-5", "Linking longer ideas", "Words for so that, although, until, and for example.", [
         it("որպեսզի", "vorpeszi", "so that"), it("քանի որ", "kani vor", "since, because"),
         it("չնայած", "chnayats", "although"), it("մինչև", "minchev", "until"),
         it("թեև", "tev", "even though"), it("այնպես որ", "aynpes vor", "so, so that"),
         it("ուստի", "usti", "therefore"), it("այսինքն", "aysink", "that is, in other words"),
         it("օրինակ", "orinak", "for example"), it("ընդհակառակը", "əndhakaṙakə", "on the contrary")
       ]),
-      L("A1.1-6", "Little helper words", "Short words that add already, still, only or even.", [
+      chapter("A1.1-6", "Little helper words", "Short words that add already, still, only or even.", [
         it("էլ", "el", "too, also"), it("էլի", "eli", "again; come on"),
         it("դեռ", "deṙ", "still, yet"), it("արդեն", "arden", "already"),
         it("միայն", "miayn", "only"), it("նույնիսկ", "nuynisk", "even"),
         it("գուցե", "gutse", "maybe"), it("հենց", "hents", "just, exactly"),
         it("ահա", "aha", "here it is"), it("հա", "ha", "yeah")
       ]),
-      L("A1.1-7", "Everyday greetings", "Friendly openers and replies for people you know.", [
+      chapter("A1.1-7", "Everyday greetings", "Friendly openers and replies for people you know.", [
         it("բարի օր", "bari or", "good day"), it("Ինչպե՞ս ես", "Inchpes yes", "How are you? (to a friend)"),
         it("Ի՞նչ կա", "Inch ka", "What's up?"), it("Ի՞նչ նորություն կա", "Inch norutyun ka", "What's new?"),
         it("մերսի", "mersi", "thanks (casual)"), it("շատ շնորհակալ եմ", "shat shnorhakal yem", "thank you very much"),
         it("չարժե", "charzhe", "don't mention it"), it("Ամեն ինչ լավ է", "Amen inch lav e", "Everything is fine"),
         it("կհանդիպենք", "khandipenk", "see you later"), it("բարի ճանապարհ", "bari chanaparh", "have a good trip")
       ]),
-      L("A1.1-8", "Everyone and no one", "Words for all, each, some, and nobody.", [
+      chapter("A1.1-8", "Everyone and no one", "Words for all, each, some, and nobody.", [
         it("մեկը", "mekə", "someone, one of them"), it("ոչ ոք", "voch vok", "nobody"),
         it("ամեն ինչ", "amen inch", "everything"), it("բոլորը", "bolorə", "everyone"),
         it("ամեն", "amen", "every"), it("յուրաքանչյուր", "yurakanchyur", "each"),
         it("մյուսը", "myusə", "the other one"), it("նույն", "nuyn", "same"),
         it("ամբողջ", "amboghj", "whole"), it("որոշ", "vorosh", "some, certain")
       ]),
-      L("A1.1-9", "Saying yes and no", "Answers that are stronger or softer than a plain yes or no.", [
+      chapter("A1.1-9", "Saying yes and no", "Answers that are stronger or softer than a plain yes or no.", [
         it("անպայման", "anpayman", "definitely"), it("անշուշտ", "anshusht", "certainly"),
         it("իրոք", "irok", "really, indeed"), it("իսկապե՞ս", "iskapes", "Really?"),
         it("համաձայն եմ", "hamadzayn yem", "I agree"), it("համաձայն չեմ", "hamadzayn chem", "I disagree"),
         it("ոչ մի դեպքում", "voch mi depkum", "no way"), it("իհարկե ոչ", "iharke voch", "of course not"),
         it("հնարավոր է", "hnaravor e", "it is possible"), it("չեմ կարծում", "chem kartsum", "I don't think so")
       ]),
-      L("A1.1-10", "With, about, for", "Armenian puts most of these after the word they go with.", [
+      chapter("A1.1-10", "With, about, for", "Armenian puts most of these after the word they go with.", [
         it("հետ", "het", "with"), it("մասին", "masin", "about"),
         it("համար", "hamar", "for"), it("առանց", "aṙants", "without"),
         it("մոտ", "mot", "near, at someone's place"), it("պես", "pes", "like"),
@@ -688,11 +692,11 @@ const LEVELS = [
       ]),
     ] },
 ];
-// Levels 1 to 10 are A0. Fill in the labels the level bar shows for them.
-LEVELS.forEach((lv) => { lv.tier = lv.tier || "A0"; lv.short = lv.short || lv.n; lv.tag = lv.tag || `Lesson ${lv.n}`; });
+// Units 1 to 10 make up domain A0. Fill in the labels the unit bar shows for them.
+UNITS.forEach((u) => { u.domain = u.domain || "A0"; u.short = u.short || u.n; u.tag = u.tag || `Unit ${u.n}`; });
 
-// The CEFR levels in the level bar's dropdown. A level with no units yet shows as coming soon.
-const TIERS = [
+// The domains (CEFR levels) in the unit bar's dropdown. A domain with no units yet shows as coming soon.
+const DOMAINS = [
   { id: "A0", name: "Foundations" }, { id: "A1", name: "Beginner" }, { id: "A2", name: "Elementary" },
   { id: "B1", name: "Intermediate" }, { id: "B2", name: "Upper intermediate" }, { id: "C1", name: "Advanced" },
   { id: "C2", name: "Mastery" },
@@ -1205,7 +1209,7 @@ const todayKey = () => {
 const dayGap = (a, b) => (a ? Math.round((new Date(b) - new Date(a)) / 86400000) : Infinity);
 
 /* ------------------------------------------------------------------ */
-/*  Sessions                                                           */
+/*  Lessons                                                            */
 /*                                                                     */
 /*  Nothing is ever asked before it has been shown. Each word climbs   */
 /*  four stages, saved per learner:                                    */
@@ -1224,13 +1228,13 @@ const dayGap = (a, b) => (a ? Math.round((new Date(b) - new Date(a)) / 86400000)
 /*  again next time.                                                   */
 /* ------------------------------------------------------------------ */
 
-const NEW_PER_SESSION = 5;
-const PRACTICE_PER_SESSION = 4;
-const REVIEW_PER_SESSION = 3;
+const NEW_PER_LESSON = 5;
+const PRACTICE_PER_LESSON = 4;
+const REVIEW_PER_LESSON = 3;
 const MASTERED = 3;
 
 const wordKey = (x) => `${x.hy}|${x.en}`;
-const wordsOf = (lesson) => lesson.words || lesson.items;
+const wordsOf = (chapter) => chapter.words || chapter.items;
 const stageOf = (words, x) => (words && words[wordKey(x)]) || 0;
 const isSpellable = (x) => /^[ա-և]+$/.test(x.hy) && splitWord(x.hy).length <= 7;
 const fullNote = (x) => `${x.hy} · ${x.rom} · ${x.en}`;
@@ -1240,26 +1244,27 @@ function nextStage(stage, rung, ok) {
   return rung === stage ? Math.min(MASTERED, stage + 1) : stage;
 }
 
-function buildSession(levelIdx, idx, words = {}, doneLessons = {}) {
-  const level = LEVELS[levelIdx];
-  const lesson = level.lessons[idx];
-  const own = wordsOf(lesson);
+// One lesson: a sitting in chapter number idx of a unit (new words, practice, review).
+function buildLesson(unitIdx, idx, words = {}, doneChapters = {}) {
+  const unit = UNITS[unitIdx];
+  const chapter = unit.chapters[idx];
+  const own = wordsOf(chapter);
 
-  // Which words this session teaches, practises and reviews.
-  const fresh = shuffle(own.filter((x) => stageOf(words, x) === 0)).slice(0, NEW_PER_SESSION);
+  // Which words this lesson teaches, practises and reviews.
+  const fresh = shuffle(own.filter((x) => stageOf(words, x) === 0)).slice(0, NEW_PER_LESSON);
   const practice = shuffle(own.filter((x) => stageOf(words, x) > 0))
     .sort((a, b) => stageOf(words, a) - stageOf(words, b))
-    .slice(0, PRACTICE_PER_SESSION + NEW_PER_SESSION - fresh.length);
+    .slice(0, PRACTICE_PER_LESSON + NEW_PER_LESSON - fresh.length);
   const taken = new Set([...fresh, ...practice].map(wordKey));
   const review = pickN(
-    level.lessons.slice(0, idx).flatMap(wordsOf)
+    unit.chapters.slice(0, idx).flatMap(wordsOf)
       .filter((x) => stageOf(words, x) > 0 && !taken.has(wordKey(x))),
-    REVIEW_PER_SESSION,
+    REVIEW_PER_LESSON,
   );
 
   // Wrong options come from words the learner has already seen, when there are enough.
   const freshKeys = new Set(fresh.map(wordKey));
-  const pool = level.lessons.slice(0, idx + 1).flatMap(wordsOf);
+  const pool = unit.chapters.slice(0, idx + 1).flatMap(wordsOf);
   const seen = pool.filter((x) => stageOf(words, x) > 0 || freshKeys.has(wordKey(x)));
   const wrongOptions = (x, keyFn) => {
     const clash = (o) => o.en === x.en || o.hy === x.hy;
@@ -1268,8 +1273,8 @@ function buildSession(levelIdx, idx, words = {}, doneLessons = {}) {
   };
 
   const tiles = [...new Set(
-    lesson.letters
-      ? LESSONS.slice(0, idx + 1).flatMap((l) => l.letters).map((x) => x.lo)
+    chapter.letters
+      ? LETTER_CHAPTERS.slice(0, idx + 1).flatMap((l) => l.letters).map((x) => x.lo)
       : [...ALPHABET, ...EXTRAS].map((x) => x.lo),
   )];
 
@@ -1305,11 +1310,11 @@ function buildSession(levelIdx, idx, words = {}, doneLessons = {}) {
     : stage === 2 ? produce(x)
     : Math.random() < 0.5 ? meaning(x, 1) : produce(x);
 
-  // Letter questions, for level 1 only.
+  // Letter questions, for unit 1 (the letters) only.
   let letterQs = [];
   let letterReview = [];
-  if (lesson.letters) {
-    const bank = LESSONS.slice(0, idx + 1).flatMap((l) => l.letters);
+  if (chapter.letters) {
+    const bank = LETTER_CHAPTERS.slice(0, idx + 1).flatMap((l) => l.letters);
     const letterQ = (L, kind) => {
       if (kind === "sound2glyph") {
         const d = distractors(bank, L, 3, (x) => x.rom);
@@ -1335,16 +1340,16 @@ function buildSession(levelIdx, idx, words = {}, doneLessons = {}) {
       };
     };
     const kinds = ["glyph2sound", "sound2glyph", "case"];
-    letterQs = lesson.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
+    letterQs = chapter.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
     if (idx > 0) {
-      // Only review letters from lessons the learner has finished; any lesson can be opened first.
-      letterReview = pickN(LESSONS.slice(0, idx).filter((l) => doneLessons[l.id]?.done).flatMap((l) => l.letters), 2)
+      // Only review letters from chapters the learner has finished; any chapter can be opened first.
+      letterReview = pickN(LETTER_CHAPTERS.slice(0, idx).filter((l) => doneChapters[l.id]?.done).flatMap((l) => l.letters), 2)
         .map((L) => letterQ(L, Math.random() < 0.5 ? "glyph2sound" : "sound2glyph"));
     }
   }
 
   const cards = [
-    ...(lesson.letters || []).map((x) => ({ kind: "letter", ...x })),
+    ...(chapter.letters || []).map((x) => ({ kind: "letter", ...x })),
     ...fresh.map((x, k) => ({ kind: "word", ...x, firstWord: k === 0 })),
   ];
 
@@ -1365,14 +1370,14 @@ function buildSession(levelIdx, idx, words = {}, doneLessons = {}) {
 }
 
 /* The rows behind the Parts of speech page. Level 1 writes some words with
-   եվ before lesson 1-8 teaches և; those are the same words, so they share a
+   եվ before chapter 1-8 teaches և; those are the same words, so they share a
    row and count as known if either spelling has been learned. */
 const KNOWN = 2;   // answered from the Armenian alone, without the transliteration
 
 const BANK = (() => {
   const first = new Map();
-  LEVELS.forEach((lv) => lv.lessons.forEach((l) => wordsOf(l).forEach((x) => {
-    if (!first.has(wordKey(x))) first.set(wordKey(x), { ...x, lesson: l.id });
+  UNITS.forEach((u) => u.chapters.forEach((l) => wordsOf(l).forEach((x) => {
+    if (!first.has(wordKey(x))) first.set(wordKey(x), { ...x, chapter: l.id });
   })));
   return PARTS.map((part) => {
     const rows = new Map();
@@ -1382,7 +1387,7 @@ const BANK = (() => {
       const hy = x.hy.replace(/եվ/g, "և");
       const id = `${hy}|${x.en}`;
       if (rows.has(id)) rows.get(id).keys.push(k);
-      else rows.set(id, { hy, rom: x.rom, en: x.en, lesson: x.lesson, keys: [k] });
+      else rows.set(id, { hy, rom: x.rom, en: x.en, chapter: x.chapter, keys: [k] });
     }
     return { ...part, rows: [...rows.values()] };
   });
@@ -1395,7 +1400,7 @@ const knownCount = (words) => BANK.reduce((n, p) => n + p.rows.filter((r) => row
 /*  Progress                                                           */
 /* ------------------------------------------------------------------ */
 
-const emptyProgress = () => ({ v: 2, xp: 0, lessons: {}, words: {}, streak: 0, lastDay: null });
+const emptyProgress = () => ({ v: 3, xp: 0, chapters: {}, words: {}, streak: 0, lastDay: null });
 
 function readStored() {
   try {
@@ -1412,6 +1417,8 @@ function useProgress() {
 
   useEffect(() => {
     const stored = readStored();
+    // Saves from before the Domain / Unit / Chapter / Lesson naming kept finished chapters under "lessons".
+    if (stored && stored.lessons && !stored.chapters) { stored.chapters = stored.lessons; delete stored.lessons; stored.v = 3; }
     setProgress({ ...emptyProgress(), ...(stored || {}) });
     let usable = false;
     try {
@@ -1459,19 +1466,19 @@ const CSS = `
 .hy-raildiv{flex:0 0 1px;align-self:stretch;background:${C.line};margin:0 4px}
 .hy-btn:focus-visible,.hy-tab:focus-visible,.hy-railitem:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
 .hy-railnum,.hy-railpre,.hy-short,.hy-railcurrent{display:none}
-.hy-tiersep{height:1px;background:${C.line};margin:6px 4px}
-.hy-tierbtn{display:flex;align-items:center;gap:8px;flex:0 0 auto;background:transparent;border:1px solid ${C.line};
+.hy-domainsep{height:1px;background:${C.line};margin:6px 4px}
+.hy-domainbtn{display:flex;align-items:center;gap:8px;flex:0 0 auto;background:transparent;border:1px solid ${C.line};
   border-radius:8px;padding:8px 12px;color:${C.parch};font-family:${UI};cursor:pointer;text-align:left}
-.hy-tierbtn:hover,.hy-tierbtn[aria-expanded="true"]{border-color:${C.gold}}
-.hy-tierid{font-family:${UI};font-weight:700;font-size:14px;letter-spacing:.04em;color:${C.gold}}
-.hy-tiername{font-size:13px;color:${C.muted}}
-.hy-tiermenu{position:fixed;z-index:50;width:270px;background:${C.ink2};border:1px solid ${C.line};border-radius:10px;
+.hy-domainbtn:hover,.hy-domainbtn[aria-expanded="true"]{border-color:${C.gold}}
+.hy-domainid{font-family:${UI};font-weight:700;font-size:14px;letter-spacing:.04em;color:${C.gold}}
+.hy-domainname{font-size:13px;color:${C.muted}}
+.hy-domainmenu{position:fixed;z-index:50;width:270px;background:${C.ink2};border:1px solid ${C.line};border-radius:10px;
   padding:6px;box-shadow:0 12px 32px rgba(0,0,0,.45)}
-.hy-tieropt{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;
+.hy-domainopt{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;
   border:none;border-radius:6px;padding:9px 10px;color:${C.parch};font-family:${UI};font-size:14px;cursor:pointer}
-.hy-tieropt:hover:not(:disabled),.hy-tieropt[aria-current="true"]{background:${C.ink3}}
-.hy-tieropt:disabled{opacity:.45;cursor:default}
-.hy-tierbtn:focus-visible,.hy-tieropt:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
+.hy-domainopt:hover:not(:disabled),.hy-domainopt[aria-current="true"]{background:${C.ink3}}
+.hy-domainopt:disabled{opacity:.45;cursor:default}
+.hy-domainbtn:focus-visible,.hy-domainopt:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
 @media (max-width:879px){
   .hy-root{padding:calc(env(safe-area-inset-top, 0px) + 16px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);box-sizing:border-box}
   .hy-rail{gap:8px;padding:10px 12px;align-items:center;scrollbar-width:thin;scrollbar-color:${C.line} transparent}
@@ -1480,19 +1487,19 @@ const CSS = `
   .hy-rail::-webkit-scrollbar-thumb{background:${C.line};border-radius:2px}
   .hy-railcurrent{display:block;flex:0 1 150px;min-width:0;padding:6px 10px;border-radius:8px;background:${C.ink3};border:1px solid ${C.gold}}
   .hy-railgrid{display:grid;grid-template-rows:repeat(3,30px);grid-auto-flow:column;grid-auto-columns:30px;gap:5px;flex:0 0 auto}
-  .hy-railgrid .hy-raillevel{width:30px;height:30px;min-width:0;padding:0;border-radius:50%;border-color:${C.line};background:transparent;
+  .hy-railgrid .hy-railunit{width:30px;height:30px;min-width:0;padding:0;border-radius:50%;border-color:${C.line};background:transparent;
     display:flex;align-items:center;justify-content:center}
-  .hy-railgrid .hy-raillevel:hover,.hy-railgrid .hy-raillevel[data-on="true"]{border-color:${C.gold}}
-  .hy-railgrid .hy-raillevel[data-done="true"]{background:${C.gold};border-color:${C.gold}}
+  .hy-railgrid .hy-railunit:hover,.hy-railgrid .hy-railunit[data-on="true"]{border-color:${C.gold}}
+  .hy-railgrid .hy-railunit[data-done="true"]{background:${C.gold};border-color:${C.gold}}
   .hy-railgrid .hy-railfull{display:none}
   .hy-railgrid .hy-railnum{display:inline;font-family:${UI};font-size:12px;font-weight:600;color:${C.parch}}
-  .hy-railgrid .hy-raillevel[data-on="true"] .hy-railnum{color:${C.gold}}
-  .hy-railgrid .hy-raillevel[data-done="true"] .hy-railnum{color:${C.ink}}
+  .hy-railgrid .hy-railunit[data-on="true"] .hy-railnum{color:${C.gold}}
+  .hy-railgrid .hy-railunit[data-done="true"] .hy-railnum{color:${C.ink}}
   .hy-railpre{display:inline;color:${C.gold}}
   .hy-railsub{display:none}
   .hy-railcurrent .hy-railsub{display:block}
-  .hy-tierbtn{align-self:center;padding:7px 9px}
-  .hy-tiername{display:none}
+  .hy-domainbtn{align-self:center;padding:7px 9px}
+  .hy-domainname{display:none}
 }
 
 @media (min-width:880px){
@@ -1501,7 +1508,7 @@ const CSS = `
     overflow-y:auto;overflow-x:hidden;border-bottom:none;border-right:1px solid ${C.line};padding:26px 14px}
   .hy-railitem{min-width:0;width:100%}
   .hy-raildiv{height:1px;margin:10px 4px}
-  .hy-tierbtn{width:100%;margin-bottom:8px}
+  .hy-domainbtn{width:100%;margin-bottom:8px}
   .hy-railgrid{display:flex;flex-direction:column;gap:8px}
 }
 @media (max-width:520px){ .hy-opts{grid-template-columns:1fr} }
@@ -1657,15 +1664,15 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
 /*  Home                                                               */
 /* ------------------------------------------------------------------ */
 
-function LessonList({ level, progress, onStart }) {
-  const lessons = level.lessons;
-  const firstOpen = lessons.findIndex((L) => !progress.lessons[L.id]?.done);
+function ChapterList({ unit, progress, onStart }) {
+  const chapters = unit.chapters;
+  const firstOpen = chapters.findIndex((L) => !progress.chapters[L.id]?.done);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {lessons.map((L, i) => {
-        const rec = progress.lessons[L.id];
+      {chapters.map((L, i) => {
+        const rec = progress.chapters[L.id];
         const done = !!rec?.done;
-        const locked = false;   // every lesson is open; learners can move freely
+        const locked = false;   // every chapter is open; learners can move freely
         const next = i === firstOpen;
         const letters = L.letters;
         return (
@@ -1677,7 +1684,7 @@ function LessonList({ level, progress, onStart }) {
             }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12 }}>
               <span style={{ fontFamily: UI, fontSize: 14, color: C.parch, fontWeight: 600 }}>
-                {L.id} · {L.title}
+                Chapter {i + 1} · {L.title}
               </span>
               {done ? <Stars n={rec.stars} />
                 : locked ? <span style={{ fontFamily: UI, fontSize: 12, color: C.muted }}>locked</span>
@@ -1699,17 +1706,17 @@ function LessonList({ level, progress, onStart }) {
   );
 }
 
-function Home({ progress, onStart, storageWarning, level, setLevel }) {
+function Home({ progress, onStart, storageWarning, unitN }) {
   const learnedIds = useMemo(() => {
     const s = new Set();
-    LESSONS.forEach((L) => {
-      if (progress.lessons[L.id]?.done) L.letters.forEach((x) => s.add(x.u));
+    LETTER_CHAPTERS.forEach((L) => {
+      if (progress.chapters[L.id]?.done) L.letters.forEach((x) => s.add(x.u));
     });
     return s;
   }, [progress]);
 
   const learnedCount = ALPHABET.filter((x) => learnedIds.has(x.u)).length;
-  const current = LEVELS.find((L) => L.n === level);
+  const current = UNITS.find((u) => u.n === unitN);
 
   return (
     <div className="hy-wrap">
@@ -1720,13 +1727,13 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
         <p style={{ marginTop: 8, fontFamily: UI, color: C.muted, fontSize: 15 }}>Eastern Armenian</p>
       </header>
 
-      {level === 1 && (
+      {unitN === 1 && (
         <section style={{ marginBottom: 28 }}>
           <AlphabetBoard learnedIds={learnedIds} learnedCount={learnedCount} />
         </section>
       )}
 
-      {level === 1 && (
+      {unitN === 1 && (
       <section style={{
         marginBottom: 30, display: "flex", gap: 26, borderRadius: 12,
         padding: "12px 16px", background: C.ink2, border: `1px solid ${C.line}`,
@@ -1744,7 +1751,7 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
       </section>
       )}
 
-      <LessonList level={current} progress={progress} onStart={onStart} />
+      <ChapterList unit={current} progress={progress} onStart={onStart} />
 
       {storageWarning && (
         <p style={{ marginTop: 24, fontFamily: UI, fontSize: 12, color: C.muted }}>
@@ -1805,12 +1812,12 @@ function WordBank({ words }) {
       <div role="tabpanel" aria-label={part.name} style={{ marginTop: 22 }}>
         <p style={{ margin: 0, fontFamily: UI, fontSize: 15, color: C.parch }}>{part.note}</p>
         <p style={{ margin: "6px 0 0", fontFamily: UI, fontSize: 13, color: C.muted }}>
-          {known.length} known · {learning.length} still learning · {unmet} to meet in later lessons
+          {known.length} known · {learning.length} still learning · {unmet} to meet in later units
         </p>
 
         {known.length + learning.length === 0 ? (
           <p style={{ marginTop: 26, fontFamily: UI, fontSize: 15, color: C.muted, lineHeight: 1.6 }}>
-            No {part.name.toLowerCase()} yet. The first ones come in lesson {part.rows[0].lesson}.
+            No {part.name.toLowerCase()} yet. The first ones come in chapter {part.rows[0].chapter}.
           </p>
         ) : (
           <>
@@ -2125,12 +2132,12 @@ function StoryReader({ progress, save }) {
 /*  Study                                                              */
 /* ------------------------------------------------------------------ */
 
-function Study({ lesson, cards, onDone, onQuit }) {
+function Study({ chapter, cards, onDone, onQuit }) {
   const [i, setI] = useState(0);
   const c = cards[i];
   const last = i === cards.length - 1;
   const next = cards[i + 1];
-  const newLetters = new Set((lesson.letters || []).map((x) => x.lo));
+  const newLetters = new Set((chapter.letters || []).map((x) => x.lo));
   const label = last ? "Start practice"
     : c.kind === "letter" && next.kind === "word" ? "On to the words"
     : c.kind === "letter" ? "Next letter" : "Next word";
@@ -2164,19 +2171,19 @@ function Study({ lesson, cards, onDone, onQuit }) {
               </div>
             ) : (
               <p style={{ marginTop: 22, fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>
-                No example word in this lesson — ֆ is rare enough that none of its words fits here yet.
+                No example word in this chapter — ֆ is rare enough that none of its words fits here yet.
               </p>
             )}
           </>
         ) : (
           <>
-            {c.firstWord && lesson.letters && (
+            {c.firstWord && chapter.letters && (
               <p style={{ margin: "0 0 26px", fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>
                 Words you can read with these letters. The new letters are in gold.
               </p>
             )}
             <div style={{ fontFamily: ARM, fontSize: c.hy.length > 12 ? 34 : 50, lineHeight: 1.25, maxWidth: 480 }}>
-              {lesson.letters
+              {chapter.letters
                 ? splitWord(c.hy).map((ch, k) => (
                     <span key={k} style={{ color: newLetters.has(ch) ? C.gold : C.parch }}>{ch}</span>
                   ))
@@ -2185,9 +2192,9 @@ function Study({ lesson, cards, onDone, onQuit }) {
             <div style={{ marginTop: 12, fontFamily: UI, fontSize: 20, color: C.apricot }}>{c.rom}</div>
             <div style={{ marginTop: 4, fontFamily: UI, fontSize: 18, color: C.parch }}>{c.en}</div>
             <div style={{ marginTop: 18 }}><SpeakButton hy={c.hy} /></div>
-            {i === 0 && lesson.note && (
+            {i === 0 && chapter.note && (
               <p style={{ marginTop: 26, fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 400, lineHeight: 1.6 }}>
-                {lesson.note}
+                {chapter.note}
               </p>
             )}
           </>
@@ -2360,7 +2367,7 @@ function Quiz({ questions, onFinish, onQuit }) {
 /*  Result                                                             */
 /* ------------------------------------------------------------------ */
 
-function Result({ lesson, session, result, stars, xpGain, onRetry, onHome }) {
+function Result({ chapter, lesson, result, stars, xpGain, onRetry, onHome }) {
   const wrap = { maxWidth: 460, margin: "0 auto", padding: "64px 20px", textAlign: "center", width: "100%", boxSizing: "border-box" };
 
   if (result.failed) {
@@ -2369,11 +2376,11 @@ function Result({ lesson, session, result, stars, xpGain, onRetry, onHome }) {
         <div style={{ display: "flex", justifyContent: "center" }}><Hearts n={0} /></div>
         <h2 style={{ marginTop: 18, fontFamily: UI, fontSize: 22, color: C.parch, fontWeight: 700 }}>Out of hearts</h2>
         <p style={{ marginTop: 8, fontFamily: UI, fontSize: 15, color: C.muted, lineHeight: 1.6 }}>
-          Lesson {lesson.id} stays where it is. Try again: the cards come first, then the questions.
+          The chapter “{chapter.title}” stays where it is. Try again: the cards come first, then the questions.
         </p>
         <div style={{ marginTop: 32, display: "flex", flexDirection: "column", gap: 12 }}>
-          <Button full onClick={onRetry}>Try lesson {lesson.id} again</Button>
-          <Button full tone="quiet" onClick={onHome}>Back to the alphabet</Button>
+          <Button full onClick={onRetry}>Try this lesson again</Button>
+          <Button full tone="quiet" onClick={onHome}>Back to the unit</Button>
         </div>
       </div>
     );
@@ -2383,31 +2390,31 @@ function Result({ lesson, session, result, stars, xpGain, onRetry, onHome }) {
     <div style={wrap}>
       <div style={{ display: "flex", justifyContent: "center" }}><Stars n={stars} size={38} /></div>
       <h2 style={{ marginTop: 24, fontFamily: UI, fontSize: 22, color: C.parch, fontWeight: 700 }}>
-        Lesson {lesson.id} complete
+        “{chapter.title}” complete
       </h2>
       <p style={{ marginTop: 8, fontFamily: UI, fontSize: 15, color: C.muted }}>
         {result.mistakes === 0 ? "No mistakes." : `${result.mistakes} mistake${result.mistakes > 1 ? "s" : ""}.`} +{xpGain} experience.
       </p>
-      {lesson.letters && (
+      {chapter.letters && (
         <>
           <div style={{ marginTop: 32, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8, fontFamily: ARM, fontSize: 34, color: C.gold }}>
-            {lesson.letters.map((x) => <span key={x.u}>{glyph(x)}</span>)}
+            {chapter.letters.map((x) => <span key={x.u}>{glyph(x)}</span>)}
           </div>
           <p style={{ marginTop: 12, fontFamily: UI, fontSize: 13, color: C.muted }}>now lit on your board</p>
         </>
       )}
-      {session.fresh.length > 0 && (
+      {lesson.fresh.length > 0 && (
         <>
           <div style={{ marginTop: 28, display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "6px 14px", fontFamily: ARM, fontSize: 22, color: C.parch }}>
-            {session.fresh.map((x) => <span key={x.hy}>{x.hy}</span>)}
+            {lesson.fresh.map((x) => <span key={x.hy}>{x.hy}</span>)}
           </div>
           <p style={{ marginTop: 10, fontFamily: UI, fontSize: 13, color: C.muted }}>
-            {session.fresh.length} new {session.fresh.length === 1 ? "word" : "words"} this time
+            {lesson.fresh.length} new {lesson.fresh.length === 1 ? "word" : "words"} this time
           </p>
         </>
       )}
       <div style={{ marginTop: 40, display: "flex", flexDirection: "column", gap: 12 }}>
-        <Button full onClick={onHome}>Back to the alphabet</Button>
+        <Button full onClick={onHome}>Back to the unit</Button>
         <Button full tone="quiet" onClick={onRetry}>Practise again</Button>
       </div>
     </div>
@@ -2421,39 +2428,39 @@ function Result({ lesson, session, result, stars, xpGain, onRetry, onHome }) {
 export default function ArmenianCourse() {
   const { progress, status, save } = useProgress();
   const [view, setView] = useState({ name: "home" });
-  const [level, setLevel] = useState(1);
-  const [tier, setTier] = useState("A0");
-  const [tierMenu, setTierMenu] = useState(null);   // where the open dropdown sits, or null when closed
-  const tierBtn = React.useRef(null);
+  const [page, setPage] = useState(1);                 // the open unit's number, or "pos" (Grammar) or "stories"
+  const [domain, setDomain] = useState("A0");
+  const [domainMenu, setDomainMenu] = useState(null);   // where the open dropdown sits, or null when closed
+  const domainBtn = React.useRef(null);
 
-  // Keep the dropdown on the CEFR level of whatever unit is open.
+  // Keep the dropdown on the domain of whatever unit is open.
   useEffect(() => {
-    const lv = LEVELS.find((l) => l.n === level);
-    if (lv) setTier(lv.tier);
-  }, [level]);
+    const u = UNITS.find((x) => x.n === page);
+    if (u) setDomain(u.domain);
+  }, [page]);
 
   // Close the dropdown on a click elsewhere or on Escape.
   useEffect(() => {
-    if (!tierMenu) return;
+    if (!domainMenu) return;
     const close = (e) => {
-      if (e.type === "keydown" ? e.key === "Escape" : !e.target.closest(".hy-tiermenu, .hy-tierbtn")) setTierMenu(null);
+      if (e.type === "keydown" ? e.key === "Escape" : !e.target.closest(".hy-domainmenu, .hy-domainbtn")) setDomainMenu(null);
     };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", close);
     return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", close); };
-  }, [tierMenu]);
+  }, [domainMenu]);
 
-  const toggleTierMenu = () => {
-    if (tierMenu) return setTierMenu(null);
-    const r = tierBtn.current.getBoundingClientRect();
-    setTierMenu({ top: r.bottom + 6, left: Math.max(8, Math.min(r.left, window.innerWidth - 278)) });
+  const toggleDomainMenu = () => {
+    if (domainMenu) return setDomainMenu(null);
+    const r = domainBtn.current.getBoundingClientRect();
+    setDomainMenu({ top: r.bottom + 6, left: Math.max(8, Math.min(r.left, window.innerWidth - 278)) });
   };
 
-  const chooseTier = (t) => {
-    setTierMenu(null);
-    setTier(t);
-    const first = LEVELS.find((l) => l.tier === t);
-    if (first) setLevel(first.n);
+  const chooseDomain = (d) => {
+    setDomainMenu(null);
+    setDomain(d);
+    const first = UNITS.find((u) => u.domain === d);
+    if (first) setPage(first.n);
   };
 
   useEffect(() => {
@@ -2466,18 +2473,19 @@ export default function ArmenianCourse() {
     document.head.appendChild(link);
   }, []);
 
-  const startLesson = (lvl, idx) => {
-    const session = buildSession(lvl - 1, idx, progress.words, progress.lessons);
-    setView({ name: session.cards.length ? "study" : "quiz", lvl, idx, session });
+  // unitN: the unit's number. idx: which chapter in it.
+  const startLesson = (unitN, idx) => {
+    const lesson = buildLesson(unitN - 1, idx, progress.words, progress.chapters);
+    setView({ name: lesson.cards.length ? "study" : "quiz", unitN, idx, lesson });
   };
 
-  const finish = async (lvl, idx, result) => {
-    const lesson = LEVELS[lvl - 1].lessons[idx];
+  const finish = async (unitN, idx, result) => {
+    const chapter = UNITS[unitN - 1].chapters[idx];
     let stars = 0, xpGain = 0;
     if (!result.failed) {
       stars = result.mistakes === 0 ? 3 : result.mistakes <= 2 ? 2 : 1;
       xpGain = 10 + (result.mistakes === 0 ? 5 : 0);
-      const prev = progress.lessons[lesson.id];
+      const prev = progress.chapters[chapter.id];
       const today = todayKey();
       const gap = dayGap(progress.lastDay, today);
       const streak = gap === 0 ? progress.streak || 1 : gap === 1 ? (progress.streak || 0) + 1 : 1;
@@ -2488,10 +2496,10 @@ export default function ArmenianCourse() {
         words,
         xp: progress.xp + xpGain,
         streak, lastDay: today,
-        lessons: { ...progress.lessons, [lesson.id]: { done: true, stars: Math.max(stars, prev?.stars || 0), mistakes: result.mistakes } },
+        chapters: { ...progress.chapters, [chapter.id]: { done: true, stars: Math.max(stars, prev?.stars || 0), mistakes: result.mistakes } },
       });
     }
-    setView({ name: "result", lvl, idx, session: view.session, result, stars, xpGain });
+    setView({ name: "result", unitN, idx, lesson: view.lesson, result, stars, xpGain });
   };
 
   if (!progress) {
@@ -2507,14 +2515,14 @@ export default function ArmenianCourse() {
 
   let body;
   if (view.name === "study") {
-    body = <Study lesson={LEVELS[view.lvl - 1].lessons[view.idx]} cards={view.session.cards} onQuit={() => setView({ name: "home" })} onDone={() => setView({ ...view, name: "quiz" })} />;
+    body = <Study chapter={UNITS[view.unitN - 1].chapters[view.idx]} cards={view.lesson.cards} onQuit={() => setView({ name: "home" })} onDone={() => setView({ ...view, name: "quiz" })} />;
   } else if (view.name === "quiz") {
-    body = <Quiz questions={view.session.questions} onQuit={() => setView({ name: "home" })} onFinish={(r) => finish(view.lvl, view.idx, r)} />;
+    body = <Quiz questions={view.lesson.questions} onQuit={() => setView({ name: "home" })} onFinish={(r) => finish(view.unitN, view.idx, r)} />;
   } else if (view.name === "result") {
-    body = <Result lesson={LEVELS[view.lvl - 1].lessons[view.idx]} session={view.session} result={view.result} stars={view.stars} xpGain={view.xpGain}
-      onRetry={() => startLesson(view.lvl, view.idx)} onHome={() => setView({ name: "home" })} />;
+    body = <Result chapter={UNITS[view.unitN - 1].chapters[view.idx]} lesson={view.lesson} result={view.result} stars={view.stars} xpGain={view.xpGain}
+      onRetry={() => startLesson(view.unitN, view.idx)} onHome={() => setView({ name: "home" })} />;
   } else {
-    body = level === "stories" ? <StoryReader progress={progress} save={save} /> : level === "pos" ? <WordBank words={progress.words} /> : <Home progress={progress} onStart={(idx) => startLesson(level, idx)} storageWarning={status === "memory"} level={level} setLevel={setLevel} />;
+    body = page === "stories" ? <StoryReader progress={progress} save={save} /> : page === "pos" ? <WordBank words={progress.words} /> : <Home progress={progress} onStart={(idx) => startLesson(page, idx)} storageWarning={status === "memory"} unitN={page} />;
   }
 
   return (
@@ -2522,43 +2530,43 @@ export default function ArmenianCourse() {
       <style>{CSS}</style>
       <div className="hy-shell">
         {!inLesson && (
-          <nav className="hy-rail" aria-label="Levels">
-            <button ref={tierBtn} className="hy-tierbtn" onClick={toggleTierMenu}
-              aria-haspopup="menu" aria-expanded={!!tierMenu} aria-label={`CEFR level ${tier}, choose another`}>
-              <span className="hy-tierid">{level === "pos" ? "Grammar" : level === "stories" ? "Stories" : tier}</span>
-              {typeof level === "number" && <span className="hy-tiername">{TIERS.find((t) => t.id === tier).name}</span>}
-              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: "auto", transform: tierMenu ? "rotate(180deg)" : "none" }}>
+          <nav className="hy-rail" aria-label="Units">
+            <button ref={domainBtn} className="hy-domainbtn" onClick={toggleDomainMenu}
+              aria-haspopup="menu" aria-expanded={!!domainMenu} aria-label={`Domain ${domain}, choose another`}>
+              <span className="hy-domainid">{page === "pos" ? "Grammar" : page === "stories" ? "Stories" : domain}</span>
+              {typeof page === "number" && <span className="hy-domainname">{DOMAINS.find((d) => d.id === domain).name}</span>}
+              <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: "auto", transform: domainMenu ? "rotate(180deg)" : "none" }}>
                 <path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke={C.gold} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
             {(() => {
               // On phones: a card for the open unit, beside the numbered circles.
-              const cur = LEVELS.find((L) => L.n === level && L.tier === tier);
+              const cur = UNITS.find((u) => u.n === page && u.domain === domain);
               if (!cur) return null;
-              const done = cur.lessons.filter((x) => progress.lessons[x.id]?.done).length;
+              const done = cur.chapters.filter((x) => progress.chapters[x.id]?.done).length;
               return (
                 <div className="hy-railcurrent" aria-hidden="true">
                   <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
                     <span className="hy-railpre">{cur.short} · </span>{cur.name}
                   </div>
                   <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: C.muted, marginTop: 2 }}>
-                    {done} of {cur.lessons.length} done
+                    {done} of {cur.chapters.length} done
                   </div>
                 </div>
               );
             })()}
             <div className="hy-railgrid">
-            {LEVELS.filter((L) => L.tier === tier).map((L) => {
-              const doneCount = L.lessons.filter((x) => progress.lessons[x.id]?.done).length;
-              const complete = L.lessons.length > 0 && doneCount === L.lessons.length;
+            {UNITS.filter((U) => U.domain === domain).map((U) => {
+              const doneCount = U.chapters.filter((x) => progress.chapters[x.id]?.done).length;
+              const complete = U.chapters.length > 0 && doneCount === U.chapters.length;
               return (
-                <React.Fragment key={L.n}>
-                <button className="hy-railitem hy-raillevel" data-on={level === L.n} data-done={complete} onClick={() => setLevel(L.n)}
-                  aria-label={`${L.tag}, ${L.name}${complete ? ", complete" : ""}`}>
-                  <span className="hy-railnum" aria-hidden="true">{L.short}</span>
+                <React.Fragment key={U.n}>
+                <button className="hy-railitem hy-railunit" data-on={page === U.n} data-done={complete} onClick={() => setPage(U.n)}
+                  aria-label={`${U.tag}, ${U.name}${complete ? ", complete" : ""}`}>
+                  <span className="hy-railnum" aria-hidden="true">{U.short}</span>
                   <div className="hy-railfull">
-                  <div className="hy-railtop" style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: UI, fontSize: 11, fontWeight: 600, color: level === L.n || complete ? C.gold : C.muted }}>
-                    {L.tag}
+                  <div className="hy-railtop" style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: UI, fontSize: 11, fontWeight: 600, color: page === U.n || complete ? C.gold : C.muted }}>
+                    {U.tag}
                     {complete && (
                       <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
                         <circle cx="8" cy="8" r="8" fill={C.gold} />
@@ -2567,10 +2575,10 @@ export default function ArmenianCourse() {
                     )}
                   </div>
                   <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
-                    <span className="hy-railpre">{L.short} · </span>{L.name}
+                    <span className="hy-railpre">{U.short} · </span>{U.name}
                   </div>
                   <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: complete ? C.gold : C.muted, marginTop: 2 }}>
-                    {complete ? "Complete" : `${doneCount} of ${L.lessons.length} done`}
+                    {complete ? "Complete" : `${doneCount} of ${U.chapters.length} done`}
                   </div>
                   </div>
                 </button>
@@ -2580,28 +2588,28 @@ export default function ArmenianCourse() {
             </div>
           </nav>
         )}
-        {tierMenu && !inLesson && (
-          <div className="hy-tiermenu" role="menu" aria-label="CEFR levels" style={{ top: tierMenu.top, left: tierMenu.left }}>
-            {TIERS.map((t) => {
-              const units = LEVELS.filter((l) => l.tier === t.id).length;
+        {domainMenu && !inLesson && (
+          <div className="hy-domainmenu" role="menu" aria-label="Domains" style={{ top: domainMenu.top, left: domainMenu.left }}>
+            {DOMAINS.map((d) => {
+              const units = UNITS.filter((u) => u.domain === d.id).length;
               return (
-                <button key={t.id} role="menuitem" className="hy-tieropt" disabled={!units}
-                  aria-current={t.id === tier} onClick={() => chooseTier(t.id)}>
-                  <span><span className="hy-tierid">{t.id}</span> <span style={{ marginLeft: 6 }}>{t.name}</span></span>
+                <button key={d.id} role="menuitem" className="hy-domainopt" disabled={!units}
+                  aria-current={d.id === domain} onClick={() => chooseDomain(d.id)}>
+                  <span><span className="hy-domainid">{d.id}</span> <span style={{ marginLeft: 6 }}>{d.name}</span></span>
                   <span style={{ fontSize: 12, color: C.muted }}>
-                    {!units ? "coming soon" : t.id === "A0" ? `${units} lessons` : `${units} unit${units === 1 ? "" : "s"}`}
+                    {!units ? "coming soon" : `${units} unit${units === 1 ? "" : "s"}`}
                   </span>
                 </button>
               );
             })}
-            <div className="hy-tiersep" aria-hidden="true" />
-            <button role="menuitem" className="hy-tieropt" aria-current={level === "pos"}
-              onClick={() => { setTierMenu(null); setLevel("pos"); }}>
+            <div className="hy-domainsep" aria-hidden="true" />
+            <button role="menuitem" className="hy-domainopt" aria-current={page === "pos"}
+              onClick={() => { setDomainMenu(null); setPage("pos"); }}>
               <span>Grammar</span>
               <span style={{ fontSize: 12, color: C.muted }}>{knownCount(progress.words)} words known</span>
             </button>
-            <button role="menuitem" className="hy-tieropt" aria-current={level === "stories"}
-              onClick={() => { setTierMenu(null); setLevel("stories"); }}>
+            <button role="menuitem" className="hy-domainopt" aria-current={page === "stories"}
+              onClick={() => { setDomainMenu(null); setPage("stories"); }}>
               <span>Stories</span>
               <span style={{ fontSize: 12, color: C.muted }}>{storiesRead(progress)} of {STORIES.length} read</span>
             </button>
