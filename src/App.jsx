@@ -1550,6 +1550,7 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
         </section>
       )}
 
+      {level === 1 && (
       <section style={{
         marginBottom: 30, display: "flex", gap: 26, borderRadius: 12,
         padding: "12px 16px", background: C.ink2, border: `1px solid ${C.line}`,
@@ -1565,6 +1566,7 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
           </div>
         ))}
       </section>
+      )}
 
       <LessonList level={current} progress={progress} onStart={onStart} />
 
