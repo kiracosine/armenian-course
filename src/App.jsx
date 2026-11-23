@@ -1341,6 +1341,28 @@ const CSS = `
 .hy-tab[aria-selected="true"]{background:${C.ink3};border-color:${C.gold}}
 .hy-raildiv{flex:0 0 1px;align-self:stretch;background:${C.line};margin:0 4px}
 .hy-btn:focus-visible,.hy-tab:focus-visible,.hy-railitem:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
+.hy-railnum,.hy-railpre,.hy-short{display:none}
+@media (max-width:879px){
+  .hy-rail{gap:6px;padding:10px 14px;align-items:center;scrollbar-width:thin;scrollbar-color:${C.line} transparent}
+  .hy-rail::-webkit-scrollbar{height:4px}
+  .hy-rail::-webkit-scrollbar-track{background:transparent}
+  .hy-rail::-webkit-scrollbar-thumb{background:${C.line};border-radius:2px}
+  .hy-railitem{min-width:0;padding:6px 10px}
+  .hy-raillevel[data-on="false"]{width:34px;height:34px;padding:0;border-radius:50%;border-color:${C.line};
+    display:flex;align-items:center;justify-content:center}
+  .hy-raillevel[data-on="false"]:hover{border-color:${C.gold}}
+  .hy-raillevel[data-on="false"][data-done="true"]{background:${C.gold};border-color:${C.gold}}
+  .hy-raillevel[data-on="false"][data-done="true"] .hy-railnum{color:${C.ink}}
+  .hy-raillevel[data-on="false"] .hy-railfull{display:none}
+  .hy-raillevel[data-on="false"] .hy-railnum{display:inline;font-family:${UI};font-size:13px;font-weight:600;color:${C.parch}}
+  .hy-raillevel[data-on="true"] .hy-railtop{display:none!important}
+  .hy-railpre{display:inline;color:${C.gold}}
+  .hy-railsub{display:none}
+  .hy-raillevel .hy-railsub{display:block}
+  .hy-long{display:none}
+  .hy-short{display:inline}
+  .hy-raildiv{align-self:center;height:24px}
+}
 @media (min-width:880px){
   .hy-shell{flex-direction:row}
   .hy-rail{flex-direction:column;width:232px;flex:0 0 232px;height:100vh;position:sticky;top:0;
@@ -2285,9 +2307,11 @@ export default function ArmenianCourse() {
               const doneCount = L.lessons.filter((x) => progress.lessons[x.id]?.done).length;
               const complete = doneCount === L.lessons.length;
               return (
-                <button key={L.n} className="hy-railitem" data-on={level === L.n} onClick={() => setLevel(L.n)}
+                <button key={L.n} className="hy-railitem hy-raillevel" data-on={level === L.n} data-done={complete} onClick={() => setLevel(L.n)}
                   aria-label={`Level ${L.n}, ${L.name}${complete ? ", complete" : ""}`}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: UI, fontSize: 11, fontWeight: 600, color: level === L.n || complete ? C.gold : C.muted }}>
+                  <span className="hy-railnum" aria-hidden="true">{L.n}</span>
+                  <div className="hy-railfull">
+                  <div className="hy-railtop" style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: UI, fontSize: 11, fontWeight: 600, color: level === L.n || complete ? C.gold : C.muted }}>
                     Level {L.n}
                     {complete && (
                       <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
@@ -2297,10 +2321,11 @@ export default function ArmenianCourse() {
                     )}
                   </div>
                   <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
-                    {L.name}
+                    <span className="hy-railpre">{L.n} · </span>{L.name}
                   </div>
-                  <div style={{ fontFamily: UI, fontSize: 11, color: complete ? C.gold : C.muted, marginTop: 2 }}>
+                  <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: complete ? C.gold : C.muted, marginTop: 2 }}>
                     {complete ? "Complete" : `${doneCount} of ${L.lessons.length} done`}
+                  </div>
                   </div>
                 </button>
               );
@@ -2309,9 +2334,9 @@ export default function ArmenianCourse() {
             <button className="hy-railitem" data-on={level === "pos"} onClick={() => setLevel("pos")}
               aria-label={`Parts of speech, ${knownCount(progress.words)} words known`}>
               <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
-                Parts of speech
+                <span className="hy-long">Parts of speech</span><span className="hy-short">Grammar</span>
               </div>
-              <div style={{ fontFamily: UI, fontSize: 11, color: knownCount(progress.words) ? C.gold : C.muted, marginTop: 2 }}>
+              <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: knownCount(progress.words) ? C.gold : C.muted, marginTop: 2 }}>
                 {knownCount(progress.words)} words known
               </div>
             </button>
@@ -2320,7 +2345,7 @@ export default function ArmenianCourse() {
               <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
                 Stories
               </div>
-              <div style={{ fontFamily: UI, fontSize: 11, color: storiesRead(progress) ? C.gold : C.muted, marginTop: 2 }}>
+              <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: storiesRead(progress) ? C.gold : C.muted, marginTop: 2 }}>
                 {storiesRead(progress)} of {STORIES.length} {STORIES.length === 1 ? "story" : "stories"} read
               </div>
             </button>
