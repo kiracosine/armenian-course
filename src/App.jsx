@@ -32,7 +32,7 @@ const LEGACY_KEY = "armenian:level1:progress";
 const w = (hy, rom, en) => ({ hy, rom, en });
 const l = (u, lo, name, rom, tip, ex) => ({ u, lo, name, rom, tip, ex });
 const wide = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), wide: true });
-const aside = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), solo: true, uncounted: true });
+const aside = (u, lo, name, rom, tip, ex) => ({ ...l(u, lo, name, rom, tip, ex), solo: true });
 const glyph = (x) => (x.solo ? x.lo : x.u);
 const pair = (x) => (x.solo ? x.lo : `${x.u} ${x.lo}`);
 
@@ -220,13 +220,13 @@ const LETTER_LESSONS = [
 
 const LESSONS = LETTER_LESSONS;
 const ALPHABET = LESSONS.flatMap((L) => L.letters.filter((x) => !x.uncounted));
-// Taught, but set apart from the 38: a ligature rather than a letter of the alphabet.
+// Anything marked uncounted is taught but kept off the alphabet count. և now counts as the 39th letter.
 const EXTRAS = LESSONS.flatMap((L) => L.letters.filter((x) => x.uncounted));
 
 const LEVELS = [
   { n: 1, name: "The letters",
-    blurb: "All 38 letters, grouped so that every word a lesson asks you to read is spellable from that lesson plus the core.",
-    topics: ["38 letters plus և", "194 words", "Reading short words"], lessons: LETTER_LESSONS },
+    blurb: "All 39 letters, grouped so that every word a lesson asks you to read is spellable from that lesson plus the core.",
+    topics: ["39 letters, ending with և", "194 words", "Reading short words"], lessons: LETTER_LESSONS },
   { n: 2, name: "Syllables and stress", blurb: "Turning letters into sound. The rules that decide how a written word is said.",
     topics: ["Words with ու", "Words with և", "Words that begin with ը"], lessons: [
       L("2-1", "Words with ու", "ու is two letters but one sound. Read each of these aloud.", [
@@ -1438,7 +1438,7 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
     <div>
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 6 }}>
         {ALPHABET.map((L) => tile(L))}
-        <span aria-hidden="true" style={{ width: 1, height: 26, background: C.line, margin: "0 6px" }} />
+        {EXTRAS.length > 0 && <span aria-hidden="true" style={{ width: 1, height: 26, background: C.line, margin: "0 6px" }} />}
         {EXTRAS.map((L) => tile(L))}
       </div>
       <div style={{ marginTop: 12, fontSize: 14, color: sel ? C.parch : C.muted, fontFamily: UI, minHeight: 22 }}>
@@ -1448,7 +1448,7 @@ function AlphabetBoard({ learnedIds, learnedCount }) {
             <span style={{ fontFamily: ARM }}>{sel.name}</span> · {sel.rom} — {sel.tip}
           </span>
         ) : (
-          `${learnedCount} of 38 letters lit, plus և after the divider. Tap a gold one for a reminder.`
+          `${learnedCount} of ${ALPHABET.length} letters lit. Tap a gold one for a reminder.`
         )}
       </div>
     </div>
@@ -1491,7 +1491,7 @@ function LessonList({ level, progress, onStart }) {
                 : L.items.slice(0, 5).map((x) => <span key={x.hy}>{x.hy}</span>)}
             </div>
             <div style={{ marginTop: 8, fontFamily: UI, fontSize: 12, color: C.muted }}>
-              {(letters ? `${letters.filter((x) => !x.uncounted).length} letters · ` : "") +
+              {(letters ? `${letters.filter((x) => !x.uncounted).length} letter${letters.filter((x) => !x.uncounted).length === 1 ? "" : "s"} · ` : "") +
                 `${wordsOf(L).filter((x) => stageOf(progress.words, x) > 0).length} of ${wordsOf(L).length} words introduced`}
             </div>
           </button>
@@ -1533,7 +1533,7 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
         {[
           [progress.xp, "experience", C.apricot],
           [progress.streak, "day streak", C.apricot],
-          [`${learnedCount}/38`, "letters", C.gold],
+          [`${learnedCount}/${ALPHABET.length}`, "letters", C.gold],
         ].map(([v, label, col]) => (
           <div key={label}>
             <div style={{ fontFamily: UI, fontSize: 22, color: col, fontWeight: 700 }}>{v}</div>
