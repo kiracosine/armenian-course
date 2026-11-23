@@ -1522,9 +1522,11 @@ function Home({ progress, onStart, storageWarning, level, setLevel }) {
         <p style={{ marginTop: 8, fontFamily: UI, color: C.muted, fontSize: 15 }}>Eastern Armenian</p>
       </header>
 
-      <section style={{ marginBottom: 28 }}>
-        <AlphabetBoard learnedIds={learnedIds} learnedCount={learnedCount} />
-      </section>
+      {level === 1 && (
+        <section style={{ marginBottom: 28 }}>
+          <AlphabetBoard learnedIds={learnedIds} learnedCount={learnedCount} />
+        </section>
+      )}
 
       <section style={{
         marginBottom: 30, display: "flex", gap: 26, borderRadius: 12,
