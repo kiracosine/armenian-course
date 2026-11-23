@@ -2023,9 +2023,9 @@ function Study({ lesson, cards, onDone, onQuit }) {
     : c.kind === "letter" && next.kind === "word" ? "On to the words"
     : c.kind === "letter" ? "Next letter" : "Next word";
 
-  // Say each new word or phrase aloud when its card appears.
+  // Say each new letter's name, or each new word or phrase, when its card appears.
   useEffect(() => {
-    if (c.kind !== "letter") audioReady.then(() => playHy(c.hy));
+    audioReady.then(() => playHy(c.kind === "letter" ? c.name : c.hy));
   }, [i]);
 
   return (
@@ -2042,6 +2042,7 @@ function Study({ lesson, cards, onDone, onQuit }) {
             <div style={{ fontFamily: ARM, fontSize: c.wide ? 68 : 92, color: C.gold, lineHeight: 1.1 }}>{pair(c)}</div>
             <div style={{ marginTop: 14, fontFamily: ARM, fontSize: 20, color: C.parch }}>{c.name}</div>
             <div style={{ marginTop: 2, fontFamily: UI, fontSize: 28, color: C.apricot, fontWeight: 600 }}>{c.rom}</div>
+            <div style={{ marginTop: 12 }}><SpeakButton hy={c.name} /></div>
             <p style={{ marginTop: 18, fontFamily: UI, fontSize: 15, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>{c.tip}</p>
             {c.ex ? (
               <div style={{ marginTop: 22, borderRadius: 12, padding: "16px 24px", background: C.ink2, border: `1px solid ${C.line}` }}>
@@ -2052,6 +2053,7 @@ function Study({ lesson, cards, onDone, onQuit }) {
                 </div>
                 <div style={{ marginTop: 4, fontFamily: UI, fontSize: 15, color: C.apricot }}>{c.ex.rom}</div>
                 <div style={{ fontFamily: UI, fontSize: 15, color: C.muted }}>{c.ex.en}</div>
+                <div style={{ marginTop: 10 }}><SpeakButton hy={c.ex.hy} size={34} /></div>
               </div>
             ) : (
               <p style={{ marginTop: 22, fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 380, lineHeight: 1.6 }}>
