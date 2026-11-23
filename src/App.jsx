@@ -613,7 +613,83 @@ const LEVELS = [
         it("Ամեն ինչ մաքուր է", "Amen inch makur e", "Everything is clean")
       ]),
     ] },
+  /* A1 to C2: the CEFR course. Each unit is 10 lessons of 10 words, none repeated from A0. */
+  { n: 11, tier: "A1", short: 1, tag: "A1 · Unit 1", name: "Greetings, pronouns and glue words", blurb: "The small words that hold every sentence together: who, whose, and, but, because.",
+    topics: ["People words", "Mine and yours", "More questions"], lessons: [
+      L("A1.1-1", "People words", "The rest of the personal pronouns, and a few forms built from them.", [
+        it("դու", "du", "you"), it("մենք", "menk", "we"),
+        it("դուք", "duk", "you (plural, polite)"), it("նրանք", "nrank", "they"),
+        it("մեզ", "mez", "to us"), it("ձեզ", "dzez", "to you (plural)"),
+        it("ինքը", "inkə", "he himself, she herself"), it("ինքս", "inks", "I myself"),
+        it("իրենք", "irenk", "they themselves"), it("նրանից", "nranits", "from him, from her")
+      ]),
+      L("A1.1-2", "Mine and yours", "Add -ը to my, your and our to say mine, yours and ours.", [
+        it("իմը", "imə", "mine"), it("քոնը", "konə", "yours"),
+        it("նրանը", "nranə", "his, hers"), it("մերը", "merə", "ours"),
+        it("ձերը", "dzerə", "yours (plural)"), it("նրանցը", "nrantsə", "theirs"),
+        it("իրենց", "irents", "their own"), it("ինձ հետ", "indz het", "with me"),
+        it("քեզ հետ", "kez het", "with you"), it("մեզ հետ", "mez het", "with us")
+      ]),
+      L("A1.1-3", "More questions", "Question words for which, what kind, and since when.", [
+        it("որտեղի՞ց", "vorteghits", "from where"), it("ո՞րը", "vorə", "which one"),
+        it("ինչպիսի՞", "inchpisi", "what kind of"), it("ինչքա՞ն", "inchkan", "how much (everyday)"),
+        it("ինչո՞վ", "inchov", "with what"), it("ինչի՞ մասին", "inchi masin", "about what"),
+        it("ում", "um", "whom, whose"), it("երբվանի՞ց", "yerbvanits", "since when"),
+        it("ինչու՞ ոչ", "inchu voch", "why not"), it("Ի՞նչ է պատահել", "Inch e patahel", "What happened?")
+      ]),
+      L("A1.1-4", "Joining words", "And, but, or, because: the words that link two ideas.", [
+        it("բայց", "bayts", "but"), it("կամ", "kam", "or"),
+        it("որովհետև", "vorovhetev", "because"), it("եթե", "yete", "if"),
+        it("ապա", "apa", "then, next"), it("նաև", "nayev", "also"),
+        it("սակայն", "sakayn", "however"), it("թե", "te", "whether"),
+        it("ու", "u", "and (casual)"), it("իսկ", "isk", "and, while (contrast)")
+      ]),
+      L("A1.1-5", "Linking longer ideas", "Words for so that, although, until, and for example.", [
+        it("որպեսզի", "vorpeszi", "so that"), it("քանի որ", "kani vor", "since, because"),
+        it("չնայած", "chnayats", "although"), it("մինչև", "minchev", "until"),
+        it("թեև", "tev", "even though"), it("այնպես որ", "aynpes vor", "so, so that"),
+        it("ուստի", "usti", "therefore"), it("այսինքն", "aysink", "that is, in other words"),
+        it("օրինակ", "orinak", "for example"), it("ընդհակառակը", "əndhakaṙakə", "on the contrary")
+      ]),
+      L("A1.1-6", "Little helper words", "Short words that add already, still, only or even.", [
+        it("էլ", "el", "too, also"), it("էլի", "eli", "again; come on"),
+        it("դեռ", "deṙ", "still, yet"), it("արդեն", "arden", "already"),
+        it("միայն", "miayn", "only"), it("նույնիսկ", "nuynisk", "even"),
+        it("գուցե", "gutse", "maybe"), it("հենց", "hents", "just, exactly"),
+        it("ահա", "aha", "here it is"), it("հա", "ha", "yeah")
+      ]),
+      L("A1.1-7", "Everyday greetings", "Friendly openers and replies for people you know.", [
+        it("բարի օր", "bari or", "good day"), it("Ինչպե՞ս ես", "Inchpes yes", "How are you? (to a friend)"),
+        it("Ի՞նչ կա", "Inch ka", "What's up?"), it("Ի՞նչ նորություն կա", "Inch norutyun ka", "What's new?"),
+        it("մերսի", "mersi", "thanks (casual)"), it("շատ շնորհակալ եմ", "shat shnorhakal yem", "thank you very much"),
+        it("չարժե", "charzhe", "don't mention it"), it("Ամեն ինչ լավ է", "Amen inch lav e", "Everything is fine"),
+        it("կհանդիպենք", "khandipenk", "see you later"), it("բարի ճանապարհ", "bari chanaparh", "have a good trip")
+      ]),
+      L("A1.1-8", "Everyone and no one", "Words for all, each, some, and nobody.", [
+        it("մեկը", "mekə", "someone, one of them"), it("ոչ ոք", "voch vok", "nobody"),
+        it("ամեն ինչ", "amen inch", "everything"), it("բոլորը", "bolorə", "everyone"),
+        it("ամեն", "amen", "every"), it("յուրաքանչյուր", "yurakanchyur", "each"),
+        it("մյուսը", "myusə", "the other one"), it("նույն", "nuyn", "same"),
+        it("ամբողջ", "amboghj", "whole"), it("որոշ", "vorosh", "some, certain")
+      ]),
+      L("A1.1-9", "Saying yes and no", "Answers that are stronger or softer than a plain yes or no.", [
+        it("անպայման", "anpayman", "definitely"), it("անշուշտ", "anshusht", "certainly"),
+        it("իրոք", "irok", "really, indeed"), it("իսկապե՞ս", "iskapes", "Really?"),
+        it("համաձայն եմ", "hamadzayn yem", "I agree"), it("համաձայն չեմ", "hamadzayn chem", "I disagree"),
+        it("ոչ մի դեպքում", "voch mi depkum", "no way"), it("իհարկե ոչ", "iharke voch", "of course not"),
+        it("հնարավոր է", "hnaravor e", "it is possible"), it("չեմ կարծում", "chem kartsum", "I don't think so")
+      ]),
+      L("A1.1-10", "With, about, for", "Armenian puts most of these after the word they go with.", [
+        it("հետ", "het", "with"), it("մասին", "masin", "about"),
+        it("համար", "hamar", "for"), it("առանց", "aṙants", "without"),
+        it("մոտ", "mot", "near, at someone's place"), it("պես", "pes", "like"),
+        it("դեպի", "depi", "toward"), it("փոխարեն", "pokharen", "instead of"),
+        it("ընթացքում", "əntatskum", "during"), it("շնորհիվ", "shnorhiv", "thanks to")
+      ]),
+    ] },
 ];
+// Levels 1 to 10 are A0. Fill in the labels the level bar shows for them.
+LEVELS.forEach((lv) => { lv.tier = lv.tier || "A0"; lv.short = lv.short || lv.n; lv.tag = lv.tag || `Level ${lv.n}`; });
 
 
 /* ------------------------------------------------------------------ */
@@ -999,7 +1075,8 @@ const PARTS = [
     "ով|who", "ինչ|what", "այս|this", "այդ|that", "այն|that over there", "սա|this one", "դա|that one",
     "նա|he, she", "սրանք|these", "դրանք|those", "ի՞նչ|what", "ո՞վ|who", "քանի՞|how many", "ո՞ր|which",
     "որքա՞ն|how much", "իմ|my", "քո|your", "նրա|his, her", "մեր|our", "ձեր|your (plural)", "նրանց|their",
-    "ինձ|to me", "քեզ|to you", "նրան|to him, to her", "ինձնից|from me", "քեզնից|from you"
+    "ինձ|to me", "քեզ|to you", "նրան|to him, to her", "ինձնից|from me", "քեզնից|from you",
+    "դու|you", "մենք|we", "դուք|you (plural, polite)", "նրանք|they", "մեզ|to us", "ձեզ|to you (plural)", "ինքը|he himself, she herself", "ինքս|I myself", "իրենք|they themselves", "նրանից|from him, from her", "իմը|mine", "քոնը|yours", "նրանը|his, hers", "մերը|ours", "ձերը|yours (plural)", "նրանցը|theirs", "իրենց|their own", "ո՞րը|which one", "ինչպիսի՞|what kind of", "ինչո՞վ|with what", "ում|whom, whose", "մեկը|someone, one of them", "ոչ ոք|nobody", "ամեն ինչ|everything", "բոլորը|everyone", "ամեն|every", "յուրաքանչյուր|each", "մյուսը|the other one", "որոշ|some, certain"
   ] },
   { id: "verb", name: "Verbs", note: "Actions and states, including every form you have learned.", words: [
     "արի|come!", "ասա|say!", "երևալ|to appear", "սևանալ|to turn black", "ընդունել|to accept", "ընկնել|to fall",
@@ -1039,28 +1116,33 @@ const PARTS = [
     "կանաչ|green", "ինը|nine", "լավ|good", "մեծ|big", "փոքր|small", "սև|black", "թեթև|light", "արևոտ|sunny",
     "անձրևոտ|rainy", "թևավոր|winged", "արևային|solar", "ընտիր|choice", "ընդհանուր|general", "մեկ|one",
     "երեք|three", "չորս|four", "հինգ|five", "յոթ|seven", "ութ|eight", "տասը|ten", "գեղեցիկ|beautiful",
-    "սառը|cold", "թանկ|expensive", "էժան|cheap", "հեշտ|easy", "դժվար|difficult"
+    "սառը|cold", "թանկ|expensive", "էժան|cheap", "հեշտ|easy", "դժվար|difficult",
+    "նույն|same", "ամբողջ|whole"
   ] },
   { id: "adverb", name: "Adverbs", note: "When, where, how and how often.", words: [
     "ուր|where", "ուշ|late", "երբ|when", "ևս|also", "երևի|probably", "ու՞ր|where to", "որտե՞ղ|where",
     "ե՞րբ|when", "ինչու՞|why", "ինչպե՞ս|how", "այստեղ|here", "այնտեղ|there", "Իհարկե|Of course",
     "այստեղից|from here", "այնտեղից|from there", "երեկ|yesterday", "այսօր|today", "վաղը|tomorrow", "հիմա|now",
     "հետո|later", "շուտ|early", "միշտ|always", "երբեք|never", "երբեմն|sometimes", "անցյալ շաբաթ|last week",
-    "մյուս շաբաթ|next week", "միասին|together"
+    "մյուս շաբաթ|next week", "միասին|together",
+    "որտեղի՞ց|from where", "ինչքա՞ն|how much (everyday)", "երբվանի՞ց|since when", "ապա|then, next", "նաև|also", "օրինակ|for example", "ընդհակառակը|on the contrary", "էլ|too, also", "էլի|again; come on", "դեռ|still, yet", "արդեն|already", "միայն|only", "նույնիսկ|even", "գուցե|maybe", "հենց|just, exactly", "անպայման|definitely", "անշուշտ|certainly", "իրոք|really, indeed", "իսկապե՞ս|Really?"
   ] },
   { id: "preposition", name: "Prepositions", note: "Where things are. Armenian puts most of these after the noun.", words: [
     "մեջ|in, inside", "ներսում|inside", "դրսում|outside", "վերևում|above", "ներքևում|below", "կողքին|beside",
-    "հետևում|behind", "առջևում|in front", "մեջտեղում|in the middle"
+    "հետևում|behind", "առջևում|in front", "մեջտեղում|in the middle",
+    "մինչև|until", "հետ|with", "մասին|about", "համար|for", "առանց|without", "մոտ|near, at someone's place", "պես|like", "դեպի|toward", "փոխարեն|instead of", "ընթացքում|during", "շնորհիվ|thanks to"
   ] },
   { id: "conjunction", name: "Conjunctions", note: "Words that join other words and sentences.", words: [
-    "և|and", "ասես|as if"
+    "և|and", "ասես|as if",
+    "բայց|but", "կամ|or", "որովհետև|because", "եթե|if", "սակայն|however", "թե|whether", "ու|and (casual)", "իսկ|and, while (contrast)", "որպեսզի|so that", "քանի որ|since, because", "չնայած|although", "թեև|even though", "այնպես որ|so, so that", "ուստի|therefore", "այսինքն|that is, in other words"
   ] },
   { id: "interjection", name: "Interjections", note: "Greetings, thanks and other words said on their own.", words: [
     "ոչ|no", "այո|yes", "բարև|hello", "բարև ձեզ|hello (polite)", "բարի լույս|good morning",
     "բարի երեկո|good evening", "բարի գիշեր|good night", "ցտեսություն|goodbye", "հաջողություն|good luck",
     "բարի գալուստ|welcome", "ողջույն|greetings", "առայժմ|see you", "շնորհակալություն|thank you",
     "շնորհակալ եմ|I am grateful", "խնդրեմ|please, you are welcome", "ներողություն|sorry", "կներեք|excuse me",
-    "ոչինչ|it is nothing", "հաճելի է|pleased to meet you", "բարի ախորժակ|enjoy your meal", "անհոգ|no worries"
+    "ոչինչ|it is nothing", "հաճելի է|pleased to meet you", "բարի ախորժակ|enjoy your meal", "անհոգ|no worries",
+    "ահա|here it is", "հա|yeah", "բարի օր|good day", "մերսի|thanks (casual)", "շատ շնորհակալ եմ|thank you very much", "չարժե|don't mention it", "կհանդիպենք|see you later", "բարի ճանապարհ|have a good trip"
   ] },
 ];
 
@@ -1370,6 +1452,8 @@ const CSS = `
 .hy-raildiv{flex:0 0 1px;align-self:stretch;background:${C.line};margin:0 4px}
 .hy-btn:focus-visible,.hy-tab:focus-visible,.hy-railitem:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
 .hy-railnum,.hy-railpre,.hy-short{display:none}
+.hy-railgroup{font-family:${UI};font-size:11px;font-weight:700;letter-spacing:.08em;color:${C.gold};padding:10px 12px 2px;flex:0 0 auto}
+.hy-railgroup:first-child{padding-top:0}
 @media (max-width:879px){
   .hy-rail{gap:6px;padding:10px 14px;align-items:center;scrollbar-width:thin;scrollbar-color:${C.line} transparent}
   .hy-rail::-webkit-scrollbar{height:4px}
@@ -1390,6 +1474,8 @@ const CSS = `
   .hy-long{display:none}
   .hy-short{display:inline}
   .hy-raildiv{align-self:center;height:24px}
+  .hy-railgroup{align-self:center;padding:0 2px 0 6px}
+  .hy-railgroup:first-child{padding-left:0}
 }
 @media (min-width:880px){
   .hy-shell{flex-direction:row}
@@ -2383,16 +2469,19 @@ export default function ArmenianCourse() {
       <div className="hy-shell">
         {!inLesson && (
           <nav className="hy-rail" aria-label="Levels">
-            {LEVELS.map((L) => {
+            {LEVELS.map((L, li) => {
               const doneCount = L.lessons.filter((x) => progress.lessons[x.id]?.done).length;
-              const complete = doneCount === L.lessons.length;
+              const complete = L.lessons.length > 0 && doneCount === L.lessons.length;
+              const newTier = li === 0 || LEVELS[li - 1].tier !== L.tier;
               return (
-                <button key={L.n} className="hy-railitem hy-raillevel" data-on={level === L.n} data-done={complete} onClick={() => setLevel(L.n)}
-                  aria-label={`Level ${L.n}, ${L.name}${complete ? ", complete" : ""}`}>
-                  <span className="hy-railnum" aria-hidden="true">{L.n}</span>
+                <React.Fragment key={L.n}>
+                {newTier && <div className="hy-railgroup">{L.tier}</div>}
+                <button className="hy-railitem hy-raillevel" data-on={level === L.n} data-done={complete} onClick={() => setLevel(L.n)}
+                  aria-label={`${L.tag}, ${L.name}${complete ? ", complete" : ""}`}>
+                  <span className="hy-railnum" aria-hidden="true">{L.short}</span>
                   <div className="hy-railfull">
                   <div className="hy-railtop" style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: UI, fontSize: 11, fontWeight: 600, color: level === L.n || complete ? C.gold : C.muted }}>
-                    Level {L.n}
+                    {L.tag}
                     {complete && (
                       <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
                         <circle cx="8" cy="8" r="8" fill={C.gold} />
@@ -2401,13 +2490,14 @@ export default function ArmenianCourse() {
                     )}
                   </div>
                   <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
-                    <span className="hy-railpre">{L.n} · </span>{L.name}
+                    <span className="hy-railpre">{L.short} · </span>{L.name}
                   </div>
                   <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: complete ? C.gold : C.muted, marginTop: 2 }}>
                     {complete ? "Complete" : `${doneCount} of ${L.lessons.length} done`}
                   </div>
                   </div>
                 </button>
+                </React.Fragment>
               );
             })}
             <div className="hy-raildiv" aria-hidden="true" />
