@@ -622,9 +622,153 @@ const UNITS = [
         it("Ամեն ինչ մաքուր է", "Amen inch makur e", "Everything is clean")
       ]),
     ] },
+  { n: 11, name: "Shopping, money and clothes", blurb: "Buying what you need, paying for it, and the clothes you wear.",
+    topics: ["Shops", "Money and paying", "Clothes"], chapters: [
+      chapter("11-1", "Shops and places to buy things", "Where you go for bread, medicine or a book.", [
+        it("հացատուն", "hatsatun", "bakery"), it("դեղատուն", "deghatun", "pharmacy"),
+        it("գրախանութ", "grakhanut", "bookshop"), it("մթերային խանութ", "mterayin khanut", "grocery store"),
+        it("սուպերմարկետ", "supermarket", "supermarket"), it("տոնավաճառ", "tonavachaṙ", "fair, bazaar"),
+        it("կրպակ", "krpak", "kiosk"), it("հանրախանութ", "hanrakhanut", "department store"),
+        it("բանկ", "bank", "bank"), it("փոստ", "post", "post office")
+      ]),
+      chapter("11-2", "At the market", "Weighing, choosing and carrying it home.", [
+        it("վաճառող", "vachaṙogh", "seller"), it("գնորդ", "gnord", "buyer"), it("գնել", "gnel", "to buy"),
+        it("վաճառել", "vachaṙel", "to sell"), it("կիլոգրամ", "kilogram", "kilogram"), it("կշեռք", "ksheṙk", "scale"),
+        it("զամբյուղ", "zambyugh", "basket"), it("տոպրակ", "toprak", "bag (for shopping)"),
+        it("թարմ", "tarm", "fresh"), it("հասած", "hasats", "ripe")
+      ]),
+      chapter("11-3", "Money and prices", "Armenia pays in dram.", [
+        it("դրամ", "dram", "dram"), it("մետաղադրամ", "metaghadram", "coin"), it("թղթադրամ", "tghtadram", "banknote"),
+        it("մանր", "manr", "small change"), it("գնապիտակ", "gnapitak", "price tag"),
+        it("արժենալ", "arzhenal", "to cost"), it("զեղչ", "zeghch", "discount"), it("գումար", "gumar", "amount, sum"),
+        it("դրամապանակ", "dramapanak", "wallet"), it("ծախսել", "tsakhsel", "to spend")
+      ]),
+      chapter("11-4", "Paying and checking out", "The last step of every trip to the shop.", [
+        it("վճարել", "vcharel", "to pay"), it("կանխիկ", "kankhik", "cash"), it("քարտ", "kart", "card"),
+        it("անդորրագիր", "andorragir", "receipt"), it("դրամարկղ", "dramarkgh", "checkout"),
+        it("գանձապահ", "gandzapah", "cashier"), it("հերթ", "hert", "line, queue"),
+        it("մնացորդ", "mnatsord", "change given back"), it("վերադարձնել", "veradardznel", "to return"),
+        it("փաթեթավորել", "patetavorel", "to wrap")
+      ]),
+      chapter("11-5", "Asking in a shop", "Sentences for trying, choosing and paying.", [
+        it("Ինձ սա պետք է", "Indz sa petk e", "I need this"),
+        it("Կարո՞ղ եմ փորձել", "Karogh yem portsel", "Can I try it on?"),
+        it("Ուրիշ գույն ունե՞ք", "Urish guyn unek", "Do you have another colour?"),
+        it("Ես սա վերցնում եմ", "Yes sa vertsnum yem", "I will take this"),
+        it("Քարտով կարելի՞ է", "Kartov kareli e", "Can I pay by card?"),
+        it("Զեղչ կա՞", "Zeghch ka", "Is there a discount?"),
+        it("Պարզապես նայում եմ", "Parzapes nayum yem", "I am just looking"),
+        it("Որտե՞ղ է դրամարկղը", "Vortegh e dramarkghə", "Where is the checkout?"),
+        it("Տոպրակ պե՞տք է", "Toprak petk e", "Do you need a bag?"),
+        it("Ավելի էժան ունե՞ք", "Aveli ezhan unek", "Do you have a cheaper one?")
+      ]),
+      chapter("11-6", "Everyday clothes", "What you put on most mornings.", [
+        it("տաբատ", "tabat", "trousers"), it("շրջազգեստ", "shrjazgest", "skirt"), it("զգեստ", "zgest", "dress"),
+        it("ջինս", "jins", "jeans"), it("սվիտեր", "sviter", "sweater"), it("բաճկոն", "bachkon", "jacket"),
+        it("գուլպա", "gulpa", "sock"), it("ներքնազգեստ", "nerknazgest", "underwear"),
+        it("պիժամա", "pizhama", "pajamas"), it("վերնաշապիկ", "vernashapik", "button shirt")
+      ]),
+      chapter("11-7", "Coats, shoes and warm things", "For rain, snow and Yerevan winters.", [
+        it("վերարկու", "verarku", "coat"), it("գլխարկ", "glkhark", "hat"), it("ձեռնոց", "dzeṙnots", "glove"),
+        it("շարֆ", "sharf", "scarf"), it("սապոգ", "sapog", "boots"), it("հողաթափ", "hoghatap", "slippers"),
+        it("սանդալ", "sandal", "sandal"), it("անձրևանոց", "andzrevanots", "raincoat"),
+        it("հովանոց", "hovanots", "umbrella"), it("մուշտակ", "mushtak", "fur coat")
+      ]),
+      chapter("11-8", "Size and fit", "Too tight, too loose, or just right.", [
+        it("չափս", "chaps", "size"), it("նեղ", "negh", "tight"), it("լայն", "layn", "loose, wide"),
+        it("հարմար", "harmar", "comfortable"), it("սազել", "sazel", "to suit"), it("հագնել", "hagnel", "to put on"),
+        it("հանել", "hanel", "to take off"), it("փորձել", "portsel", "to try on"),
+        it("հանդերձարան", "handerdzaran", "fitting room"), it("կոճակ", "kochak", "button")
+      ]),
+      chapter("11-9", "Materials and patterns", "What it is made of, and what is printed on it.", [
+        it("բամբակ", "bambak", "cotton"), it("բուրդ", "burd", "wool"), it("մետաքս", "metaks", "silk"),
+        it("կտոր", "ktor", "fabric"), it("կաշվե", "kashve", "made of leather"), it("արծաթ", "artsat", "silver"),
+        it("գծավոր", "gtsavor", "striped"), it("վանդակավոր", "vandakavor", "checked"),
+        it("պուտավոր", "putavor", "spotted"), it("միագույն", "miaguyn", "plain, one colour")
+      ]),
+      chapter("11-10", "Bags and accessories", "The small things you carry and wear.", [
+        it("պայուսակ", "payusak", "handbag"), it("ուսապարկ", "usapark", "backpack"),
+        it("ժամացույց", "zhamatsuyts", "watch"), it("ակնոց", "aknots", "glasses"), it("մատանի", "matani", "ring"),
+        it("ականջօղ", "akanjogh", "earring"), it("վզնոց", "vznots", "necklace"),
+        it("ապարանջան", "aparanjan", "bracelet"), it("գոտի", "goti", "belt"), it("փողկապ", "poghkap", "necktie")
+      ]),
+    ] },
+  { n: 12, name: "School, work and free time", blurb: "Your day from the alarm to bedtime, at school, at work and after.",
+    topics: ["My day", "School", "Work and free time"], chapters: [
+      chapter("12-1", "Morning routine", "From the alarm to the front door.", [
+        it("զարթուցիչ", "zartutsich", "alarm clock"), it("արթնանալ", "artnanal", "to wake up"),
+        it("վեր կենալ", "ver kenal", "to get up"), it("լվացվել", "lvatsvel", "to wash up"),
+        it("ցնցուղ", "tsntsugh", "shower"), it("ատամները մաքրել", "atamnerə makrel", "to brush your teeth"),
+        it("սանրվել", "sanrvel", "to comb your hair"), it("հագնվել", "hagnvel", "to get dressed"),
+        it("նախաճաշել", "nakhachashel", "to have breakfast"), it("շտապել", "shtapel", "to hurry")
+      ]),
+      chapter("12-2", "Evening routine", "Coming home and winding down.", [
+        it("տուն գալ", "tun gal", "to come home"), it("գիշերանոց", "gisheranots", "nightgown"),
+        it("ընթրել", "əntrel", "to have dinner"), it("լողանալ", "loghanal", "to take a bath"),
+        it("հանգստանալ", "hangstanal", "to rest"), it("հոգնած", "hognats", "tired"),
+        it("պառկել", "paṙkel", "to lie down"), it("քնել", "knel", "to sleep"), it("երազ", "yeraz", "dream"),
+        it("արթուն", "artun", "awake")
+      ]),
+      chapter("12-3", "In the classroom", "Everything on and around your desk.", [
+        it("դասարան", "dasaran", "classroom"), it("գրատախտակ", "gratakhtak", "board"),
+        it("կավիճ", "kavich", "chalk"), it("տետր", "tetr", "notebook"), it("գրիչ", "grich", "pen"),
+        it("ռետին", "ṙetin", "eraser"), it("քանոն", "kanon", "ruler"), it("մկրատ", "mkrat", "scissors"),
+        it("դասագիրք", "dasagirk", "textbook"), it("գրասեղան", "graseghan", "desk")
+      ]),
+      chapter("12-4", "School subjects and people", "Who you meet at school, and what you study.", [
+        it("ուսանող", "usanogh", "university student"), it("դասղեկ", "dasghek", "homeroom teacher"),
+        it("դասընկեր", "dasənker", "classmate"), it("տնօրեն", "tnoren", "principal"),
+        it("դաս", "das", "lesson, class"), it("մաթեմատիկա", "matematika", "maths"),
+        it("պատմություն", "patmutyun", "history"), it("կենսաբանություն", "kensabanutyun", "biology"),
+        it("աշխարհագրություն", "ashkharhagrutyun", "geography"),
+        it("ֆիզկուլտուրա", "fizkultura", "physical education")
+      ]),
+      chapter("12-5", "Studying and learning", "Homework, tests and how you learn.", [
+        it("տնային աշխատանք", "tnayin ashkhatank", "homework"), it("քննություն", "knnutyun", "exam"),
+        it("գնահատական", "gnahatakan", "grade"), it("հարց", "harts", "question"),
+        it("պատասխան", "pataskhan", "answer"), it("վարժություն", "varzhutyun", "exercise"),
+        it("սխալ", "skhal", "mistake"), it("կրկնել", "krknel", "to repeat"),
+        it("բացատրել", "batsatrel", "to explain"), it("անգիր անել", "angir anel", "to learn by heart")
+      ]),
+      chapter("12-6", "Jobs", "What people do for a living.", [
+        it("ատամնաբույժ", "atamnabuyzh", "dentist"), it("բուժքույր", "buzhkuyr", "nurse"),
+        it("վարորդ", "varord", "driver"), it("խոհարար", "khoharar", "cook"),
+        it("ոստիկան", "vostikan", "police officer"), it("ինժեներ", "inzhener", "engineer"),
+        it("ֆերմեր", "fermer", "farmer"), it("վարսավիր", "varsavir", "barber"),
+        it("լրագրող", "lragrogh", "journalist"), it("դերասան", "derasan", "actor")
+      ]),
+      chapter("12-7", "At work", "The office, the people and the time off.", [
+        it("գրասենյակ", "grasenyak", "office"), it("գործարան", "gortsaran", "factory"), it("պետ", "pet", "boss"),
+        it("գործընկեր", "gortsnker", "colleague"), it("ժողով", "zhoghov", "meeting"),
+        it("համակարգիչ", "hamakargich", "computer"), it("աշխատավարձ", "ashkhatavardz", "salary"),
+        it("աշխատանք", "ashkhatank", "job"), it("արձակուրդ", "ardzakurd", "vacation"),
+        it("հանգստյան օր", "hangstyan or", "day off")
+      ]),
+      chapter("12-8", "Hobbies", "What you do when nobody is asking you to.", [
+        it("հոբբի", "hobbi", "hobby"), it("նկարել", "nkarel", "to draw, to paint"), it("պարել", "parel", "to dance"),
+        it("լուսանկարել", "lusankarel", "to take photos"), it("ձկնորսություն", "dzknorsutyun", "fishing"),
+        it("զբոսնել", "zbosnel", "to go for a walk"), it("ճամփորդել", "champordel", "to travel"),
+        it("կինո", "kino", "cinema"), it("համերգ", "hamerg", "concert"), it("թանգարան", "tangaran", "museum")
+      ]),
+      chapter("12-9", "Sports and games", "Playing, winning and losing.", [
+        it("ֆուտբոլ", "futbol", "football"), it("բասկետբոլ", "basketbol", "basketball"),
+        it("շախմատ", "shakhmat", "chess"), it("լող", "logh", "swimming"), it("վազել", "vazel", "to run"),
+        it("թիմ", "tim", "team"), it("գնդակ", "gndak", "ball"), it("խաղ", "khagh", "game"),
+        it("հաղթել", "haghtel", "to win"), it("պարտվել", "partvel", "to lose")
+      ]),
+      chapter("12-10", "Making plans", "Inviting someone and settling when and where.", [
+        it("Վաղը ազա՞տ ես", "Vaghə azat yes", "Are you free tomorrow?"),
+        it("Ուզո՞ւմ ես կինո գնալ", "Uzum yes kino gnal", "Do you want to go to the cinema?"),
+        it("Արի միասին գնանք", "Ari miasin gnank", "Let us go together"),
+        it("Զբաղված եմ", "Zbaghvats yem", "I am busy"), it("Ո՞ր ժամին", "Vor zhamin", "At what time?"),
+        it("Որտե՞ղ հանդիպենք", "Vortegh handipenk", "Where shall we meet?"),
+        it("Լավ միտք է", "Lav mitk e", "Good idea"), it("Կզանգեմ քեզ", "Kzangem kez", "I will call you"),
+        it("Այլ անգամ", "Ayl angam", "Another time"), it("Հետո կխոսենք", "Heto kkhosenk", "We will talk later")
+      ]),
+    ] },
   /* A1 to C2: the CEFR course. In A1 every chapter is 10 lessons of 10 words, none repeated from A0.
      A1 will have 12 chapters. */
-  { n: 11, domain: "A1", short: 1, tag: "A1 · Unit 1", name: "Greetings, pronouns and glue words", blurb: "The small words that hold every sentence together: who, whose, and, but, because.",
+  { n: 13, domain: "A1", short: 1, tag: "A1 · Unit 1", name: "Greetings, pronouns and glue words", blurb: "The small words that hold every sentence together: who, whose, and, but, because.",
     topics: ["People words", "Mine and yours", "More questions"], chapters: [
      chapterOf("A1.1", "Greetings, pronouns and glue words", "The small words that hold every sentence together: who, whose, and, but, because.", [
       lesson("A1.1-1", "People words", "The rest of the personal pronouns, and a few forms built from them.", [
@@ -700,7 +844,7 @@ const UNITS = [
      ]),
     ] },
 ];
-// Units 1 to 10 make up domain A0. Fill in the labels the unit bar shows for them.
+// Units without a domain (1 to 12) make up domain A0. Fill in the labels the unit bar shows for them.
 UNITS.forEach((u) => { u.domain = u.domain || "A0"; u.short = u.short || u.n; u.tag = u.tag || `Unit ${u.n}`; });
 // An A0 chapter is its own single lesson.
 UNITS.forEach((u) => u.chapters.forEach((c) => { if (!c.lessons) c.lessons = [c]; }));
@@ -1089,7 +1233,33 @@ const PARTS = [
     "բակ|yard", "աստիճաններ|stairs", "դանակ|knife", "պատառաքաղ|fork", "գդալ|spoon", "ափսե|plate",
     "բաժակ|glass", "կաթսա|pot", "վառարան|stove", "թեյնիկ|kettle", "լվացարան|sink", "անկողին|bed",
     "բարձ|pillow", "վերմակ|blanket", "սրբիչ|towel", "օճառ|soap", "հայելի|mirror", "լամպ|lamp",
-    "վարագույր|curtain", "բանալի|key", "պահարան|cupboard", "աղբաման|bin", "փոշեկուլ|vacuum cleaner"
+    "վարագույր|curtain", "բանալի|key", "պահարան|cupboard", "աղբաման|bin", "փոշեկուլ|vacuum cleaner",
+    "հացատուն|bakery", "դեղատուն|pharmacy", "գրախանութ|bookshop", "մթերային խանութ|grocery store",
+    "սուպերմարկետ|supermarket", "տոնավաճառ|fair, bazaar", "կրպակ|kiosk", "հանրախանութ|department store",
+    "բանկ|bank", "փոստ|post office", "վաճառող|seller", "գնորդ|buyer", "կիլոգրամ|kilogram", "կշեռք|scale",
+    "զամբյուղ|basket", "տոպրակ|bag (for shopping)", "դրամ|dram", "մետաղադրամ|coin", "թղթադրամ|banknote",
+    "մանր|small change", "գնապիտակ|price tag", "զեղչ|discount", "գումար|amount, sum", "դրամապանակ|wallet",
+    "կանխիկ|cash", "քարտ|card", "անդորրագիր|receipt", "դրամարկղ|checkout", "գանձապահ|cashier",
+    "հերթ|line, queue", "մնացորդ|change given back", "տաբատ|trousers", "շրջազգեստ|skirt", "զգեստ|dress",
+    "ջինս|jeans", "սվիտեր|sweater", "բաճկոն|jacket", "գուլպա|sock", "ներքնազգեստ|underwear", "պիժամա|pajamas",
+    "վերնաշապիկ|button shirt", "վերարկու|coat", "գլխարկ|hat", "ձեռնոց|glove", "շարֆ|scarf", "սապոգ|boots",
+    "հողաթափ|slippers", "սանդալ|sandal", "անձրևանոց|raincoat", "հովանոց|umbrella", "մուշտակ|fur coat",
+    "չափս|size", "հանդերձարան|fitting room", "կոճակ|button", "բամբակ|cotton", "բուրդ|wool", "մետաքս|silk",
+    "կտոր|fabric", "արծաթ|silver", "պայուսակ|handbag", "ուսապարկ|backpack", "ժամացույց|watch", "ակնոց|glasses",
+    "մատանի|ring", "ականջօղ|earring", "վզնոց|necklace", "ապարանջան|bracelet", "գոտի|belt", "փողկապ|necktie",
+    "զարթուցիչ|alarm clock", "ցնցուղ|shower", "գիշերանոց|nightgown", "երազ|dream", "դասարան|classroom",
+    "գրատախտակ|board", "կավիճ|chalk", "տետր|notebook", "գրիչ|pen", "ռետին|eraser", "քանոն|ruler",
+    "մկրատ|scissors", "դասագիրք|textbook", "գրասեղան|desk", "ուսանող|university student",
+    "դասղեկ|homeroom teacher", "դասընկեր|classmate", "տնօրեն|principal", "դաս|lesson, class",
+    "մաթեմատիկա|maths", "պատմություն|history", "կենսաբանություն|biology", "աշխարհագրություն|geography",
+    "ֆիզկուլտուրա|physical education", "տնային աշխատանք|homework", "քննություն|exam", "գնահատական|grade",
+    "հարց|question", "պատասխան|answer", "վարժություն|exercise", "սխալ|mistake", "ատամնաբույժ|dentist",
+    "բուժքույր|nurse", "վարորդ|driver", "խոհարար|cook", "ոստիկան|police officer", "ինժեներ|engineer",
+    "ֆերմեր|farmer", "վարսավիր|barber", "լրագրող|journalist", "դերասան|actor", "գրասենյակ|office",
+    "գործարան|factory", "պետ|boss", "գործընկեր|colleague", "ժողով|meeting", "համակարգիչ|computer",
+    "աշխատավարձ|salary", "աշխատանք|job", "արձակուրդ|vacation", "հանգստյան օր|day off", "հոբբի|hobby",
+    "ձկնորսություն|fishing", "կինո|cinema", "համերգ|concert", "թանգարան|museum", "ֆուտբոլ|football",
+    "բասկետբոլ|basketball", "շախմատ|chess", "լող|swimming", "թիմ|team", "գնդակ|ball", "խաղ|game"
   ] },
   { id: "pronoun", name: "Pronouns", note: "Words that stand in for a noun: I, this, who, my.", words: [
     "ես|I", "որ|that, which", "իր|his, her", "սա|this", "իրար|each other", "սրա|of this one", "որի|of which",
@@ -1128,7 +1298,16 @@ const PARTS = [
     "խնդրում եմ|I ask you", "Ունե՞ք|Do you have it?", "Կարո՞ղ եմ|May I?", "Գալիս եմ|I am coming",
     "լվանալ|to wash", "մաքրել|to clean", "եփել|to cook", "ավլել|to sweep", "արդուկել|to iron",
     "չորացնել|to dry", "դասավորել|to tidy", "աման լվանալ|to wash dishes", "հագուստ լվանալ|to do laundry",
-    "ջրել|to water"
+    "ջրել|to water",
+    "գնել|to buy", "վաճառել|to sell", "արժենալ|to cost", "ծախսել|to spend", "վճարել|to pay",
+    "վերադարձնել|to return", "փաթեթավորել|to wrap", "սազել|to suit", "հագնել|to put on", "հանել|to take off",
+    "փորձել|to try on", "արթնանալ|to wake up", "վեր կենալ|to get up", "լվացվել|to wash up",
+    "ատամները մաքրել|to brush your teeth", "սանրվել|to comb your hair", "հագնվել|to get dressed",
+    "նախաճաշել|to have breakfast", "շտապել|to hurry", "տուն գալ|to come home", "ընթրել|to have dinner",
+    "լողանալ|to take a bath", "հանգստանալ|to rest", "պառկել|to lie down", "քնել|to sleep", "կրկնել|to repeat",
+    "բացատրել|to explain", "անգիր անել|to learn by heart", "նկարել|to draw, to paint", "պարել|to dance",
+    "լուսանկարել|to take photos", "զբոսնել|to go for a walk", "ճամփորդել|to travel", "վազել|to run",
+    "հաղթել|to win", "պարտվել|to lose"
   ] },
   { id: "adjective", name: "Adjectives", note: "Words that describe a noun. Numbers are here too.", words: [
     "սուր|sharp", "արու|male", "երկար|long", "կարճ|short", "երկու|two", "ուրիշ|other", "վեց|six", "վատ|bad",
@@ -1138,7 +1317,10 @@ const PARTS = [
     "անձրևոտ|rainy", "թևավոր|winged", "արևային|solar", "ընտիր|choice", "ընդհանուր|general", "մեկ|one",
     "երեք|three", "չորս|four", "հինգ|five", "յոթ|seven", "ութ|eight", "տասը|ten", "գեղեցիկ|beautiful",
     "սառը|cold", "թանկ|expensive", "էժան|cheap", "հեշտ|easy", "դժվար|difficult",
-    "նույն|same", "ամբողջ|whole"
+    "նույն|same", "ամբողջ|whole",
+    "թարմ|fresh", "հասած|ripe", "նեղ|tight", "լայն|loose, wide", "հարմար|comfortable", "կաշվե|made of leather",
+    "գծավոր|striped", "վանդակավոր|checked", "պուտավոր|spotted", "միագույն|plain, one colour", "հոգնած|tired",
+    "արթուն|awake"
   ] },
   { id: "adverb", name: "Adverbs", note: "When, where, how and how often.", words: [
     "ուր|where", "ուշ|late", "երբ|when", "ևս|also", "երևի|probably", "ու՞ր|where to", "որտե՞ղ|where",
