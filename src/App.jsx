@@ -1793,9 +1793,9 @@ function WordBank({ words }) {
 
 const STORY_STAGES = [
   { label: "Read" },
-  { label: "Sound to meaning", a: "tr", b: "en", prompt: "Match each word's sound with its meaning" },
-  { label: "Letters to sound", a: "hy", b: "tr", prompt: "Match each Armenian word with how it sounds" },
-  { label: "Letters to meaning", a: "hy", b: "en", prompt: "Match each Armenian word with its meaning" },
+  { label: "Sound to meaning", a: "tr", b: "en", prompt: "Match each phrase's sound with its meaning" },
+  { label: "Letters to sound", a: "hy", b: "tr", prompt: "Match each Armenian phrase with how it sounds" },
+  { label: "Letters to meaning", a: "hy", b: "en", prompt: "Match each Armenian phrase with its meaning" },
 ];
 
 const FIELD_STYLE = {
@@ -1874,7 +1874,7 @@ function MatchRound({ items, a, b, prompt, roundLabel, onDone }) {
     <div>
       <h2 style={{ fontFamily: UI, fontSize: 18, color: C.parch, fontWeight: 600, lineHeight: 1.4, margin: 0 }}>{prompt}</h2>
       <p style={{ margin: "6px 0 0", fontFamily: UI, fontSize: 13, color: C.muted }}>
-        Tap a word on the left, then its partner on the right.{roundLabel ? ` ${roundLabel}` : ""}
+        Tap a phrase on the left, then its partner on the right.{roundLabel ? ` ${roundLabel}` : ""}
       </p>
       <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: 10 }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
