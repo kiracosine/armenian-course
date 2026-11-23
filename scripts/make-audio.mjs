@@ -1,6 +1,7 @@
-// Makes a spoken audio clip for every Armenian word and phrase in the chosen
-// levels, using Azure's Armenian voice. Clips already made are skipped, so
-// only new phrases are sent to Azure.
+// Makes a spoken audio clip for every Armenian word, phrase and letter name in
+// the lessons, using Azure's Armenian voice (always Anahit, so the whole course
+// sounds the same). Clips already made are skipped, so only new phrases are
+// sent to Azure.
 //
 // Run by the deploy workflow. Needs the AZURE_SPEECH_KEY secret; without it,
 // no new clips are made and the site still builds.
@@ -11,13 +12,14 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execSync } from "node:child_process";
 
-const LEVELS_WITH_AUDIO = [10];                 // add level numbers here to voice more levels
-const VOICE = process.env.AZURE_SPEECH_VOICE || "hy-AM-AnahitNeural";
+const VOICE = "hy-AM-AnahitNeural";
 const RATE = "-10%";                            // a little slower than normal speech, for learners
 const REGION = process.env.AZURE_SPEECH_REGION || "eastus";
 const KEY = process.env.AZURE_SPEECH_KEY || "";
 const OUT = path.join("public", "audio");
+const SAVE_EVERY = Number(process.env.AUDIO_SAVE_EVERY || 0);   // in the workflow: push clips to GitHub every N
 
 // Same file name for the same phrase every time (FNV-1a hash of the text).
 function fileFor(text) {
@@ -29,13 +31,30 @@ function fileFor(text) {
   return h.toString(16).padStart(8, "0") + ".mp3";
 }
 
-function phrasesFor(src, n) {
-  const start = src.indexOf(`{ n: ${n}, name:`);
-  if (start < 0) throw new Error(`Level ${n} not found in src/App.jsx`);
-  const next = src.indexOf("{ n: ", start + 5);
-  const close = src.indexOf("\n];", start);
-  const end = next > 0 && next < close ? next : close;
-  return [...src.slice(start, end).matchAll(/\bit\("([^"]+)"/g)].map((m) => m[1]);
+// Every lesson word and phrase (written with it(...) or w(...) in App.jsx),
+// plus the name of every letter (the third value of l, wide and aside).
+function lessonPhrases(src) {
+  const words = [...src.matchAll(/\b(?:it|w)\("([^"]+)"/g)].map((m) => m[1]);
+  const names = [...src.matchAll(/\b(?:l|wide|aside)\("[^"]*", "[^"]*", "([^"]+)"/g)].map((m) => m[1]);
+  return [...words, ...names];
+}
+
+function writeManifest(phrases) {
+  const manifest = {};
+  for (const p of phrases) if (fs.existsSync(path.join(OUT, fileFor(p)))) manifest[p] = fileFor(p);
+  fs.writeFileSync(path.join(OUT, "manifest.json"), JSON.stringify(manifest, null, 1) + "\n");
+  return Object.keys(manifest).length;
+}
+
+// Save the clips made so far to GitHub, so a long run that gets cut off keeps its work.
+function saveProgress(phrases, made) {
+  writeManifest(phrases);
+  try {
+    execSync(`git add ${OUT} && git commit -q -m "Add audio for new phrases (${made} so far)" && git pull -q --rebase && git push -q`, { stdio: "inherit" });
+    console.log(`  saved ${made} clips to the repository`);
+  } catch (e) {
+    console.log("  could not save progress to the repository; continuing");
+  }
 }
 
 const xml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -62,7 +81,7 @@ async function speak(text) {
 }
 
 const src = fs.readFileSync(path.join("src", "App.jsx"), "utf8");
-const phrases = [...new Set(LEVELS_WITH_AUDIO.flatMap((n) => phrasesFor(src, n)))];
+const phrases = [...new Set(lessonPhrases(src))];
 fs.mkdirSync(OUT, { recursive: true });
 
 const missing = phrases.filter((p) => !fs.existsSync(path.join(OUT, fileFor(p))));
@@ -71,14 +90,14 @@ console.log(`${phrases.length} phrases, ${missing.length} without audio yet.`);
 if (missing.length && !KEY) {
   console.log("No AZURE_SPEECH_KEY secret, so no new audio was made.");
 } else {
+  let made = 0;
   for (const p of missing) {
     fs.writeFileSync(path.join(OUT, fileFor(p)), await speak(p));
-    console.log(`  made ${fileFor(p)}  ${p}`);
+    made++;
+    console.log(`  made ${fileFor(p)}  ${p}  (${made} of ${missing.length})`);
+    if (SAVE_EVERY && made % SAVE_EVERY === 0 && made < missing.length) saveProgress(phrases, made);
     await sleep(3500);   // stay well inside the free tier's rate limit
   }
 }
 
-const manifest = {};
-for (const p of phrases) if (fs.existsSync(path.join(OUT, fileFor(p)))) manifest[p] = fileFor(p);
-fs.writeFileSync(path.join(OUT, "manifest.json"), JSON.stringify(manifest, null, 1) + "\n");
-console.log(`manifest.json lists ${Object.keys(manifest).length} clips.`);
+console.log(`manifest.json lists ${writeManifest(phrases)} clips.`);
