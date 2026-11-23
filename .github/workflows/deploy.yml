@@ -25,16 +25,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Set the name used for audio commits
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
       - name: Make audio for new phrases
         env:
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: eastus
+          AUDIO_SAVE_EVERY: 100
         run: node scripts/make-audio.mjs
       - name: Save new audio to the repository
         run: |
           if [ -n "$(git status --porcelain public/audio)" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
             git add public/audio
             git commit -m "Add audio for new phrases"
             git pull --rebase && git push || echo "Could not save the audio to the repository; it is still in this deploy."
