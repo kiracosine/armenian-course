@@ -1151,7 +1151,7 @@ function nextStage(stage, rung, ok) {
   return rung === stage ? Math.min(MASTERED, stage + 1) : stage;
 }
 
-function buildSession(levelIdx, idx, words = {}) {
+function buildSession(levelIdx, idx, words = {}, doneLessons = {}) {
   const level = LEVELS[levelIdx];
   const lesson = level.lessons[idx];
   const own = wordsOf(lesson);
@@ -1248,7 +1248,8 @@ function buildSession(levelIdx, idx, words = {}) {
     const kinds = ["glyph2sound", "sound2glyph", "case"];
     letterQs = lesson.letters.map((L, i) => letterQ(L, L.solo ? "glyph2sound" : kinds[i % 3]));
     if (idx > 0) {
-      letterReview = pickN(LESSONS.slice(0, idx).flatMap((l) => l.letters), 2)
+      // Only review letters from lessons the learner has finished; any lesson can be opened first.
+      letterReview = pickN(LESSONS.slice(0, idx).filter((l) => doneLessons[l.id]?.done).flatMap((l) => l.letters), 2)
         .map((L) => letterQ(L, Math.random() < 0.5 ? "glyph2sound" : "sound2glyph"));
     }
   }
@@ -1557,7 +1558,7 @@ function LessonList({ level, progress, onStart }) {
       {lessons.map((L, i) => {
         const rec = progress.lessons[L.id];
         const done = !!rec?.done;
-        const locked = i > 0 && !progress.lessons[lessons[i - 1].id]?.done;
+        const locked = false;   // every lesson is open; learners can move freely
         const next = i === firstOpen;
         const letters = L.letters;
         return (
@@ -2324,7 +2325,7 @@ export default function ArmenianCourse() {
   }, []);
 
   const startLesson = (lvl, idx) => {
-    const session = buildSession(lvl - 1, idx, progress.words);
+    const session = buildSession(lvl - 1, idx, progress.words, progress.lessons);
     setView({ name: session.cards.length ? "study" : "quiz", lvl, idx, session });
   };
 
