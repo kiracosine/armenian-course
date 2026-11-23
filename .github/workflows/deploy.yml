@@ -1,4 +1,6 @@
 # Builds the site and publishes it to GitHub Pages on every push to main.
+# Before building, it makes audio for any new Armenian phrases (see
+# scripts/make-audio.mjs) and saves the clips back to the repository.
 name: Deploy to GitHub Pages
 
 on:
@@ -7,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -23,6 +25,20 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Make audio for new phrases
+        env:
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: eastus
+        run: node scripts/make-audio.mjs
+      - name: Save new audio to the repository
+        run: |
+          if [ -n "$(git status --porcelain public/audio)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+            git add public/audio
+            git commit -m "Add audio for new phrases"
+            git pull --rebase && git push || echo "Could not save the audio to the repository; it is still in this deploy."
+          fi
       - run: npm install
       - run: npm run build
       - uses: actions/configure-pages@v5
