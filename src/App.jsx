@@ -689,7 +689,7 @@ const LEVELS = [
     ] },
 ];
 // Levels 1 to 10 are A0. Fill in the labels the level bar shows for them.
-LEVELS.forEach((lv) => { lv.tier = lv.tier || "A0"; lv.short = lv.short || lv.n; lv.tag = lv.tag || `Level ${lv.n}`; });
+LEVELS.forEach((lv) => { lv.tier = lv.tier || "A0"; lv.short = lv.short || lv.n; lv.tag = lv.tag || `Lesson ${lv.n}`; });
 
 // The CEFR levels in the level bar's dropdown. A level with no units yet shows as coming soon.
 const TIERS = [
@@ -1458,7 +1458,8 @@ const CSS = `
 .hy-tab[aria-selected="true"]{background:${C.ink3};border-color:${C.gold}}
 .hy-raildiv{flex:0 0 1px;align-self:stretch;background:${C.line};margin:0 4px}
 .hy-btn:focus-visible,.hy-tab:focus-visible,.hy-railitem:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
-.hy-railnum,.hy-railpre,.hy-short{display:none}
+.hy-railnum,.hy-railpre,.hy-short,.hy-railcurrent{display:none}
+.hy-tiersep{height:1px;background:${C.line};margin:6px 4px}
 .hy-tierbtn{display:flex;align-items:center;gap:8px;flex:0 0 auto;background:transparent;border:1px solid ${C.line};
   border-radius:8px;padding:8px 12px;color:${C.parch};font-family:${UI};cursor:pointer;text-align:left}
 .hy-tierbtn:hover,.hy-tierbtn[aria-expanded="true"]{border-color:${C.gold}}
@@ -1472,28 +1473,28 @@ const CSS = `
 .hy-tieropt:disabled{opacity:.45;cursor:default}
 .hy-tierbtn:focus-visible,.hy-tieropt:focus-visible{outline:2px solid ${C.apricot};outline-offset:2px}
 @media (max-width:879px){
-  .hy-rail{gap:6px;padding:10px 14px;align-items:center;scrollbar-width:thin;scrollbar-color:${C.line} transparent}
+  .hy-root{padding:calc(env(safe-area-inset-top, 0px) + 16px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);box-sizing:border-box}
+  .hy-rail{gap:8px;padding:10px 12px;align-items:center;scrollbar-width:thin;scrollbar-color:${C.line} transparent}
   .hy-rail::-webkit-scrollbar{height:4px}
   .hy-rail::-webkit-scrollbar-track{background:transparent}
   .hy-rail::-webkit-scrollbar-thumb{background:${C.line};border-radius:2px}
-  .hy-railitem{min-width:0;padding:6px 10px}
-  .hy-raillevel[data-on="false"]{width:34px;height:34px;padding:0;border-radius:50%;border-color:${C.line};
+  .hy-railcurrent{display:block;flex:0 1 150px;min-width:0;padding:6px 10px;border-radius:8px;background:${C.ink3};border:1px solid ${C.gold}}
+  .hy-railgrid{display:grid;grid-template-rows:repeat(3,30px);grid-auto-flow:column;grid-auto-columns:30px;gap:5px;flex:0 0 auto}
+  .hy-railgrid .hy-raillevel{width:30px;height:30px;min-width:0;padding:0;border-radius:50%;border-color:${C.line};background:transparent;
     display:flex;align-items:center;justify-content:center}
-  .hy-raillevel[data-on="false"]:hover{border-color:${C.gold}}
-  .hy-raillevel[data-on="false"][data-done="true"]{background:${C.gold};border-color:${C.gold}}
-  .hy-raillevel[data-on="false"][data-done="true"] .hy-railnum{color:${C.ink}}
-  .hy-raillevel[data-on="false"] .hy-railfull{display:none}
-  .hy-raillevel[data-on="false"] .hy-railnum{display:inline;font-family:${UI};font-size:13px;font-weight:600;color:${C.parch}}
-  .hy-raillevel[data-on="true"] .hy-railtop{display:none!important}
+  .hy-railgrid .hy-raillevel:hover,.hy-railgrid .hy-raillevel[data-on="true"]{border-color:${C.gold}}
+  .hy-railgrid .hy-raillevel[data-done="true"]{background:${C.gold};border-color:${C.gold}}
+  .hy-railgrid .hy-railfull{display:none}
+  .hy-railgrid .hy-railnum{display:inline;font-family:${UI};font-size:12px;font-weight:600;color:${C.parch}}
+  .hy-railgrid .hy-raillevel[data-on="true"] .hy-railnum{color:${C.gold}}
+  .hy-railgrid .hy-raillevel[data-done="true"] .hy-railnum{color:${C.ink}}
   .hy-railpre{display:inline;color:${C.gold}}
   .hy-railsub{display:none}
-  .hy-raillevel .hy-railsub{display:block}
-  .hy-long{display:none}
-  .hy-short{display:inline}
-  .hy-raildiv{align-self:center;height:24px}
-  .hy-tierbtn{align-self:center;padding:7px 10px}
+  .hy-railcurrent .hy-railsub{display:block}
+  .hy-tierbtn{align-self:center;padding:7px 9px}
   .hy-tiername{display:none}
 }
+
 @media (min-width:880px){
   .hy-shell{flex-direction:row}
   .hy-rail{flex-direction:column;width:232px;flex:0 0 232px;height:100vh;position:sticky;top:0;
@@ -1501,6 +1502,7 @@ const CSS = `
   .hy-railitem{min-width:0;width:100%}
   .hy-raildiv{height:1px;margin:10px 4px}
   .hy-tierbtn{width:100%;margin-bottom:8px}
+  .hy-railgrid{display:flex;flex-direction:column;gap:8px}
 }
 @media (max-width:520px){ .hy-opts{grid-template-columns:1fr} }
 @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
@@ -2523,12 +2525,29 @@ export default function ArmenianCourse() {
           <nav className="hy-rail" aria-label="Levels">
             <button ref={tierBtn} className="hy-tierbtn" onClick={toggleTierMenu}
               aria-haspopup="menu" aria-expanded={!!tierMenu} aria-label={`CEFR level ${tier}, choose another`}>
-              <span className="hy-tierid">{tier}</span>
-              <span className="hy-tiername">{TIERS.find((t) => t.id === tier).name}</span>
+              <span className="hy-tierid">{level === "pos" ? "Grammar" : level === "stories" ? "Stories" : tier}</span>
+              {typeof level === "number" && <span className="hy-tiername">{TIERS.find((t) => t.id === tier).name}</span>}
               <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" style={{ marginLeft: "auto", transform: tierMenu ? "rotate(180deg)" : "none" }}>
                 <path d="M2.5 4.5l3.5 3.5 3.5-3.5" fill="none" stroke={C.gold} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </button>
+            {(() => {
+              // On phones: a card for the open unit, beside the numbered circles.
+              const cur = LEVELS.find((L) => L.n === level && L.tier === tier);
+              if (!cur) return null;
+              const done = cur.lessons.filter((x) => progress.lessons[x.id]?.done).length;
+              return (
+                <div className="hy-railcurrent" aria-hidden="true">
+                  <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
+                    <span className="hy-railpre">{cur.short} · </span>{cur.name}
+                  </div>
+                  <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: C.muted, marginTop: 2 }}>
+                    {done} of {cur.lessons.length} done
+                  </div>
+                </div>
+              );
+            })()}
+            <div className="hy-railgrid">
             {LEVELS.filter((L) => L.tier === tier).map((L) => {
               const doneCount = L.lessons.filter((x) => progress.lessons[x.id]?.done).length;
               const complete = L.lessons.length > 0 && doneCount === L.lessons.length;
@@ -2558,25 +2577,7 @@ export default function ArmenianCourse() {
                 </React.Fragment>
               );
             })}
-            <div className="hy-raildiv" aria-hidden="true" />
-            <button className="hy-railitem" data-on={level === "pos"} onClick={() => setLevel("pos")}
-              aria-label={`Parts of speech, ${knownCount(progress.words)} words known`}>
-              <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
-                <span className="hy-long">Parts of speech</span><span className="hy-short">Grammar</span>
-              </div>
-              <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: knownCount(progress.words) ? C.gold : C.muted, marginTop: 2 }}>
-                {knownCount(progress.words)} words known
-              </div>
-            </button>
-            <button className="hy-railitem" data-on={level === "stories"} onClick={() => setLevel("stories")}
-              aria-label={`Stories, ${storiesRead(progress)} of ${STORIES.length} read`}>
-              <div style={{ fontFamily: UI, fontSize: 14, fontWeight: 500, lineHeight: 1.3, color: C.parch }}>
-                Stories
-              </div>
-              <div className="hy-railsub" style={{ fontFamily: UI, fontSize: 11, color: storiesRead(progress) ? C.gold : C.muted, marginTop: 2 }}>
-                {storiesRead(progress)} of {STORIES.length} {STORIES.length === 1 ? "story" : "stories"} read
-              </div>
-            </button>
+            </div>
           </nav>
         )}
         {tierMenu && !inLesson && (
@@ -2588,11 +2589,22 @@ export default function ArmenianCourse() {
                   aria-current={t.id === tier} onClick={() => chooseTier(t.id)}>
                   <span><span className="hy-tierid">{t.id}</span> <span style={{ marginLeft: 6 }}>{t.name}</span></span>
                   <span style={{ fontSize: 12, color: C.muted }}>
-                    {!units ? "coming soon" : t.id === "A0" ? `${units} levels` : `${units} unit${units === 1 ? "" : "s"}`}
+                    {!units ? "coming soon" : t.id === "A0" ? `${units} lessons` : `${units} unit${units === 1 ? "" : "s"}`}
                   </span>
                 </button>
               );
             })}
+            <div className="hy-tiersep" aria-hidden="true" />
+            <button role="menuitem" className="hy-tieropt" aria-current={level === "pos"}
+              onClick={() => { setTierMenu(null); setLevel("pos"); }}>
+              <span>Grammar</span>
+              <span style={{ fontSize: 12, color: C.muted }}>{knownCount(progress.words)} words known</span>
+            </button>
+            <button role="menuitem" className="hy-tieropt" aria-current={level === "stories"}
+              onClick={() => { setTierMenu(null); setLevel("stories"); }}>
+              <span>Stories</span>
+              <span style={{ fontSize: 12, color: C.muted }}>{storiesRead(progress)} of {STORIES.length} read</span>
+            </button>
           </div>
         )}
         <main className="hy-main">{body}</main>
