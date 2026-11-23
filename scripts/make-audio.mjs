@@ -21,10 +21,15 @@ const KEY = process.env.AZURE_SPEECH_KEY || "";
 const OUT = path.join("public", "audio");
 const SAVE_EVERY = Number(process.env.AUDIO_SAVE_EVERY || 0);   // in the workflow: push clips to GitHub every N
 
-// Same file name for the same phrase every time (FNV-1a hash of the text).
+// What Azure is actually asked to say. Azure misreads the ligature և (Երևան,
+// բարև), so it is sent as եվ, which sounds the same. The lessons still show և.
+const spoken = (text) => text.replace(/և/g, "եվ");
+
+// Same file name for the same spoken text every time (FNV-1a hash). Changing
+// how a phrase is spoken gives it a new file, so it is made again.
 function fileFor(text) {
   let h = 0x811c9dc5;
-  for (const b of Buffer.from(text.normalize("NFC"), "utf8")) {
+  for (const b of Buffer.from(spoken(text).normalize("NFC"), "utf8")) {
     h ^= b;
     h = Math.imul(h, 0x01000193) >>> 0;
   }
@@ -57,14 +62,11 @@ function saveProgress(phrases, made) {
   }
 }
 
-// Text Azure can't read on its own, and what to say instead (same sound).
-const SAY = { "և": "եվ" };
-
 const xml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function speak(text) {
-  const ssml = `<speak version="1.0" xml:lang="hy-AM"><voice name="${VOICE}"><prosody rate="${RATE}">${xml(SAY[text] || text)}</prosody></voice></speak>`;
+  const ssml = `<speak version="1.0" xml:lang="hy-AM"><voice name="${VOICE}"><prosody rate="${RATE}">${xml(spoken(text))}</prosody></voice></speak>`;
   for (let attempt = 1; attempt <= 5; attempt++) {
     const res = await fetch(`https://${REGION}.tts.speech.microsoft.com/cognitiveservices/v1`, {
       method: "POST",
