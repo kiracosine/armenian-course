@@ -1457,6 +1457,47 @@ function Button({ children, onClick, tone = "gold", disabled, full, small }) {
   );
 }
 
+/* Spoken audio. Clips are made ahead of time by scripts/make-audio.mjs and
+   listed in audio/manifest.json; a phrase with no clip simply has no button. */
+let AUDIO = null;
+const audioReady = fetch("./audio/manifest.json")
+  .then((r) => (r.ok ? r.json() : {}))
+  .catch(() => ({}))
+  .then((m) => { AUDIO = m || {}; });
+let playing = null;
+
+function playHy(hy) {
+  const f = AUDIO && AUDIO[hy];
+  if (!f) return;
+  try {
+    if (playing) playing.pause();
+    playing = new Audio(`./audio/${f}`);
+    playing.play().catch(() => {});
+  } catch (e) { /* audio not available in this browser */ }
+}
+
+function useHasAudio(hy) {
+  const [ready, setReady] = useState(AUDIO !== null);
+  useEffect(() => { if (!ready) audioReady.then(() => setReady(true)); }, [ready]);
+  return ready && !!AUDIO[hy];
+}
+
+function SpeakButton({ hy, size = 44 }) {
+  if (!useHasAudio(hy)) return null;
+  return (
+    <button className="hy-btn" onClick={() => playHy(hy)} aria-label="Hear it spoken" title="Hear it spoken"
+      style={{
+        width: size, height: size, borderRadius: "50%", display: "inline-flex", alignItems: "center",
+        justifyContent: "center", background: C.ink2, border: `1px solid ${C.line}`, cursor: "pointer", padding: 0,
+      }}>
+      <svg width={size * 0.5} height={size * 0.5} viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill={C.gold} />
+        <path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" fill="none" stroke={C.gold} strokeWidth="1.8" strokeLinecap="round" />
+      </svg>
+    </button>
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Alphabet board                                                     */
 /* ------------------------------------------------------------------ */
@@ -1981,6 +2022,11 @@ function Study({ lesson, cards, onDone, onQuit }) {
     : c.kind === "letter" && next.kind === "word" ? "On to the words"
     : c.kind === "letter" ? "Next letter" : "Next word";
 
+  // Say each new word or phrase aloud when its card appears.
+  useEffect(() => {
+    if (c.kind !== "letter") audioReady.then(() => playHy(c.hy));
+  }, [i]);
+
   return (
     <div className="hy-lesson">
       <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 28 }}>
@@ -2028,6 +2074,7 @@ function Study({ lesson, cards, onDone, onQuit }) {
             </div>
             <div style={{ marginTop: 12, fontFamily: UI, fontSize: 20, color: C.apricot }}>{c.rom}</div>
             <div style={{ marginTop: 4, fontFamily: UI, fontSize: 18, color: C.parch }}>{c.en}</div>
+            <div style={{ marginTop: 18 }}><SpeakButton hy={c.hy} /></div>
             {i === 0 && lesson.note && (
               <p style={{ marginTop: 26, fontFamily: UI, fontSize: 14, color: C.muted, maxWidth: 400, lineHeight: 1.6 }}>
                 {lesson.note}
@@ -2105,6 +2152,7 @@ function Quiz({ questions, onFinish, onQuit }) {
             {(q.sub || (q.peek && peeked)) && (
               <div style={{ marginTop: 10, fontFamily: UI, fontSize: 20, color: C.apricot }}>{q.sub || q.peek}</div>
             )}
+            <div style={{ marginTop: 12 }}><SpeakButton hy={q.big} size={38} /></div>
             {q.peek && !peeked && state === "answering" && (
               <button className="hy-btn" onClick={() => setPeeked(true)}
                 style={{ marginTop: 10, background: "none", border: "none", color: C.muted, fontFamily: UI, fontSize: 14, textDecoration: "underline", cursor: "pointer" }}>
