@@ -1,5 +1,5 @@
 // Makes a spoken audio clip for every Armenian word, phrase and letter name in
-// the lessons, using Azure's Armenian voice (always Anahit, so the whole course
+// the lessons and stories, using Azure's Armenian voice (always Anahit, so the whole course
 // sounds the same). Clips already made are skipped, so only new phrases are
 // sent to Azure.
 //
@@ -41,7 +41,12 @@ function fileFor(text) {
 function lessonPhrases(src) {
   const words = [...src.matchAll(/\b(?:it|w)\("([^"]+)"/g)].map((m) => m[1]);
   const names = [...src.matchAll(/\b(?:l|wide|aside)\("[^"]*", "[^"]*", "([^"]+)"/g)].map((m) => m[1]);
-  return [...words, ...names];
+  // Stories: every line (hy: "...") and every word in a line's word list (["hy", "tr", "en"]).
+  const start = src.indexOf("const STORIES = [");
+  const stories = start < 0 ? "" : src.slice(start, src.indexOf("\n];", start));
+  const lines = [...stories.matchAll(/\bhy: "([^"]+)"/g)].map((m) => m[1]);
+  const storyWords = [...stories.matchAll(/\["([^"]+)", "[^"]*", "[^"]*"\]/g)].map((m) => m[1]);
+  return [...words, ...names, ...lines, ...storyWords];
 }
 
 function writeManifest(phrases) {
